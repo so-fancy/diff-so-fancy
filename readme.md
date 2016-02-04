@@ -17,7 +17,7 @@
 # Requirements / Install
 #
 # * GNU sed. On Mac, install it with Homebrew:
-#   	brew install gnu-sed --default-names  # You'll have to change below to `gsed` otherwise
+#   	brew install gnu-sed --with-default-names  # You'll have to change below to `gsed` otherwise
 # * diff-highlight. It's shipped with Git, but probably not in your $PATH
 #       ln -sf "$(brew --prefix)/share/git-core/contrib/diff-highlight/diff-highlight" ~/bin/diff-highlight
 # * Add some coloring to your .gitconfig:
