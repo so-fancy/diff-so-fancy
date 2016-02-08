@@ -13,7 +13,7 @@ diff-so-fancy builds on the good-lookin' output of diff-highlight to upgrade you
 ## Usage
 
 ```shell
-git diff | diff-highlight | diff-so-fancy
+git diff --color | diff-highlight | diff-so-fancy
 ```
 
 Add to .gitconfig so all `git diff` uses it.
