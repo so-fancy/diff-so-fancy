@@ -15,7 +15,10 @@
     "diff",
     "fancy",
     "good-lookin'",
-    "diff-highlight"
+    "diff-highlight",
+    "color",
+    "readable",
+    "high-light"
   ],
   "author": "Paul Irish",
   "license": "ISC",
