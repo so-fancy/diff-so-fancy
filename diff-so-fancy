@@ -26,7 +26,7 @@ strip_leading_symbols () {
 }
 
 print_horizontal_rule () {
-		printf "%$(tput cols)s\n"|tr " " "─"
+	printf "%$(tput cols)s\n"|sed 's/ /─/g'
 }
 
 # run it.
