@@ -1,6 +1,6 @@
 # diff-so-fancy
 
-diff-so-fancy builds on the good-lookin' output of diff-highlight to upgrade
+diff-so-fancy builds on the good-lookin' output of git contrib's `diff-highlight` to upgrade
 your diffs' appearances.
 
 * Output will not be in standard patch format, but will be readable.
@@ -14,29 +14,42 @@ your diffs' appearances.
 
 ## Usage
 
+You can do one-off fanciness:
 ```shell
 git diff --color | diff-so-fancy
 ```
 
-Add to .gitconfig so all `git diff` uses it.
+**But**, you'll probably want to fancify all your diffs. Add this to `~/.gitconfig` so all `git diff` will use it:
 ```shell
 git config --global core.pager "diff-so-fancy | less --tabs=1,5 -R"
 ```
 
 ## Install
 
+For convenience, the recommended installation is via NPM:
 ```shell
 npm install -g diff-so-fancy
 ```
 This will install and link the `diff-so-fancy` and `diff-highlight` scripts.
 
-### GNU sed.
-On Mac, install it with Homebrew.
+### Manual installation alternative
+If you want, you can choose to install manually:
+
+* Grab the two scripts (`diff-highlight` and `diff-so-fancy`) via either downloading or cloning the repo.
+* Place them in a location that is in your `PATH`.
+* Set up the git `core.pager` config, as described above
+
+Note: The `diff-highlight` dependency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience. If you prefer less fancy in your diff, you also use diff-highlight [on it's own](https://news.ycombinator.com/item?id=11068436).
+
+### Install GNU `sed`
+You'll need GNU sed. On Mac, it's easy to install with Homebrew.
 ```shell
-brew install gnu-sed --with-default-names  # You'll have to change below to `gsed` otherwise
+brew install gnu-sed --with-default-names  # Without the default-names flag, you'll have to use it via `gsed`
 ```
 
-### Git config color
+### Improved colors for the the highlighted bits
+
+`diff-highlight` has default colors that are arguably a little nasty. They'll work fine, but you can try some fancier colors:
 ```
 git config --global color.diff-highlight.oldNormal "red bold"
 git config --global color.diff-highlight.oldHighlight "red bold 52"
@@ -45,11 +58,6 @@ git config --global color.diff-highlight.newHighlight "green bold 22"
 ```
 You may also want to configure [general diff colors](https://github.com/paulirish/dotfiles/blob/63cb8193b0e66cf80ab6332477f1f52c7fbb9311/.gitconfig#L23-L36).
 
-### `diff-highlight`
-Found in the official git-contrib project, it's installed via the `diff-so-fancy` npm package.
-```
-
-
 ## Credit
 
-Extracted from https://github.com/paulirish/dotfiles/blob/master/bin/diff-so-fancy
+Originated from https://github.com/paulirish/dotfiles/blob/master/bin/diff-so-fancy
