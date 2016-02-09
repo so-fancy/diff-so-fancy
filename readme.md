@@ -20,7 +20,7 @@ git diff --color | diff-highlight | diff-so-fancy
 
 Add to .gitconfig so all `git diff` uses it.
 ```shell
-git config --global core.pager "diff-highlight | diff-so-fancy | less -r"
+git config --global core.pager "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
 ```
 
 ## Install
