@@ -6,24 +6,15 @@
     "diff-so-fancy": "diff-so-fancy",
     "diff-highlight": "diff-highlight"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/stevemao/diff-so-fancy.git"
-  },
+  "repository": { "type": "git", "url": "git+https://github.com/stevemao/diff-so-fancy.git" },
   "keywords": [
-    "git",
-    "diff",
-    "fancy",
-    "good-lookin'",
-    "diff-highlight",
-    "color",
-    "readable",
-    "high-light"
+    "git", "diff", "fancy",
+    "good-lookin'", "diff-highlight",
+    "color", "readable",
+    "highlight"
   ],
   "author": "Paul Irish",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/stevemao/diff-so-fancy/issues"
-  },
+  "license": "MIT",
+  "bugs": { "url": "https://github.com/stevemao/diff-so-fancy/issues" },
   "homepage": "https://github.com/stevemao/diff-so-fancy#readme"
 }
