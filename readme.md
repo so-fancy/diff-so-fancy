@@ -25,10 +25,20 @@ git config --global core.pager "diff-highlight | diff-so-fancy | less --tabs=1,5
 
 ## Install
 
+For convenience, the recommended installation is via NPM:
 ```shell
 npm install -g diff-so-fancy
 ```
 This will install and link the `diff-so-fancy` and `diff-highlight` scripts.
+
+### Manual Install
+If you want, you can choose to install manually:
+
+* Grab the two scripts (`diff-highlight` and `diff-so-fancy`) via either downloading or cloning the repo.
+* Place them in a location that is in your `PATH`.
+* Set up the git `core.pager` config, as described above
+
+Note: The `diff-highlight` depenency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience.
 
 ### GNU sed.
 On Mac, install it with Homebrew.
