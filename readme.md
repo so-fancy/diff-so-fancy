@@ -19,7 +19,7 @@ You can do one-off fanciness:
 git diff --color | diff-highlight | diff-so-fancy
 ```
 
-**But**, you'll probably want to fancify all your diffs. Add this to `~/.gitconfig` so all `git diff` will use it:
+**But**, you'll probably want to fancify all your diffs. Run this so `git diff` will use it:
 ```shell
 git config --global core.pager "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
 ```
