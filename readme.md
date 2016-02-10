@@ -75,3 +75,8 @@ git --no-pager diff  # will avoid the global core.pager hook
 ## Credit
 
 Originated from https://github.com/paulirish/dotfiles/blob/master/bin/diff-so-fancy
+
+
+## License
+
+MIT
