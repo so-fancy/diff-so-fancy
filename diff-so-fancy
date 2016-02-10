@@ -15,7 +15,7 @@ format_diff_header () {
 	sed -E "s/^($color_code_regex)diff --git .*$//g" | \
 	sed -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//}" | \
 	sed -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\
-\-\-\-\5/g" |
+\1\-\-\-\5/g" |
 	sed -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\5\\
 \1$(print_horizontal_rule)/g"
 }
