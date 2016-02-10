@@ -8,11 +8,14 @@ color_code_regex=$'(\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)[m|K])?'
 reset_color="\x1B\[m"
 dim_magenta="\x1B\[38;05;146m"
 
+git_index_line_pattern="^($color_code_regex)index .*"
+
 format_diff_header () {
 	# simplify the unified patch diff header
 	sed -E "s/^($color_code_regex)diff --git .*$//g" | \
-	sed -E "s/^($color_code_regex)index .*$/\
-\1$(print_horizontal_rule)/g" | \
+	sed -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//}" | \
+	sed -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\
+\-\-\-\5/g" |
 	sed -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\5\\
 \1$(print_horizontal_rule)/g"
 }
