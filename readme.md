@@ -8,7 +8,7 @@ your diffs' appearances.
 
 ## Screenshot
 
-*`git diff` vs `git diff --color | diff-highlight | diff-so-fancy`*
+*`git diff` vs `git diff --color | diff-so-fancy`*
 
 ![diff-highlight vs diff-so-fancy](https://cloud.githubusercontent.com/assets/39191/10000682/8e849130-6052-11e5-9bd9-bd4505cd24d6.png)
 
@@ -16,12 +16,12 @@ your diffs' appearances.
 
 You can do one-off fanciness:
 ```shell
-git diff --color | diff-highlight | diff-so-fancy
+git diff --color | diff-so-fancy
 ```
 
 **But**, you'll probably want to fancify all your diffs. Run this so `git diff` will use it:
 ```shell
-git config --global core.pager "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
+git config --global core.pager "diff-so-fancy | less --tabs=1,5 -R"
 ```
 
 ## Install
@@ -30,7 +30,7 @@ For convenience, the recommended installation is via NPM:
 ```shell
 npm install -g diff-so-fancy
 ```
-This will install and link the `diff-so-fancy` and `diff-highlight` scripts. 
+This will install and link the `diff-so-fancy` and `diff-highlight` scripts.
 
 ### Manual installation alternative
 If you want, you can choose to install manually:
@@ -57,7 +57,6 @@ git config --global color.diff-highlight.newNormal "green bold"
 git config --global color.diff-highlight.newHighlight "green bold 22"
 ```
 You may also want to configure [general diff colors](https://github.com/paulirish/dotfiles/blob/63cb8193b0e66cf80ab6332477f1f52c7fbb9311/.gitconfig#L23-L36).
-
 
 ## Credit
 

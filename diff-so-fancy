@@ -2,6 +2,8 @@
 
 [ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
 
+diff_highlight="./third_party/diff-highlight/diff-highlight"
+
 color_code_regex=$'(\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)[m|K])?'
 reset_color="\x1B\[m"
 dim_magenta="\x1B\[38;05;146m"
@@ -26,8 +28,8 @@ strip_leading_symbols () {
 }
 
 print_horizontal_rule () {
-	printf "%$(tput cols)s\n"|sed 's/ /─/g'
+	printf "%$(tput cols)s\n"| sed 's/ /─/g'
 }
 
 # run it.
-cat $input | format_diff_header |  colorize_context_line | strip_leading_symbols
+cat $input | $diff_highlight | format_diff_header |  colorize_context_line | strip_leading_symbols

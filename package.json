@@ -4,7 +4,7 @@
   "description": "good-lookin' output of diff-highlight to upgrade your diffs' appearances",
   "bin": {
     "diff-so-fancy": "diff-so-fancy",
-    "diff-highlight": "diff-highlight"
+    "diff-highlight": "third_party/diff-highlight/diff-highlight"
   },
   "repository": { "type": "git", "url": "git+https://github.com/stevemao/diff-so-fancy.git" },
   "keywords": [
