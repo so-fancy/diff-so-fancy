@@ -50,13 +50,22 @@ brew install gnu-sed --with-default-names  # Without the default-names flag, you
 ### Improved colors for the the highlighted bits
 
 `diff-highlight` has default colors that are arguably a little nasty. They'll work fine, but you can try some fancier colors:
-```
+```shell
 git config --global color.diff-highlight.oldNormal "red bold"
 git config --global color.diff-highlight.oldHighlight "red bold 52"
 git config --global color.diff-highlight.newNormal "green bold"
 git config --global color.diff-highlight.newHighlight "green bold 22"
 ```
 You may also want to configure [general diff colors](https://github.com/paulirish/dotfiles/blob/63cb8193b0e66cf80ab6332477f1f52c7fbb9311/.gitconfig#L23-L36).
+
+## Opting-out
+
+Sometimes you will want to bypass diff-so-fancy. Easy enough:
+
+```shell
+git --no-pager diff  # will avoid the global core.pager hook
+```
+
 
 ## Credit
 
