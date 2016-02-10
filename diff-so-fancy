@@ -2,7 +2,10 @@
 
 [ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
 
-diff_highlight="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/third_party/diff-highlight/diff-highlight"
+diff_highlight="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/diff-highlight"
+if [ ! -x $diff_highlight ]; then
+	diff_highlight="${diff_highlight/diff-highlight/third_party/diff-highlight/diff-highlight}"
+fi
 
 color_code_regex=$'(\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)[m|K])?'
 reset_color="\x1B\[m"
