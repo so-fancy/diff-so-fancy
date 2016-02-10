@@ -26,7 +26,7 @@ git config --global core.pager "diff-so-fancy | less --tabs=1,5 -R"
 
 Or, create a git alias  in your `~/.gitconfig` for shorthand fanciness:
 ```shell
-diff-so-fancy = "!git diff --color $@ | diff-so-fancy"
+dsf = "!git diff --color $@ | diff-so-fancy"
 ```
 
 ## Install
