@@ -1,6 +1,6 @@
 # diff-so-fancy
 
-diff-so-fancy builds on the good-lookin' output of git contrib's [diff-highlight](https://github.com/git/git/blob/master/contrib/diff-highlight/diff-highlight) to upgrade
+diff-so-fancy builds on the good-lookin' output of [git contrib](https://github.com/git/git/tree/master/contrib)'s [diff-highlight](https://github.com/git/git/tree/master/contrib/diff-highlight) to upgrade
 your diffs' appearances.
 
 * Output will not be in standard patch format, but will be readable.
