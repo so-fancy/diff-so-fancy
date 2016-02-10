@@ -37,7 +37,7 @@ If you want, you can choose to install manually:
 
 * Grab the two scripts (`diff-highlight` and `diff-so-fancy`) via either downloading or cloning the repo.
 * Place them in a location that is in your `PATH`.
-* Set up the git `core.pager` config, as described above
+* Set up the git `core.pager` config, as described above.
 
 Note: The `diff-highlight` dependency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience. If you prefer less fancy in your diff, you also use diff-highlight [on it's own](https://news.ycombinator.com/item?id=11068436).
 
