@@ -2,8 +2,10 @@
 
 [ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
 
-hash gsed 2>/dev/null && SED=gsed || SED=sed
+# find my sed
+hash gsed 2> /dev/null && SED=gsed || SED=sed
 
+# find my diff-highlight
 if hash diff-highlight 2> /dev/null; then
 	diff_highlight=diff-highlight
 else
