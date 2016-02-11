@@ -2,34 +2,47 @@
 
 [ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
 
-diff_highlight="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/third_party/diff-highlight/diff-highlight"
+# find my sed
+hash gsed 2> /dev/null && SED=gsed || SED=sed
+
+# find my diff-highlight
+if hash diff-highlight 2> /dev/null; then
+	diff_highlight=diff-highlight
+else
+	diff_highlight="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" && pwd )/third_party/diff-highlight/diff-highlight"
+fi
 
 color_code_regex=$'(\x1B\\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[m|K])?'
 reset_color="\x1B\[m"
 dim_magenta="\x1B\[38;05;146m"
+invert_color="\x1B\[7m"
 
 format_diff_header () {
 	# simplify the unified patch diff header
-	sed -E "s/^($color_code_regex)diff --git .*$//g" | \
-	sed -E "s/^($color_code_regex)index .*$/\
+	$SED -E "s/^($color_code_regex)diff --git .*$//g" | \
+	$SED -E "s/^($color_code_regex)index .*$/\
 \1$(print_horizontal_rule)/g" | \
-	sed -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\6\\
+	$SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\6\\
 \1$(print_horizontal_rule)/g"
 }
 
 colorize_context_line () {
 	# extra color for @@ context line
-	sed -E "s/@@$reset_color $reset_color(.*$)/@@ $dim_magenta\1/g"
+	$SED -E "s/@@$reset_color $reset_color(.*$)/@@ $dim_magenta\1/g"
+}
+
+mark_empty_lines () {
+	$SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_color/g"
 }
 
 strip_leading_symbols () {
 	# strip the + and -
-	sed -E "s/^($color_code_regex)[\+\-]/\1 /g"
+	$SED -E "s/^$color_code_regex[\+\-]/\1 /g"
 }
 
 print_horizontal_rule () {
-	printf "%$(tput cols)s\n"| sed 's/ /─/g'
+	printf "%$(tput cols)s\n"| $SED 's/ /─/g'
 }
 
 # run it.
-cat $input | $diff_highlight | format_diff_header |  colorize_context_line | strip_leading_symbols
+cat $input | $diff_highlight | format_diff_header |  colorize_context_line | mark_empty_lines | strip_leading_symbols

@@ -49,7 +49,7 @@ Note: The `diff-highlight` dependency is an [official git-contrib script](https:
 ### Install GNU `sed`
 You'll need GNU sed. On Mac, it's easy to install with Homebrew.
 ```shell
-brew install gnu-sed --with-default-names  # Without the default-names flag, you'll have to use it via `gsed`
+brew install gnu-sed
 ```
 
 ### Improved colors for the the highlighted bits
