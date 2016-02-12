@@ -19,9 +19,10 @@ You can do one-off fanciness:
 git diff --color | diff-so-fancy
 ```
 
-**But**, you'll probably want to fancify all your diffs. Run this so `git diff` will use it:
+**But**, you'll probably want to fancify all your diffs. Run this so `git diff` and `git show` will use it:
 ```shell
-git config --global core.pager "diff-so-fancy | less --tabs=1,5 -R"
+git config --global pager.diff "diff-so-fancy | less --tabs=1,5 -R"
+git config --global pager.show "diff-so-fancy | less --tabs=1,5 -R"
 ```
 
 Or, create a git alias  in your `~/.gitconfig` for shorthand fanciness:
@@ -44,7 +45,7 @@ If you want, you can choose to install manually:
 * Grab the two scripts (`diff-highlight` and `diff-so-fancy`) via either downloading or cloning the repo.
 * If you download `diff-highlight` from the official git repo, make sure it's executable.
 * Symlink or place them in a location that is in your `PATH`.
-* Set up the git `core.pager` config, as described above.
+* Set up the git `pager.diff` and `pager.show` configs, as described above.
 
 Note: The `diff-highlight` dependency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience. If you prefer less fancy in your diff, you also use diff-highlight [on it's own](https://news.ycombinator.com/item?id=11068436).
 
@@ -68,10 +69,10 @@ You may also want to configure [general diff colors](https://github.com/pauliris
 
 ## Opting-out
 
-Sometimes you will want to bypass diff-so-fancy. Easy enough:
+Sometimes you will want to bypass diff-so-fancy. Use `--no-pager` for that:
 
 ```shell
-git --no-pager diff  # will avoid core.pager hook
+git --no-pager diff
 ```
 
 
