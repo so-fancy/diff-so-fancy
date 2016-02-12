@@ -2,6 +2,18 @@
 
 [ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
 
+
+# https://gist.github.com/TheMengzor/968e5ea87e99d9c41782
+get_script_dir () {
+	SOURCE="${BASH_SOURCE[0]}"
+	while [ -h "$SOURCE" ]; do
+	  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+	  SOURCE="$(readlink "$SOURCE")"
+	  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+	done
+	echo $( cd -P "$( dirname "$SOURCE" )" && pwd )
+}
+
 # find my sed
 hash gsed 2> /dev/null && SED=gsed || SED=sed
 
@@ -9,8 +21,7 @@ hash gsed 2> /dev/null && SED=gsed || SED=sed
 if hash diff-highlight 2> /dev/null; then
 	diff_highlight=diff-highlight
 else
-	SCRIPT_PATH=$( cd $(dirname $0) ; pwd -P )
-	diff_highlight="$SCRIPT_PATH/third_party/diff-highlight/diff-highlight"
+	diff_highlight="$(get_script_dir)/third_party/diff-highlight/diff-highlight"
 fi
 
 color_code_regex="(\x1B\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[m|K])?"
