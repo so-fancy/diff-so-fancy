@@ -1,20 +1,29 @@
 {
   "name": "diff-so-fancy",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Good-lookin' diffs with diff-highlight and more",
   "bin": {
     "diff-so-fancy": "diff-so-fancy",
     "diff-highlight": "third_party/diff-highlight/diff-highlight"
   },
-  "repository": { "type": "git", "url": "git+https://github.com/stevemao/diff-so-fancy.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevemao/diff-so-fancy.git"
+  },
   "keywords": [
-    "git", "diff", "fancy",
-    "good-lookin'", "diff-highlight",
-    "color", "readable",
+    "git",
+    "diff",
+    "fancy",
+    "good-lookin'",
+    "diff-highlight",
+    "color",
+    "readable",
     "highlight"
   ],
   "author": "Paul Irish",
   "license": "MIT",
-  "bugs": { "url": "https://github.com/stevemao/diff-so-fancy/issues" },
+  "bugs": {
+    "url": "https://github.com/stevemao/diff-so-fancy/issues"
+  },
   "homepage": "https://github.com/stevemao/diff-so-fancy#readme"
 }
