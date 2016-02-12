@@ -5,13 +5,13 @@
 
 # https://gist.github.com/TheMengzor/968e5ea87e99d9c41782
 get_script_dir () {
-	SOURCE="${BASH_SOURCE[0]}"
-	while [ -h "$SOURCE" ]; do
-	  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-	  SOURCE="$(readlink "$SOURCE")"
-	  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+	src="${BASH_SOURCE[0]}"
+	while [ -h "$src" ]; do
+	  dir="$( cd -P "$( dirname "$src" )" && pwd )"
+	  src="$(readlink "$src")"
+	  [[ $src != /* ]] && src="$dir/$src"
 	done
-	echo $( cd -P "$( dirname "$SOURCE" )" && pwd )
+	echo $( cd -P "$( dirname "$src" )" && pwd )
 }
 
 # find my sed
