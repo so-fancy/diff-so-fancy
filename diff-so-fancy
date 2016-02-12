@@ -40,7 +40,7 @@ mark_empty_lines () {
 
 strip_leading_symbols () {
 	# strip the + and -
-	$SED -E "s/^$color_code_regex[\+\-]/\1 /g"
+	$SED -E "s/^$color_code_regex[\ \+\-]/\1/g"
 }
 
 print_horizontal_rule () {
