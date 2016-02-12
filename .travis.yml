@@ -1,0 +1,7 @@
+language: bash
+before_install:
+  - git clone --depth 1 https://github.com/sstephenson/bats.git
+  - sudo apt-get update  -qq
+  - sudo apt-get install -y coreutils
+script:
+  - ./bats/bin/bats test/*.bats

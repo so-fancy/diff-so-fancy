@@ -1,0 +1,478 @@
+[1;33mdiff --git a/.aliases b/.aliases[m
+[1;33mindex 30182ef..be9fb1d 100644[m
+[1;33m--- a/.aliases[m
+[1;33m+++ b/.aliases[m
+[1;35m@@ -18,6 +18,7 @@[m [malias brwe=brew  #typos[m
+ [m
+ alias hosts='sudo $EDITOR /etc/hosts'   # yes I occasionally 127.0.0.1 twitter.com ;)[m
+ [m
+[1;32m+[m[1;32malias ag='ag -W 200 -f'[m
+ [m
+ ###[m
+ # time to upgrade `ls`[m
+[1;35m@@ -51,7 +52,7 @@[m [malias gr='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-cdup[m
+ [m
+ # Networking. IP address, dig, DNS[m
+ alias ip="dig +short myip.opendns.com @resolver1.opendns.com"[m
+[1;31m-alias dig="dig +nocmd any +multiline +noall +answer"[m
+[1;32m+[m[1;32m# alias dig="dig +nocmd any +multiline +noall +answer"[m
+ [m
+ # Recursively delete `.DS_Store` files[m
+ alias cleanup_dsstore="find . -name '*.DS_Store' -type f -ls -delete"[m
+[1;35m@@ -68,7 +69,13 @@[m [malias ungz="gunzip -k"[m
+ alias fs="stat -f \"%z bytes\""[m
+ [m
+ # Empty the Trash on all mounted volumes and the main HDD. then clear the useless sleepimage[m
+[1;31m-alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; rm -rfv ~/.Trash; sudo rm /private/var/vm/sleepimage"[m
+[1;32m+[m[1;32malias emptytrash=" \[m[7;31m [m
+[1;32m+[m[1;32m    sudo rm -rfv /Volumes/*/.Trashes; \[m
+[1;32m+[m[1;32m    rm -rfv ~/.Trash/*; \[m
+[1;32m+[m[1;32m    sudo rm -v /private/var/vm/sleepimage; \[m
+[1;32m+[m[1;32m    rm -rv \"/Users/paulirish/Library/Application Support/stremio/Cache\";  \[m
+[1;32m+[m[1;32m    rm -rv \"/Users/paulirish/Library/Application Support/stremio/stremio-cache\" \[m
+[1;32m+[m[1;32m"[m
+ [m
+ # Update installed Ruby gems, Homebrew, npm, and their installed packages[m
+ alias brew_update="brew -v update; brew -v upgrade --all; brew cleanup; brew cask cleanup; brew prune; brew doctor"[m
+[1;33mdiff --git a/.bash_profile b/.bash_profile[m
+[1;33mindex 8f17751..def367d 100644[m
+[1;33m--- a/.bash_profile[m
+[1;33m+++ b/.bash_profile[m
+[1;35m@@ -116,3 +116,9 @@[m [mshopt -s cdspell;[m
+ [m
+ [m
+ [m
+[1;32m+[m
+[1;32m+[m[1;32m# The next line updates PATH for the Google Cloud SDK.[m
+[1;32m+[m[1;32msource '/Users/paulirish/google-cloud-sdk/path.bash.inc'[m
+[1;32m+[m
+[1;32m+[m[1;32m# The next line enables shell command completion for gcloud.[m
+[1;32m+[m[1;32msource '/Users/paulirish/google-cloud-sdk/completion.bash.inc'[m
+[1;33mdiff --git a/.bash_prompt b/.bash_prompt[m
+[1;33mindex 852d69f..8d3e3d0 100644[m
+[1;33m--- a/.bash_prompt[m
+[1;33m+++ b/.bash_prompt[m
+[1;35m@@ -4,6 +4,9 @@[m
+ default_username='paulirish'[m
+ [m
+ [m
+[1;32m+[m[1;32meval "$(thefuck --alias)"[m
+[1;32m+[m
+[1;32m+[m
+ if [[ -n "$ZSH_VERSION" ]]; then  # quit now if in zsh[m
+     return 1 2> /dev/null || exit 1;[m
+ fi;[m
+[1;33mdiff --git a/.bashrc b/.bashrc[m
+[1;33mindex 877b68f..18461ac 100644[m
+[1;33m--- a/.bashrc[m
+[1;33m+++ b/.bashrc[m
+[1;35m@@ -1,2 +1,4 @@[m
+ [ -n "$PS1" ] && source ~/.bash_profile[m
+ [m
+[1;32m+[m
+[1;32m+[m[1;32m# [ -f ~/.fzf.bash ] && source ~/.fzf.bash[m
+[1;33mdiff --git a/.functions b/.functions[m
+[1;33mindex 8292d2e..a548d45 100644[m
+[1;33m--- a/.functions[m
+[1;33m+++ b/.functions[m
+[1;35m@@ -28,6 +28,19 @@[m [mcdf() {  # short for cdfinder[m
+ }[m
+ [m
+ [m
+[1;32m+[m
+[1;32m+[m[1;32m# git commit browser. needs fzf[m
+[1;32m+[m[1;32mlog() {[m
+[1;32m+[m[1;32m  git log --graph --color=always \[m
+[1;32m+[m[1;32m      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |[m
+[1;32m+[m[1;32m  fzf --ansi --no-sort --reverse --tiebreak=index --toggle-sort=\` \[m
+[1;32m+[m[1;32m      --bind "ctrl-m:execute:[m
+[1;32m+[m[1;32m                echo '{}' | grep -o '[a-f0-9]\{7\}' | head -1 |[m
+[1;32m+[m[1;32m                xargs -I % sh -c 'git show --color=always % | less -R'"[m
+[1;32m+[m[1;32m}[m
+[1;32m+[m
+[1;32m+[m
+[1;32m+[m
+ # Start an HTTP server from a directory, optionally specifying the port[m
+ function server() {[m
+ 	local port="${1:-8000}"[m
+[1;35m@@ -145,17 +158,14 @@[m [mwebmify(){[m
+ 	ffmpeg -i $1 -vcodec libvpx -acodec libvorbis -isync -copyts -aq 80 -threads 3 -qmax 30 -y $2 $1.webm[m
+ }[m
+ [m
+[1;32m+[m[1;32m# direct it all to /dev/null[m
+[1;32m+[m[1;32mfunction nullify() {[m
+[1;32m+[m[1;32m  "$@" >/dev/null 2>&1[m
+[1;32m+[m[1;32m}[m
+[1;32m+[m
+ [m
+ # visual studio code. a la `subl`[m
+[1;31m-code () {[m
+[1;31m-	if [[ $# = 0 ]][m
+[1;31m-	then[m
+[1;31m-		open -a "Visual Studio Code"[m
+[1;31m-	else[m
+[1;31m-		[[ $1 = /* ]] && F="$1" || F="$PWD/${1#./}"[m
+[1;31m-		open -a "Visual Studio Code" --args "$F"[m
+[1;31m-	fi[m
+[1;31m-}[m
+[1;32m+[m[1;32mfunction code () { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $*; }[m
+ [m
+ # `shellswitch [bash |zsh]`[m
+ #   Must be in /etc/shells[m
+[1;33mdiff --git a/.gitconfig b/.gitconfig[m
+[1;33mindex d2be05f..d32f98c 100644[m
+[1;33m--- a/.gitconfig[m
+[1;33m+++ b/.gitconfig[m
+[1;35m@@ -7,11 +7,13 @@[m
+ 	df = diff --color --color-words --abbrev[m
+ 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --[m
+ 	co = checkout[m
+[1;32m+[m	[1;32mcherry = cherry-pick # does this conflict with the real `git cherry`?[m
+ [m
+ 	# Show the diff between the latest commit and the current state[m
+ 	d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"[m
+ [m
+[1;31m-	reup = rebase-update[m
+[1;32m+[m	[1;32m# chromium/depot_tools convenience. manual[m
+[1;32m+[m	[1;32mreup = rebase-update --no_fetch --keep-going[m
+ [m
+ [m
+ [m
+[1;35m@@ -23,7 +25,7 @@[m
+ 	excludesfile = ~/.gitignore[m
+ 	attributesfile = ~/.gitattributes[m
+ 	# insanely beautiful diffs[m
+[1;31m-	pager = diff-highlight | diff-so-fancy | less -r[m
+[1;32m+[m	[1;32mpager = diff-so-fancy | less --tabs=1,5 -R[m
+ [color "branch"][m
+ 	current = yellow reverse[m
+ 	local = yellow[m
+[1;35m@@ -40,7 +42,8 @@[m
+ 	changed = green[m
+ 	untracked = cyan[m
+ [merge][m
+[1;31m-	tool = opendiff[m
+[1;32m+[m	[1;32m#tool = opendiff[m
+[1;32m+[m	[1;32mtool = kdiff3[m
+ [m
+ [m
+ [color "diff-highlight"][m
+[1;35m@@ -86,3 +89,5 @@[m
+ 	required = true[m
+ [init][m
+ 	templatedir = ~/.git_template[m
+[1;32m+[m[1;32m[http][m
+[1;32m+[m	[1;32mcookiefile = /Users/paulirish/.gitcookies[m
+[1;33mdiff --git a/.zshrc b/.zshrc[m
+[1;33mindex 410a2ca..dbad355 100644[m
+[1;33m--- a/.zshrc[m
+[1;33m+++ b/.zshrc[m
+[1;35m@@ -113,3 +113,5 @@[m [msource ~/.bash_profile[m
+ [m
+ [m
+ export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting[m
+[1;32m+[m
+[1;32m+[m[1;32m[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh[m
+[1;33mdiff --git a/README.md b/README.md[m
+[1;33mindex 496bbbb..171eaea 100644[m
+[1;33m--- a/README.md[m
+[1;33m+++ b/README.md[m
+[1;35m@@ -55,7 +55,6 @@[m [mLastly, I use `open .` to open Finder from this path. (That's just available nor[m
+ ## overview of files[m
+ [m
+ ####  Automatic config[m
+[1;31m-* `.sift.conf` - sift (faster than grep, ack, ag)[m
+ * `.vimrc`, `.vim` - vim config, obv.[m
+ * `.inputrc` - behavior of the actual prompt line[m
+ [m
+[1;33mdiff --git a/bin/diff-highlight b/bin/diff-highlight[m
+[1;33mdeleted file mode 120000[m
+[1;33mindex 7c5c827..0000000[m
+[1;33m--- a/bin/diff-highlight[m
+[1;33m+++ /dev/null[m
+[1;35m@@ -1 +0,0 @@[m
+[1;31m-/Users/paulirish/.homebrew/share/git-core/contrib/diff-highlight/diff-highlight[m
+\ No newline at end of file[m
+[1;33mdiff --git a/bin/diff-so-fancy b/bin/diff-so-fancy[m
+[1;33mdeleted file mode 100755[m
+[1;33mindex 5b004a2..0000000[m
+[1;33m--- a/bin/diff-so-fancy[m
+[1;33m+++ /dev/null[m
+[1;35m@@ -1,69 +0,0 @@[m
+[1;31m-#!/bin/bash[m
+[1;31m-[m
+[1;31m-###############[m
+[1;31m-# diff-so-fancy builds on the good-lookin' output of diff-highlight to upgrade your diffs' appearances[m
+[1;31m-# 	* Output will not be in standard patch format, but will be readable[m
+[1;31m-#   * No pesky `+` or `-` at line-stars, making for easier copy-paste.[m
+[1;31m-#[m
+[1;31m-# Screenshot: https://github.com/paulirish/dotfiles/commit/6743b907ff58#commitcomment-13349456[m
+[1;31m-#[m
+[1;31m-#[m
+[1;31m-# Usage[m
+[1;31m-#[m
+[1;31m-#   git diff | diff-highlight | diff-so-fancy[m
+[1;31m-#[m
+[1;31m-# Add to .gitconfig so all `git diff` uses it.[m
+[1;31m-#   git config --global core.pager "diff-highlight | diff-so-fancy | less -r"[m
+[1;31m-#[m
+[1;31m-#[m
+[1;31m-# Requirements / Install[m
+[1;31m-#[m
+[1;31m-# * GNU sed. On Mac, install it with Homebrew:[m
+[1;31m-#   	brew install gnu-sed --default-names  # You'll have to change below to `gsed` otherwise[m
+[1;31m-# * diff-highlight. It's shipped with Git, but probably not in your $PATH[m
+[1;31m-#       ln -sf "$(brew --prefix)/share/git-core/contrib/diff-highlight/diff-highlight" ~/bin/diff-highlight[m
+[1;31m-# * Add some coloring to your .gitconfig:[m
+[1;31m-#		git config --global color.diff-highlight.oldNormal "red bold"[m
+[1;31m-#		git config --global color.diff-highlight.oldHighlight "red bold 52"[m
+[1;31m-#		git config --global color.diff-highlight.newNormal "green bold"[m
+[1;31m-#		git config --global color.diff-highlight.newHighlight "green bold 22"[m
+[1;31m-#[m
+[1;31m-###############[m
+[1;31m-[m
+[1;31m-# TODO:[m
+[1;31m-#   Put on NPM.[m
+[1;31m-[m
+[1;31m-[m
+[1;31m-[ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"[m
+[1;31m-[m
+[1;31m-color_code_regex=$'(\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)[m|K])?'[m
+[1;31m-reset_color="\x1B\[m"[m
+[1;31m-dim_magenta="\x1B\[38;05;146m"[m
+[1;31m-[m
+[1;31m-format_diff_header () {[m
+[1;31m-	# simplify the unified patch diff header[m
+[1;31m-	sed -E "s/^($color_code_regex)diff --git .*$//g" | \[m
+[1;31m-	sed -E "s/^($color_code_regex)index .*$/\[m
+[1;31m-\1$(print_horizontal_rule)/g" | \[m
+[1;31m-	sed -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\5\\[m
+[1;31m-\1$(print_horizontal_rule)/g"[m
+[1;31m-}[m
+[1;31m-[m
+[1;31m-colorize_context_line () {[m
+[1;31m-	# extra color for @@ context line[m
+[1;31m-	sed -E "s/@@$reset_color $reset_color(.*$)/@@ $dim_magenta\1/g"[m
+[1;31m-}[m
+[1;31m-[m
+[1;31m-strip_leading_symbols () {[m
+[1;31m-	# strip the + and -[m
+[1;31m-	sed -E "s/^($color_code_regex)[\+\-]/\1 /g"[m
+[1;31m-}[m
+[1;31m-[m
+[1;31m-print_horizontal_rule () {[m
+[1;31m-		printf "%$(tput cols)s\n"|tr " " "─"[m
+[1;31m-}[m
+[1;31m-[m
+[1;31m-# run it.[m
+[1;31m-cat $input | format_diff_header |  colorize_context_line | strip_leading_symbols[m
+[1;31m-[m
+[1;31m-[m
+[1;33mdiff --git a/brew-cask.sh b/brew-cask.sh[m
+[1;33mindex 24c2ba5..3f3c02a 100755[m
+[1;33m--- a/brew-cask.sh[m
+[1;33m+++ b/brew-cask.sh[m
+[1;35m@@ -1,8 +1,8 @@[m
+ #!/bin/bash[m
+ [m
+ [m
+[1;31m-# to maintain cask .... [m
+[1;31m-#     brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup` [m
+[1;32m+[m[1;32m# to maintain cask ....[m
+[1;32m+[m[1;32m#     brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup`[m
+ [m
+ [m
+ # Install native apps[m
+[1;35m@@ -14,7 +14,7 @@[m [mbrew tap caskroom/versions[m
+ brew cask install spectacle[m
+ brew cask install dropbox[m
+ brew cask install gyazo[m
+[1;31m-brew cask install onepassword[m
+[1;32m+[m[1;32mbrew cask install 1password[m
+ brew cask install rescuetime[m
+ brew cask install flux[m
+ [m
+[1;35m@@ -47,6 +47,6 @@[m [mbrew cask install utorrent[m
+ [m
+ # Not on cask but I want regardless.[m
+ [m
+[1;31m-# 3Hub   https://itunes.apple.com/us/app/3hub/id427515976?mt=12 [m
+[1;32m+[m[1;32m# 3Hub   https://itunes.apple.com/us/app/3hub/id427515976?mt=12[m
+ # File Multi Tool 5[m
+ # Phosphor[m
+\ No newline at end of file[m
+[1;33mdiff --git a/brew.sh b/brew.sh[m
+[1;33mindex 8715a37..c4a663e 100755[m
+[1;33m--- a/brew.sh[m
+[1;33m+++ b/brew.sh[m
+[1;35m@@ -58,7 +58,9 @@[m [mbrew install mtr[m
+ [m
+ [m
+ # Install other useful binaries[m
+[1;31m-brew install sift[m
+[1;32m+[m[1;32mbrew install the_silver_searcher[m
+[1;32m+[m[1;32mbrew install fzf[m
+[1;32m+[m
+ brew install git[m
+ brew install imagemagick --with-webp[m
+ brew install node # This installs `npm` too using the recommended installation method[m
+[1;33mdiff --git a/fish/aliases.fish b/fish/aliases.fish[m
+[1;33mindex a0fe9b3..fc990f6 100644[m
+[1;33m--- a/fish/aliases.fish[m
+[1;33m+++ b/fish/aliases.fish[m
+[1;35m@@ -26,17 +26,14 @@[m [malias brwe=brew  #typos[m
+ alias hosts='sudo $EDITOR /etc/hosts'   # yes I occasionally 127.0.0.1 twitter.com ;)[m
+ [m
+ [m
+[1;31m-# `shellswitch [bash|zsh|fish]`[m
+[1;31m-function shellswitch[m
+[1;31m-	chsh -s (brew --prefix)/bin/$argv[m
+[1;31m-end[m
+[1;31m-[m
+[1;31m-[m
+[1;31m-[m
+ # `cat` with beautiful colors. requires Pygments installed.[m
+ # 							   sudo easy_install -U Pygments[m
+ alias c='pygmentize -O style=monokai -f console256 -g'[m
+ [m
+[1;32m+[m[1;32malias ag='ag -W 200 -f'[m
+[1;32m+[m
+[1;32m+[m[1;32malias diskspace_report="df -P -kHl"[m
+[1;32m+[m[1;32malias free_diskspace_report="diskspace_report"[m
+ [m
+ [m
+ # Networking. IP address, dig, DNS[m
+[1;35m@@ -54,8 +51,7 @@[m [malias ungz="gunzip -k"[m
+ # File size[m
+ alias fs="stat -f \"%z bytes\""[m
+ [m
+[1;31m-# Empty the Trash on all mounted volumes and the main HDD. then clear the useless sleepimage[m
+[1;31m-alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; rm -rfv ~/.Trash; sudo rm /private/var/vm/sleepimage"[m
+[1;32m+[m[1;32m# emptytrash written as a function[m
+ [m
+ # Update installed Ruby gems, Homebrew, npm, and their installed packages[m
+ alias brew_update="brew -v update; brew -v upgrade --all; brew cleanup; brew cask cleanup; brew prune; brew doctor"[m
+[1;33mdiff --git a/fish/config.fish b/fish/config.fish[m
+[1;33mindex 9c4bd70..fd19027 100755[m
+[1;33m--- a/fish/config.fish[m
+[1;33m+++ b/fish/config.fish[m
+[1;35m@@ -2,9 +2,15 @@[m [mset default_user "paulirish"[m
+ set default_machine "paulirish-macbookair2"[m
+ [m
+ [m
+[1;32m+[m[1;32m#set -x  DYLD_FALLBACK_LIBRARY_PATH /Users/paulirish/.homebrew/lib[m
+[1;32m+[m
+ source ~/.config/fish/path.fish[m
+ source ~/.config/fish/aliases.fish[m
+ source ~/.config/fish/chpwd.fish[m
+[1;32m+[m[1;32msource ~/.config/fish/functions.fish[m
+[1;32m+[m
+[1;32m+[m
+[1;32m+[m
+ [m
+ [m
+ # Completions[m
+[1;35m@@ -22,8 +28,6 @@[m [mend[m
+ make_completion g 'git'[m
+ [m
+ [m
+[1;31m-[m
+[1;31m-[m
+ # Readline colors[m
+ set -g fish_color_autosuggestion 555 yellow[m
+ set -g fish_color_command 5f87d7[m
+[1;35m@@ -83,3 +87,4 @@[m [mset -gx LESS_TERMCAP_so \e'[38;5;246m'    # begin standout-mode - info box[m
+ set -gx LESS_TERMCAP_ue \e'[0m'           # end underline[m
+ set -gx LESS_TERMCAP_us \e'[04;38;5;146m' # begin underline[m
+ [m
+[7;31m+[m
+[1;33mdiff --git a/fish/functions/fish_prompt.fish b/fish/functions/fish_prompt.fish[m
+[1;33mindex 04abe4b..96bfa3e 100755[m
+[1;33m--- a/fish/functions/fish_prompt.fish[m
+[1;33m+++ b/fish/functions/fish_prompt.fish[m
+[1;35m@@ -13,6 +13,9 @@[m [mfunction _git_current_branch -d "Output git's current branch name"[m
+   end ^/dev/null | sed -e 's|^refs/heads/||'[m
+ end[m
+ [m
+[1;32m+[m[1;32mfunction fish_title --description 'Show current path (abbreviated) in iTerm tab title '[m
+[1;32m+[m[1;32m   echo (prompt_pwd)[m
+[1;32m+[m[1;32mend[m
+ [m
+ function fish_prompt --description 'Write out the prompt'[m
+ [m
+[1;33mdiff --git a/fish/functions/gr.fish b/fish/functions/gr.fish[m
+[1;33mindex 4c2722d..1a0ee1b 100644[m
+[1;33m--- a/fish/functions/gr.fish[m
+[1;33m+++ b/fish/functions/gr.fish[m
+[1;35m@@ -1,3 +1,12 @@[m
+ [m
+ # git root[m
+[1;31m-alias gr='[ ! -z `git rev-parse --show-cdup` ] && cd `git rev-parse --show-cdup || pwd`'[m
+[1;32m+[m[1;32mfunction gr --description "Jump to the git root"[m
+[1;32m+[m	[1;32mset -l repo_info (command git rev-parse --git-dir --is-inside-git-dir --is-bare-repository --is-inside-work-tree --short HEAD ^/dev/null)[m
+[1;32m+[m[7;31m  [m	[1;32mtest -n "$repo_info"; or return[m
+[1;32m+[m
+[1;32m+[m	[1;32mset -l cd_up_path (command git rev-parse --show-cdup)[m
+[1;32m+[m
+[1;32m+[m	[1;32mif test -n $cd_up_path[m
+[1;32m+[m		[1;32mcd $cd_up_path[m
+[1;32m+[m	[1;32mend[m
+[1;32m+[m[1;32mend[m
+[1;33mdiff --git a/fish/functions/ls.fish b/fish/functions/ls.fish[m
+[1;33mindex 33c3d8b..fd54db2 100644[m
+[1;33m--- a/fish/functions/ls.fish[m
+[1;33m+++ b/fish/functions/ls.fish[m
+[1;35m@@ -7,6 +7,8 @@[m
+ if begin[m
+     type gls 1>/dev/null 2>/dev/null[m
+     or command ls --version 1>/dev/null 2>/dev/null[m
+[1;32m+[m
+[1;32m+[m[1;32m    set -x CLICOLOR_FORCE 1[m
+   end[m
+   # This is GNU ls[m
+   function ls --description "List contents of directory"[m
+[1;35m@@ -22,11 +24,11 @@[m [mif begin[m
+     set param $param --human-readable[m
+     set param $param --sort=extension[m
+     set param $param --group-directories-first[m
+[1;31m-	if isatty 1[m
+[1;32m+[m[1;32m    if isatty 1[m
+       set param $param --indicator-style=classify[m
+     end[m
+ [m
+[1;31m-    eval "env CLICOLOR_FORCE=1 command $ls $param $argv"[m
+[1;32m+[m[1;32m    eval $ls $param "$argv"[m
+   end[m
+ [m
+   if not set -q LS_COLORS[m
+[1;33mdiff --git a/fish/path.fish b/fish/path.fish[m
+[1;33mindex 6e28fad..aa9d014 100644[m
+[1;33m--- a/fish/path.fish[m
+[1;33m+++ b/fish/path.fish[m
+[1;35m@@ -13,8 +13,10 @@[m [mfor entry in (string split \n $PATH_DIRS)[m
+     # resolve the {$HOME} substitutions[m
+     set -l resolved_path (eval echo $entry)[m
+     if test -d "$resolved_path"; # and not contains $resolved_path $PATH[m
+[1;31m-        set -x PA $PA "$resolved_path"[m
+[1;32m+[m[1;32m        set PA $PA "$resolved_path"[m
+     end[m
+ end[m
+ [m
+[1;31m-set -x PATH $PA[m
+\ No newline at end of file[m
+[1;32m+[m[1;32mset PA $PA /Users/paulirish/.rvm/gems/ruby-2.2.1/bin[m
+[1;32m+[m
+[1;32m+[m[1;32mset --export PATH $PA[m
+\ No newline at end of file[m
+[1;33mdiff --git a/setup-a-new-machine.sh b/setup-a-new-machine.sh[m
+[1;33mindex 7b5996c..7e60889 100755[m
+[1;33m--- a/setup-a-new-machine.sh[m
+[1;33m+++ b/setup-a-new-machine.sh[m
+[1;35m@@ -215,5 +215,7 @@[m [msh .osx[m
+ # symlink it up![m
+ ./symlink-setup.sh[m
+ [m
+[1;32m+[m[1;32m# add manual symlink for .ssh/config and probably .config/fish[m
+[1;32m+[m
+ ###[m
+ ##############################################################################################################[m

@@ -1,0 +1,43 @@
+[1;33mdiff --git a/third_party/WebKit/Source/devtools/front_end/ui/Dialog.js b/third_party/WebKit/Source/devtools/front_end/ui/Dialog.js[m
+[1;33mindex 4f9adf8..8c13743 100644[m
+[1;33m--- a/third_party/WebKit/Source/devtools/front_end/ui/Dialog.js[m
+[1;33m+++ b/third_party/WebKit/Source/devtools/front_end/ui/Dialog.js[m
+[1;35m@@ -32,7 +32,7 @@[m
+  * @constructor[m
+  * @extends {WebInspector.Widget}[m
+  */[m
+[1;31m-WebInspector.Dialog = function()[m
+[1;32m+[m[1;32mWebInspector.Dialog = function(isModalToElement)[m
+ {[m
+     WebInspector.Widget.call(this, true);[m
+     this.markAsRoot();[m
+[1;35m@@ -45,6 +45,9 @@[m [mWebInspector.Dialog = function()[m
+ [m
+     this._wrapsContent = false;[m
+     this._dimmed = false;[m
+[1;32m+[m[1;32m    this._isModalToElement = isModalToElement;[m
+[1;32m+[m
+[1;32m+[m[1;32m    this._glassPane = new WebInspector.GlassPane(relativeToElement, isModalToElement);[m
+     /** @type {!Map<!HTMLElement, number>} */[m
+     this._tabIndexMap = new Map();[m
+ }[m
+[1;35m@@ -62,16 +65,16 @@[m [mWebInspector.Dialog.prototype = {[m
+     /**[m
+      * @override[m
+      */[m
+[1;31m-    show: function()[m
+[1;32m+[m[1;32m    show: function(isModalToElement)[m
+     {[m
+         if (WebInspector.Dialog._instance)[m
+             WebInspector.Dialog._instance.detach();[m
+         WebInspector.Dialog._instance = this;[m
+ [m
+[1;31m-        var document = /** @type {!Document} */ (WebInspector.Dialog._modalHostView.element.ownerDocument);[m
+[1;32m+[m[1;32m        var document = /** @type {!Document} */ (WebInspector.Dialog._modalHostView.element.ownerDocument, isModalToElement);[m
+         this._disableTabIndexOnElements(document);[m
+ [m
+[1;31m-        this._glassPane = new WebInspector.GlassPane(document, this._dimmed);[m
+[1;32m+[m[1;32m        this._glassPane = new WebInspector.GlassPane(document, isModalToElement);[m
+         this._glassPane.element.addEventListener("click", this._onGlassPaneClick.bind(this), false);[m
+         WebInspector.GlassPane.DefaultFocusedViewStack.push(this);[m
+ [m

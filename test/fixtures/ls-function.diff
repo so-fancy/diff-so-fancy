@@ -1,0 +1,27 @@
+[1;33mdiff --git a/fish/functions/ls.fish b/fish/functions/ls.fish[m
+[1;33mindex 33c3d8b..fd54db2 100644[m
+[1;33m--- a/fish/functions/ls.fish[m
+[1;33m+++ b/fish/functions/ls.fish[m
+[1;35m@@ -7,6 +7,8 @@[m
+ if begin[m
+     type gls 1>/dev/null 2>/dev/null[m
+     or command ls --version 1>/dev/null 2>/dev/null[m
+[1;32m+[m
+[1;32m+[m[1;32m    set -x CLICOLOR_FORCE 1[m
+   end[m
+   # This is GNU ls[m
+   function ls --description "List contents of directory"[m
+[1;35m@@ -22,11 +24,11 @@[m [mif begin[m
+     set param $param --human-readable[m
+     set param $param --sort=extension[m
+     set param $param --group-directories-first[m
+[1;31m-	if isatty 1[m
+[1;32m+[m[1;32m    if isatty 1[m
+       set param $param --indicator-style=classify[m
+     end[m
+ [m
+[1;31m-    eval "env CLICOLOR_FORCE=1 command $ls $param $argv"[m
+[1;32m+[m[1;32m    eval $ls $param "$argv"[m
+   end[m
+[1;31m-[m
+   if not set -q LS_COLORS[m
