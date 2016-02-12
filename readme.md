@@ -68,7 +68,7 @@ You may also want to configure [general diff colors](https://github.com/pauliris
 Sometimes you will want to bypass diff-so-fancy. Easy enough:
 
 ```shell
-git --no-pager diff  # will avoid the global core.pager hook
+git --no-pager diff  # will avoid core.pager hook
 ```
 
 
