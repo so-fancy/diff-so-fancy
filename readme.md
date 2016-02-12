@@ -52,7 +52,7 @@ You'll need GNU sed. On Mac, it's easy to install with Homebrew.
 brew install gnu-sed
 ```
 
-### Improved colors for the the highlighted bits
+### Improved colors for the highlighted bits
 
 `diff-highlight` has default colors that are arguably a little nasty. They'll work fine, but you can try some fancier colors:
 ```shell
