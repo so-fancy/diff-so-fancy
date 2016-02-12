@@ -12,7 +12,7 @@ else
 	diff_highlight="$( cd "$( dirname $(realpath "${BASH_SOURCE[0]}") )" && pwd )/third_party/diff-highlight/diff-highlight"
 fi
 
-color_code_regex=$'(\x1B\\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[m|K])?'
+color_code_regex="(\x1B\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[m|K])?"
 reset_color="\x1B\[m"
 dim_magenta="\x1B\[38;05;146m"
 invert_color="\x1B\[7m"
