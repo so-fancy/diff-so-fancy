@@ -1,7 +1,7 @@
 {
   "name": "diff-so-fancy",
   "version": "0.1.2",
-  "description": "good-lookin' output of diff-highlight to upgrade your diffs' appearances",
+  "description": "Good-lookin' diffs with diff-highlight and more",
   "bin": {
     "diff-so-fancy": "diff-so-fancy",
     "diff-highlight": "third_party/diff-highlight/diff-highlight"
