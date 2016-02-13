@@ -1,0 +1,10 @@
+language: bash
+before_install:
+  - git clone --depth 1 https://github.com/sstephenson/bats.git
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew install gnu-sed; fi
+
+script:
+  - ./bats/bin/bats test/*.bats
+os:
+  - linux
+  - osx
