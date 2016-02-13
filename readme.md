@@ -80,13 +80,13 @@ git --no-pager diff
 
 ## History
 
-`diff-so-fancy` started as [a commit in paulirish's dotfiles](https://github.com/paulirish/dotfiles/commit/6743b907ff586c28cd36e08d1e1c634e2968893e#commitcomment-13349456), which grew into a [standalone script](https://github.com/paulirish/dotfiles/blob/63cb8193b0e66cf80ab6332477f1f52c7fbb9311/bin/diff-so-fancy). Later, stevemao brought it into its [own repo](https://github.com/stevemao/diff-so-fancy) (here), and gave it the room to mature. It's quickly grown into a [widely collaborative project](https://github.com/stevemao/diff-so-fancy/graphs/contributors).
+`diff-so-fancy` started as [a commit in paulirish's dotfiles](https://github.com/paulirish/dotfiles/commit/6743b907ff586c28cd36e08d1e1c634e2968893e#commitcomment-13349456), which grew into a [standalone script](https://github.com/paulirish/dotfiles/blob/63cb8193b0e66cf80ab6332477f1f52c7fbb9311/bin/diff-so-fancy). Later, @stevemao brought it into its [own repo](https://github.com/stevemao/diff-so-fancy) (here), and gave it the room to mature. It's quickly grown into a [widely collaborative project](https://github.com/stevemao/diff-so-fancy/graphs/contributors).
 
 ## Contributing
 
 Pull requests quite welcome, along with any feedback or ideas.
 
-### Hacking 
+### Hacking
 
 ```sh
 # fork and clone the diff-so-fancy repo.
@@ -95,14 +95,14 @@ git clone https://github.com/stevemao/diff-so-fancy/ && cd diff-so-fancy
 # test a saved diff against your local version
 cat test/fixtures/ls-function.diff  | ./diff-so-fancy
 
-# setup symlinks to use local copy 
+# setup symlinks to use local copy
 npm link
 cd ~/projects/catfabulator && git diff
 ```
 
 ### Running tests
 
-You'll need to install [bats](github.com/sstephenson/bats#installing-bats-from-source), the Bash automated testing system. It's also available as `brew install bats`
+You'll need to install [bats](https://github.com/sstephenson/bats#installing-bats-from-source), the Bash automated testing system. It's also available as `brew install bats`
 
 ```sh
 git submodule update --init  # pull in the assertion library, bats-assert
