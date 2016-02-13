@@ -15,7 +15,7 @@ fi
 
 color_code_regex="(\x1B\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[m|K])?"
 reset_color="\x1B\[m"
-dim_magenta="\x1B\[38;05;146m"
+dim_magenta="\x1B\[35m\x1B\[2m"
 invert_color="\x1B\[7m"
 
 git_index_line_pattern="^($color_code_regex)index .*"
