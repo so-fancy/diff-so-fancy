@@ -80,6 +80,27 @@ git --no-pager diff
 
 Originated from https://github.com/paulirish/dotfiles/blob/master/bin/diff-so-fancy
 
+## Contributing
+
+Pull requests quite welcome.
+
+## Hacking and Testing
+
+```sh
+# fork and clone the repo. then…
+
+git submodule update --init
+brew install entr coreutils
+# install bats: github.com/sstephenson/bats#installing-bats-from-source
+```
+
+```sh
+# Run the test suite once:
+bats test/diff-so-fancy.bats
+
+# Run it on every change with `entr`
+ls --color=never diff-so-fancy test/*.bats | entr bats test/*.bats
+```
 
 ## License
 

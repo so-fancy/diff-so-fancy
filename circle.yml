@@ -1,0 +1,16 @@
+machine:
+  environment:
+
+
+dependencies:
+  post:
+    - git clone --depth 1 https://github.com/sstephenson/bats.git
+
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init
+
+test:
+  override:
+    - bats/bin/bats test/*.bats
