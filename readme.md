@@ -1,4 +1,4 @@
-# diff-so-fancy
+# diff-so-fancy  [![Circle CI build](https://circleci.com/gh/stevemao/diff-so-fancy.svg?style=svg)](https://circleci.com/gh/stevemao/diff-so-fancy)
 
 diff-so-fancy builds on the good-lookin' output of [git contrib](https://github.com/git/git/tree/master/contrib)'s [diff-highlight](https://github.com/git/git/tree/master/contrib/diff-highlight) to upgrade
 your diffs' appearances.
