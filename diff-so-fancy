@@ -2,8 +2,6 @@
 
 [ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
 
-
-# https://gist.github.com/TheMengzor/968e5ea87e99d9c41782
 get_script_dir () {
 	src="${BASH_SOURCE[0]}"
 	while [ -h "$src" ]; do
