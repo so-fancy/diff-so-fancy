@@ -86,12 +86,11 @@ Pull requests quite welcome.
 
 ## Hacking and Testing
 
+Install [bats](github.com/sstephenson/bats#installing-bats-from-source), the Bash automated testing system we are using.
+
 ```sh
 # fork and clone the repo. then…
-
 git submodule update --init
-brew install entr coreutils
-# install bats: github.com/sstephenson/bats#installing-bats-from-source
 ```
 
 ```sh
@@ -99,6 +98,7 @@ brew install entr coreutils
 bats test/diff-so-fancy.bats
 
 # Run it on every change with `entr`
+brew install entr
 ls --color=never diff-so-fancy test/*.bats | entr bats test/*.bats
 ```
 
