@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stevemao/diff-so-fancy.git"
+    "url": "git+https://github.com/so-fancy/diff-so-fancy.git"
   },
   "keywords": [
     "git",
@@ -23,7 +23,7 @@
   "author": "Paul Irish",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/stevemao/diff-so-fancy/issues"
+    "url": "https://github.com/so-fancy/diff-so-fancy/issues"
   },
-  "homepage": "https://github.com/stevemao/diff-so-fancy#readme"
+  "homepage": "https://github.com/so-fancy/diff-so-fancy#readme"
 }

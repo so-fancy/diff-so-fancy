@@ -1,4 +1,4 @@
-# diff-so-fancy  [![Circle CI build](https://circleci.com/gh/stevemao/diff-so-fancy.svg?style=svg)](https://circleci.com/gh/stevemao/diff-so-fancy) [![TravisCI build](https://travis-ci.org/stevemao/diff-so-fancy.svg?branch=master)](https://travis-ci.org/stevemao/diff-so-fancy)
+# diff-so-fancy  [![Circle CI build](https://circleci.com/gh/so-fancy/diff-so-fancy.svg?style=svg)](https://circleci.com/gh/so-fancy/diff-so-fancy) [![TravisCI build](https://travis-ci.org/so-fancy/diff-so-fancy.svg?branch=master)](https://travis-ci.org/so-fancy/diff-so-fancy)
 
 diff-so-fancy builds on the good-lookin' output of [git contrib](https://github.com/git/git/tree/master/contrib)'s [diff-highlight](https://github.com/git/git/tree/master/contrib/diff-highlight) to upgrade
 your diffs' appearances.
@@ -80,7 +80,7 @@ git --no-pager diff
 
 ## History
 
-`diff-so-fancy` started as [a commit in paulirish's dotfiles](https://github.com/paulirish/dotfiles/commit/6743b907ff586c28cd36e08d1e1c634e2968893e#commitcomment-13349456), which grew into a [standalone script](https://github.com/paulirish/dotfiles/blob/63cb8193b0e66cf80ab6332477f1f52c7fbb9311/bin/diff-so-fancy). Later, @stevemao brought it into its [own repo](https://github.com/stevemao/diff-so-fancy) (here), and gave it the room to mature. It's quickly grown into a [widely collaborative project](https://github.com/stevemao/diff-so-fancy/graphs/contributors).
+`diff-so-fancy` started as [a commit in paulirish's dotfiles](https://github.com/paulirish/dotfiles/commit/6743b907ff586c28cd36e08d1e1c634e2968893e#commitcomment-13349456), which grew into a [standalone script](https://github.com/paulirish/dotfiles/blob/63cb8193b0e66cf80ab6332477f1f52c7fbb9311/bin/diff-so-fancy). Later, @so-fancy brought it into its [own repo](https://github.com/so-fancy/diff-so-fancy) (here), and gave it the room to mature. It's quickly grown into a [widely collaborative project](https://github.com/so-fancy/diff-so-fancy/graphs/contributors).
 
 ## Contributing
 
@@ -90,7 +90,7 @@ Pull requests quite welcome, along with any feedback or ideas.
 
 ```sh
 # fork and clone the diff-so-fancy repo.
-git clone https://github.com/stevemao/diff-so-fancy/ && cd diff-so-fancy
+git clone https://github.com/so-fancy/diff-so-fancy/ && cd diff-so-fancy
 
 # test a saved diff against your local version
 cat test/fixtures/ls-function.diff  | ./diff-so-fancy
