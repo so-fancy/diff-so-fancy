@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-[ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
+[[ $# -ge 1 ]] && [[ -f "$1" ]] && input="$1" || input="-"
 
 get_script_dir () {
   src="${BASH_SOURCE[0]}"
-  while [ -h "$src" ]; do
+  while [[ -h "$src" ]]; do
     dir="$( cd -P "$( dirname "$src" )" && pwd )"
     src="$(readlink "$src")"
     [[ $src != /* ]] && src="$dir/$src"
