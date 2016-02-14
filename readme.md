@@ -32,7 +32,7 @@ dsf = "!git diff --color $@ | diff-so-fancy"
 
 ## Install
 
-For convenience, the recommended installation is via NPM. If you'd prefer, you may choose to do a [manual installation](#manual-installation-alternative) instead.
+For convenience, the recommended installation is via NPM. If you'd prefer, you may choose to do a [manual installation](#manual-install) instead.
 ```shell
 npm install -g diff-so-fancy
 ```
