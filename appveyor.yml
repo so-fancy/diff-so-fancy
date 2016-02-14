@@ -1,0 +1,10 @@
+install:
+  - git clone --depth 1 https://github.com/sstephenson/bats.git
+
+build: false
+
+before_test:
+  - git submodule update --init
+
+test_script:
+  - C:\cygwin\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; bats/libexec/bats test/*.bats"
