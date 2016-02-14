@@ -59,6 +59,7 @@ print_horizontal_rule () {
 }
 
 # run it.
+# shellcheck disable=SC2002
 cat $input \
   | $diff_highlight \
   | format_diff_header \
