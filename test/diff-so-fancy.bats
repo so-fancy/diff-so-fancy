@@ -15,7 +15,7 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 
 @test "original source is indented by a single space" {
   assert_output --partial "
- if begin[m"
+if begin[m"
 }
 
 @test "index line is removed entirely" {
@@ -31,9 +31,9 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 
 @test "empty lines added/removed are marked" {
   assert_output --partial "[7m[1;32m [m
-[1;32m [m[1;32m    set -x CLICOLOR_FORCE 1[m"
+[1;32m[m[1;32m    set -x CLICOLOR_FORCE 1[m"
   assert_output --partial "[7m[1;31m [m
-   if not set -q LS_COLORS[m"
+  if not set -q LS_COLORS[m"
 }
 
 @test "diff-highlight is highlighting changes within lines" {
