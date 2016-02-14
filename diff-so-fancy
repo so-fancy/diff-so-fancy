@@ -31,12 +31,10 @@ git_index_line_pattern="^($color_code_regex)index .*"
 
 format_diff_header () {
   # simplify the unified patch diff header
-  $SED -E "s/^($color_code_regex)diff --git .*$//g" | \
-  $SED -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//}" | \
-  $SED -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\
-\1\-\-\-\5/g" | \
-  $SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\5\\
-\1$(print_horizontal_rule)/g"
+  $SED -E "s/^($color_code_regex)diff --git .*$//g" \
+    | $SED -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//}" \
+    | $SED -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\n\1\-\-\-\5/g" \
+    | $SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\5\\n\1$(print_horizontal_rule)/g"
 }
 
 colorize_context_line () {
@@ -58,4 +56,9 @@ print_horizontal_rule () {
 }
 
 # run it.
-cat $input | $diff_highlight | format_diff_header |  colorize_context_line | mark_empty_lines | strip_leading_symbols
+cat $input \
+  | $diff_highlight \
+  | format_diff_header \
+  | colorize_context_line \
+  | mark_empty_lines \
+  | strip_leading_symbols
