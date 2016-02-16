@@ -38,12 +38,11 @@ npm install -g diff-so-fancy
 ```
 This will install and link the `diff-so-fancy` and `diff-highlight` scripts.
 
-### Install GNU `sed`
-
-You'll need GNU sed. On Mac, it's easy to install with Homebrew.
+On Mac, you should use Homebrew:
 ```shell
-brew install gnu-sed
+brew install diff-so-fancy
 ```
+This will take care of the `gnu-sed` dependency you would otherwise need to install before using `npm` or manual installation, and installs both scripts as above.
 
 ### Improved colors for the highlighted bits
 
