@@ -48,7 +48,7 @@ colorize_context_line () {
 }
 
 mark_empty_lines () {
-	$SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_escape/g"
+  $SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_escape/g"
 }
 
 strip_leading_symbols () {

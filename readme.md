@@ -114,6 +114,13 @@ brew install entr
 ls --color=never diff-so-fancy test/*.bats | entr bats test
 ```
 
+Be sure to lint your scripts via shellcheck
+
+```sh
+brew install shellcheck
+shellcheck diff-so-fancy update-deps.sh
+```
+
 ## License
 
 MIT
