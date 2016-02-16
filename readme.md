@@ -42,7 +42,6 @@ On Mac, you should use Homebrew:
 ```shell
 brew install diff-so-fancy
 ```
-This will take care of the `gnu-sed` dependency you would otherwise need to install before using `npm` or manual installation, and installs both scripts as above.
 
 ### Improved colors for the highlighted bits
 
