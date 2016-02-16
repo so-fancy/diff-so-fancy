@@ -3,9 +3,13 @@ machine:
 
 
 dependencies:
+  pre:
+    - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-backports restricted main universe";
+    - sudo apt-get -y update
+    - sudo apt-get -y install shellcheck;
+
   post:
     - git clone --depth 1 https://github.com/sstephenson/bats.git
-    - sudo apt-get update; sudo apt-get install shellcheck
 
 checkout:
   post:
