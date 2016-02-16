@@ -5,6 +5,7 @@ machine:
 dependencies:
   post:
     - git clone --depth 1 https://github.com/sstephenson/bats.git
+    - sudo apt-get update; sudo apt-get install shellcheck
 
 checkout:
   post:
@@ -13,3 +14,4 @@ checkout:
 test:
   override:
     - bats/bin/bats test/*.bats
+    - shellcheck diff-so-fancy update-deps.sh
