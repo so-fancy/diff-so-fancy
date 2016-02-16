@@ -26,6 +26,8 @@ else
 fi
 
 CSI=$'\x1b\['
+NL="
+"
 color_code_regex="(${CSI}([0-9]{1,3}(;[0-9]{1,3}){0,3})[m|K])?"
 reset_color="${CSI}0?m"
 reset_escape="${CSI}m"
@@ -38,8 +40,8 @@ format_diff_header () {
   # simplify the unified patch diff header
   $SED -E "s/^($color_code_regex)diff --git .*$//g" \
     | $SED -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//;}" \
-    | $SED -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\n\1\-\-\-\5/g" \
-    | $SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\5\\n\1$(print_horizontal_rule)/g"
+    | $SED -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\${NL}\1\-\-\-\-\5/g" \
+    | $SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\+\5\\${NL}\1$(print_horizontal_rule)/g"
 }
 
 colorize_context_line () {
