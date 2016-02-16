@@ -1,15 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-[ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
+[[ $# -ge 1 ]] && [[ -f "$1" ]] && input="$1" || input="-"
 
 get_script_dir () {
-	src="${BASH_SOURCE[0]}"
-	while [ -h "$src" ]; do
-	  dir="$( cd -P "$( dirname "$src" )" && pwd )"
-	  src="$(readlink "$src")"
-	  [[ $src != /* ]] && src="$dir/$src"
-	done
-	echo $( cd -P "$( dirname "$src" )" && pwd )
+  src="${BASH_SOURCE[0]}"
+
+  while [[ -h "$src" ]]; do
+    dir="$(cd -P "$( dirname "$src" )" && pwd)"
+    src="$(readlink "$src")"
+    [[ $src != /* ]] && src="$dir/$src"
+  done
+
+  dir="$(cd -P "$( dirname "$src" )" && pwd)"
+  echo "$dir"
 }
 
 # find my sed
@@ -17,9 +20,9 @@ hash gsed 2> /dev/null && SED=gsed || SED=sed
 
 # find my diff-highlight
 if hash diff-highlight 2> /dev/null; then
-	diff_highlight=diff-highlight
+  diff_highlight=diff-highlight
 else
-	diff_highlight="$(get_script_dir)/third_party/diff-highlight/diff-highlight"
+  diff_highlight="$(get_script_dir)/third_party/diff-highlight/diff-highlight"
 fi
 
 color_code_regex="(\x1B\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[m|K])?"
@@ -30,32 +33,36 @@ invert_color="\x1B\[7m"
 git_index_line_pattern="^($color_code_regex)index .*"
 
 format_diff_header () {
-	# simplify the unified patch diff header
-	$SED -E "s/^($color_code_regex)diff --git .*$//g" | \
-	$SED -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//}" | \
-	$SED -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\
-\1\-\-\-\5/g" | \
-	$SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\5\\
-\1$(print_horizontal_rule)/g"
+  # simplify the unified patch diff header
+  $SED -E "s/^($color_code_regex)diff --git .*$//g" \
+    | $SED -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//}" \
+    | $SED -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\n\1\-\-\-\5/g" \
+    | $SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\5\\n\1$(print_horizontal_rule)/g"
 }
 
 colorize_context_line () {
-	# extra color for @@ context line
-	$SED -E "s/@@$reset_color $reset_color(.*$)/@@ $dim_magenta\1/g"
+  # extra color for @@ context line
+  $SED -E "s/@@$reset_color $reset_color(.*$)/@@ $dim_magenta\1/g"
 }
 
 mark_empty_lines () {
-	$SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_color/g"
+  $SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_color/g"
 }
 
 strip_leading_symbols () {
-	# strip the + and -
-	$SED -E "s/^$color_code_regex[\+\-]/\1 /g"
+  # strip the + and -
+  $SED -E "s/^$color_code_regex[\+\-]/\1 /g"
 }
 
 print_horizontal_rule () {
-	printf "%$(tput cols)s\n"| $SED 's/ /─/g'
+  printf "%$(tput cols)s\n"| $SED 's/ /─/g'
 }
 
 # run it.
-cat $input | $diff_highlight | format_diff_header |  colorize_context_line | mark_empty_lines | strip_leading_symbols
+# shellcheck disable=SC2002
+cat $input \
+  | $diff_highlight \
+  | format_diff_header \
+  | colorize_context_line \
+  | mark_empty_lines \
+  | strip_leading_symbols
