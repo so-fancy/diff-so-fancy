@@ -38,8 +38,9 @@ npm install -g diff-so-fancy
 ```
 This will install and link the `diff-so-fancy` and `diff-highlight` scripts.
 
-On Mac, you should use Homebrew:
+On Mac, you can install via Homebrew:
 ```shell
+brew update
 brew install diff-so-fancy
 ```
 
