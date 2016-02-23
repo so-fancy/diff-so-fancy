@@ -21,8 +21,8 @@ git diff --color | diff-so-fancy
 
 **But**, you'll probably want to fancify all your diffs. Run this so `git diff` (and `git show`) will use it:
 ```shell
-git config --global pager.diff "diff-so-fancy | less --tabs=1,5 -RFX"
-git config --global pager.show "diff-so-fancy | less --tabs=1,5 -RFX"
+git config --global pager.diff "diff-so-fancy | less --tabs=4 -RFX"
+git config --global pager.show "diff-so-fancy | less --tabs=4 -RFX"
 ```
 
 However, if you'd prefer to do the fanciness on-demand with `git dsf`, drop an alias in your `~/.gitconfig`:

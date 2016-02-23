@@ -55,7 +55,11 @@ mark_empty_lines () {
 
 strip_leading_symbols () {
   # strip the + and -
-  $SED -E "s/^$color_code_regex[\+\-]/\1 /g"
+  $SED -E "s/^($color_code_regex)[\+\-]/\1 /g"
+}
+
+strip_first_column () {
+  $SED -E "s/^($color_code_regex)[[:space:]]/\1/g"
 }
 
 print_horizontal_rule () {
@@ -69,4 +73,5 @@ cat $input \
   | format_diff_header \
   | colorize_context_line \
   | mark_empty_lines \
-  | strip_leading_symbols
+  | strip_leading_symbols \
+  | strip_first_column
