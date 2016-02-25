@@ -38,7 +38,7 @@ git_index_line_pattern="^($color_code_regex)index .*"
 
 format_diff_header () {
   # simplify the unified patch diff header
-  $SED -E "s/^($color_code_regex)diff --git .*$//g" \
+  $SED -E "/^($color_code_regex)diff --git .*$/d" \
     | $SED -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//;}" \
     | $SED -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\${NL}\1\-\-\-\-\5/g" \
     | $SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1\+\+\+\+\5\\${NL}\1$(print_horizontal_rule)/g"
