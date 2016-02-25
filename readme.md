@@ -27,7 +27,7 @@ git config --global pager.show "diff-so-fancy | less --tabs=4 -RFX"
 
 However, if you'd prefer to do the fanciness on-demand with `git dsf`, drop an alias in your `~/.gitconfig`:
 ```shell
-dsf = "!git diff --color $@ | diff-so-fancy"
+dsf = "!f() { [ \"$GIT_PREFIX\" != \"\" ] && cd "$GIT_PREFIX"; git diff --color $@ | diff-so-fancy | less --tabs=4 -RFX; }; f"
 ```
 
 ## Install
