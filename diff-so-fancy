@@ -70,6 +70,10 @@ print_horizontal_rule () {
   printf "%$(tput cols)s\n"| $SED 's/ /─/g'
 }
 
+print_header_clean () {
+  "$(get_script_dir)/libs/header_clean/header_clean.pl"
+}
+
 # run it.
 # shellcheck disable=SC2002
 cat $input \
@@ -79,4 +83,5 @@ cat $input \
   | mark_empty_lines \
   | remove_first_empty_line \
   | strip_leading_symbols \
-  | strip_first_column
+  | strip_first_column \
+  | print_header_clean
