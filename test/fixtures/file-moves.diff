@@ -1,0 +1,112 @@
+[33mcommit a12f64cfa2388b1d07659149db3a77314c9836c8[m
+Author: Scott Baker <bakers@canbytel.com>
+Date:   Thu Feb 25 08:31:54 2016 -0800
+
+    Moves
+
+[38;5;11mdiff --git a/appveyor.yml b/appveyor.yml[m
+[38;5;11mindex a6fb95e..43d61c3 100644[m
+[38;5;11m--- a/appveyor.yml[m
+[38;5;11m+++ b/appveyor.yml[m
+[36m@@ -1,4 +1,4 @@[m
+[38;5;9m-install:[m
+[38;5;10m+[m[38;5;10mFOOinstall:[m
+   - git clone --depth 1 https://github.com/sstephenson/bats.git[m
+ [m
+ build: false[m
+[38;5;11mdiff --git a/circle.yml b/circle.yml[m
+[38;5;11mdeleted file mode 100644[m
+[38;5;11mindex 18a04a3..0000000[m
+[38;5;11m--- a/circle.yml[m
+[38;5;11m+++ /dev/null[m
+[36m@@ -1,21 +0,0 @@[m
+[38;5;9m-machine:[m
+[38;5;9m-  environment:[m
+[38;5;9m-[m
+[38;5;9m-[m
+[38;5;9m-dependencies:[m
+[38;5;9m-  pre:[m
+[38;5;9m-    - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-backports restricted main universe";[m
+[38;5;9m-    - sudo apt-get -y update[m
+[38;5;9m-    - sudo apt-get -y install shellcheck;[m
+[38;5;9m-[m
+[38;5;9m-  post:[m
+[38;5;9m-    - git clone --depth 1 https://github.com/sstephenson/bats.git[m
+[38;5;9m-[m
+[38;5;9m-checkout:[m
+[38;5;9m-  post:[m
+[38;5;9m-    - git submodule update --init[m
+[38;5;9m-[m
+[38;5;9m-test:[m
+[38;5;9m-  override:[m
+[38;5;9m-    - bats/bin/bats test/*.bats[m
+[38;5;9m-    - shellcheck diff-so-fancy update-deps.sh[m
+[38;5;11mdiff --git a/hello.txt b/hello.txt[m
+[38;5;11mnew file mode 100644[m
+[38;5;11mindex 0000000..0c767bc[m
+[38;5;11m--- /dev/null[m
+[38;5;11m+++ b/hello.txt[m
+[36m@@ -0,0 +1 @@[m
+[38;5;10m+[m[38;5;10mHI THERE[m
+[38;5;11mdiff --git a/package.json b/package.json[m
+[38;5;11mdeleted file mode 100644[m
+[38;5;11mindex c7a1ab2..0000000[m
+[38;5;11m--- a/package.json[m
+[38;5;11m+++ /dev/null[m
+[36m@@ -1,29 +0,0 @@[m
+[38;5;9m-{[m
+[38;5;9m-  "name": "diff-so-fancy",[m
+[38;5;9m-  "version": "0.5.0",[m
+[38;5;9m-  "description": "Good-lookin' diffs with diff-highlight and more",[m
+[38;5;9m-  "bin": {[m
+[38;5;9m-    "diff-so-fancy": "diff-so-fancy",[m
+[38;5;9m-    "diff-highlight": "third_party/diff-highlight/diff-highlight"[m
+[38;5;9m-  },[m
+[38;5;9m-  "repository": {[m
+[38;5;9m-    "type": "git",[m
+[38;5;9m-    "url": "git+https://github.com/so-fancy/diff-so-fancy.git"[m
+[38;5;9m-  },[m
+[38;5;9m-  "keywords": [[m
+[38;5;9m-    "git",[m
+[38;5;9m-    "diff",[m
+[38;5;9m-    "fancy",[m
+[38;5;9m-    "good-lookin'",[m
+[38;5;9m-    "diff-highlight",[m
+[38;5;9m-    "color",[m
+[38;5;9m-    "readable",[m
+[38;5;9m-    "highlight"[m
+[38;5;9m-  ],[m
+[38;5;9m-  "author": "Paul Irish",[m
+[38;5;9m-  "license": "MIT",[m
+[38;5;9m-  "bugs": {[m
+[38;5;9m-    "url": "https://github.com/so-fancy/diff-so-fancy/issues"[m
+[38;5;9m-  },[m
+[38;5;9m-  "homepage": "https://github.com/so-fancy/diff-so-fancy#readme"[m
+[38;5;9m-}[m
+[38;5;11mdiff --git a/square.yml b/square.yml[m
+[38;5;11mnew file mode 100644[m
+[38;5;11mindex 0000000..18a04a3[m
+[38;5;11m--- /dev/null[m
+[38;5;11m+++ b/square.yml[m
+[36m@@ -0,0 +1,21 @@[m
+[38;5;10m+[m[38;5;10mmachine:[m
+[38;5;10m+[m[38;5;10m  environment:[m
+[38;5;10m+[m
+[38;5;10m+[m
+[38;5;10m+[m[38;5;10mdependencies:[m
+[38;5;10m+[m[38;5;10m  pre:[m
+[38;5;10m+[m[38;5;10m    - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-backports restricted main universe";[m
+[38;5;10m+[m[38;5;10m    - sudo apt-get -y update[m
+[38;5;10m+[m[38;5;10m    - sudo apt-get -y install shellcheck;[m
+[38;5;10m+[m
+[38;5;10m+[m[38;5;10m  post:[m
+[38;5;10m+[m[38;5;10m    - git clone --depth 1 https://github.com/sstephenson/bats.git[m
+[38;5;10m+[m
+[38;5;10m+[m[38;5;10mcheckout:[m
+[38;5;10m+[m[38;5;10m  post:[m
+[38;5;10m+[m[38;5;10m    - git submodule update --init[m
+[38;5;10m+[m
+[38;5;10m+[m[38;5;10mtest:[m
+[38;5;10m+[m[38;5;10m  override:[m
+[38;5;10m+[m[38;5;10m    - bats/bin/bats test/*.bats[m
+[38;5;10m+[m[38;5;10m    - shellcheck diff-so-fancy update-deps.sh[m
