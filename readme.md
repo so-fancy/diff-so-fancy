@@ -113,8 +113,10 @@ bats test
 brew install entr
 ls --color=never diff-so-fancy test/*.bats | entr bats test
 ```
+When writing assertions, you'll likely want to compare to expected output. To grab that reliably, you can use something like `git --no-pager diff | diff-so-fancy > output.txt`
 
-Be sure to lint your scripts via shellcheck
+
+You can lint your scripts via shellcheck, our CI bots will also check.
 
 ```sh
 brew install shellcheck
