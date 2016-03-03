@@ -23,8 +23,9 @@ for (my $i = 0; $i <= $#input; $i++) {
 	#########################
 	# Look for the filename #
 	#########################
-	if ($line =~ /^${ansi_sequence_regex}diff --git a\/(.+?) b\/(.+)/) {
+	if ($line =~ /^${ansi_sequence_regex}diff --git (.+?) /) {
 		$last_file_seen = $4;
+		$last_file_seen =~ s|a/||; # Remove a/
 	########################################
 	# Find the first file: --- a/README.md #
 	########################################
