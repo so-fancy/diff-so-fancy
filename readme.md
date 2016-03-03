@@ -68,7 +68,9 @@ If you want, you can choose to install manually:
 Note: The `diff-highlight` dependency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience. If you prefer less fancy in your diff, you also use diff-highlight [on it's own](https://news.ycombinator.com/item?id=11068436).
 
 
-## Opting-out
+## Pro-tips
+
+#### Opting-out
 
 Sometimes you will want to bypass diff-so-fancy. Use `--no-pager` for that:
 
@@ -76,6 +78,9 @@ Sometimes you will want to bypass diff-so-fancy. Use `--no-pager` for that:
 git --no-pager diff
 ```
 
+#### Moving around in the diff
+
+You can pre-seed your `less` pager with a search pattern, so you can move between files with `n`/`p` keys. Add `--pattern='^(added|deleted|modified): '` to the end of the less flags for your git pager config.
 
 ## History
 
