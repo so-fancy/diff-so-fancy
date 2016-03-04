@@ -1,5 +1,5 @@
 [submodule "test/test_helper/bats-core"]
-	path = test/test_helper/bats-core
+	path = test/test_helper/bats-support
 	url = https://github.com/ztombol/bats-core
 [submodule "test/test_helper/bats-assert"]
 	path = test/test_helper/bats-assert
