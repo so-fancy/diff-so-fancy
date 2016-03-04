@@ -43,3 +43,11 @@ if begin[m"
   output=$( load_fixture "noprefix" | $diff_so_fancy )
   refute_output --partial "diff --git setup-a-new-machine.sh"
 }
+
+@test "header format uses a native line-drawing character" {
+  header=$( printf "%s" "$output" | head -n3 )
+  run printf "%s" "$header"
+  assert_line --index 0 --partial "[1;33m─────"
+  assert_line --index 1 --partial "modified: fish/functions/ls.fish"
+  assert_line --index 2 --partial "[1;33m─────"
+}

@@ -62,7 +62,11 @@ strip_first_column () {
 }
 
 print_horizontal_rule () {
-  printf "%$(tput cols)s\n"| $SED 's/ /─/g'
+  let width="$(tput cols)"
+
+  # echo -n '─' | hexdump -C
+  local -r dash=$( printf "%b" "\xe2\x94\x80" )
+  printf "%*s\n" "$width" | $SED "s/ /${dash}/g"
 }
 
 print_header_clean () {
