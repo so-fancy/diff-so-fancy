@@ -37,6 +37,9 @@ if begin[m"
 }
 
 @test "diff --git line is removed entirely" {
-  output=$( load_fixture "noprefix" | $diff_so_fancy )
+  # test against ls-function
   refute_output --partial "diff --git a/fish/functions/ls.fish"
+  # test with git config diff.noprefix true
+  output=$( load_fixture "noprefix" | $diff_so_fancy )
+  refute_output --partial "diff --git setup-a-new-machine.sh"
 }
