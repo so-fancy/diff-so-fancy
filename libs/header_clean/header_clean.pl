@@ -109,7 +109,7 @@ sub strip_empty_first_line {
 	my $foo = shift(); # Array passed in by reference
 
 	# If the first line is just whitespace remove it
-	if ($foo->[0] =~ /^\s*$/) {
+	if (defined($foo->[0]) && $foo->[0] =~ /^\s*$/) {
 		shift($foo);
 	}
 }
