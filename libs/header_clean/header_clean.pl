@@ -2,10 +2,12 @@
 
 use strict;
 use warnings;
+use File::Basename;
 
 my $remove_file_add_header    = 1;
 my $remove_file_delete_header = 1;
 my $clean_permission_changes  = 1;
+my $change_hunk_indicators    = 1;
 
 #################################################################################
 
@@ -18,13 +20,11 @@ strip_empty_first_line(\@input);
 for (my $i = 0; $i <= $#input; $i++) {
 	my $line = $input[$i];
 
-	#print "RAW: $line";
-
 	#########################
 	# Look for the filename #
 	#########################
-	if ($line =~ /^${ansi_sequence_regex}diff --git (.+?) /) {
-		$last_file_seen = $4;
+	if ($line =~ /^${ansi_sequence_regex}diff --(git|cc) (.*?)(\e|$)/) {
+		$last_file_seen = $5;
 		$last_file_seen =~ s|a/||; # Remove a/
 	########################################
 	# Find the first file: --- a/README.md #
@@ -56,10 +56,29 @@ for (my $i = 0; $i <= $#input; $i++) {
 		} else {
 			print "$file_1 -> $file_2\n";
 		}
+	########################################
+	# Check for "@@ -3,41 +3,63 @@" syntax #
+	########################################
+	} elsif ($change_hunk_indicators && $line =~ /^${ansi_sequence_regex}@@@* (.+?) @@@*(.*)/) {
+		my $file_str     = $4;
+		my $remain       = $5;
+
+		if ($1) {
+			print $1; # Print out whatever color we're using
+		}
+
+		my ($start_line) = $file_str =~ m/(.+?),/;
+		$start_line      = abs($start_line + 0);
+
+		$last_file_seen = basename($last_file_seen);
+
+		# Plus three line for context
+		print "@ $last_file_seen:" . ($start_line + 3) . " \@${remain}\n";
+		#print $line;
 	###################################
 	# Remove any new file permissions #
 	###################################
-	} elsif ($remove_file_add_header && $line =~ /^${ansi_sequence_regex}new file mode/) {
+	} elsif ($remove_file_add_header && $line =~ /^${ansi_sequence_regex}.*new file mode/) {
 		# Don't print the line (i.e. remove it from the output);
 	######################################
 	# Remove any delete file permissions #
