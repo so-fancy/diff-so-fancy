@@ -64,6 +64,10 @@ strip_first_column () {
 print_horizontal_rule () {
   let width="$(tput cols)"
 
+  if [[ $(uname -s) =~ (MINGW32*|MSYS*) ]]; then
+    width=$(( width - 1 ))
+  fi
+
   # echo -n '─' | hexdump -C
   local -r dash=$( printf "%b" "\xe2\x94\x80" )
   printf "%*s\n" "$width" | $SED "s/ /${dash}/g"
