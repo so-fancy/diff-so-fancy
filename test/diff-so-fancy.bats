@@ -22,7 +22,7 @@ if begin[m"
   refute_output --partial "index 33c3d8b..fd54db2 100644"
 }
 
-@test "+/- line stars are stripped" {
+@test "+/- line symbols are stripped" {
   refute_output --partial "
 [1;31m-"
   refute_output --partial "
