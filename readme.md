@@ -109,6 +109,7 @@ cd ~/projects/catfabulator && git diff
 You'll need to install [bats](https://github.com/sstephenson/bats#installing-bats-from-source), the Bash automated testing system. It's also available as `brew install bats`
 
 ```sh
+git submodule sync
 git submodule update --init  # pull in the assertion library, bats-assert
 
 # Run the test suite once:
