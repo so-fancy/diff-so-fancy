@@ -1,0 +1,73 @@
+[38;5;227mdiff --git a/circle.yml b/circle.yml[m
+[38;5;227mold mode 100644[m
+[38;5;227mnew mode 100755[m
+[38;5;227mdiff --git a/foo.json b/foo.json[m
+[38;5;227mnew file mode 100644[m
+[38;5;227mindex 0000000..316a815[m
+[38;5;227m--- /dev/null[m
+[38;5;227m+++ b/foo.json[m
+[1;35m@@ -0,0 +1,29 @@[m
+[38;5;10m+[m[38;5;10m{[m
+[38;5;10m+[m[38;5;10m  "name": "diff-so-fancy",[m
+[38;5;10m+[m[38;5;10m  "version": "0.5.1",[m
+[38;5;10m+[m[38;5;10m  "description": "Good-lookin' diffs with diff-highlight and more",[m
+[38;5;10m+[m[38;5;10m  "bin": {[m
+[38;5;10m+[m[38;5;10m    "diff-so-fancy": "diff-so-fancy",[m
+[38;5;10m+[m[38;5;10m    "diff-highlight": "third_party/diff-highlight/diff-highlight"[m
+[38;5;10m+[m[38;5;10m  },[m
+[38;5;10m+[m[38;5;10m  "repository": {[m
+[38;5;10m+[m[38;5;10m    "type": "git",[m
+[38;5;10m+[m[38;5;10m    "url": "git+https://github.com/so-fancy/diff-so-fancy.git"[m
+[38;5;10m+[m[38;5;10m  },[m
+[38;5;10m+[m[38;5;10m  "keywords": [[m
+[38;5;10m+[m[38;5;10m    "git",[m
+[38;5;10m+[m[38;5;10m    "diff",[m
+[38;5;10m+[m[38;5;10m    "fancy",[m
+[38;5;10m+[m[38;5;10m    "good-lookin'",[m
+[38;5;10m+[m[38;5;10m    "diff-highlight",[m
+[38;5;10m+[m[38;5;10m    "color",[m
+[38;5;10m+[m[38;5;10m    "readable",[m
+[38;5;10m+[m[38;5;10m    "highlight"[m
+[38;5;10m+[m[38;5;10m  ],[m
+[38;5;10m+[m[38;5;10m  "author": "Paul Irish",[m
+[38;5;10m+[m[38;5;10m  "license": "MIT",[m
+[38;5;10m+[m[38;5;10m  "bugs": {[m
+[38;5;10m+[m[38;5;10m    "url": "https://github.com/so-fancy/diff-so-fancy/issues"[m
+[38;5;10m+[m[38;5;10m  },[m
+[38;5;10m+[m[38;5;10m  "homepage": "https://github.com/so-fancy/diff-so-fancy#readme"[m
+[38;5;10m+[m[38;5;10m}[m
+[38;5;227mdiff --git a/package.json b/package.json[m
+[38;5;227mdeleted file mode 100644[m
+[38;5;227mindex 316a815..0000000[m
+[38;5;227m--- a/package.json[m
+[38;5;227m+++ /dev/null[m
+[1;35m@@ -1,29 +0,0 @@[m
+[38;5;9m-{[m
+[38;5;9m-  "name": "diff-so-fancy",[m
+[38;5;9m-  "version": "0.5.1",[m
+[38;5;9m-  "description": "Good-lookin' diffs with diff-highlight and more",[m
+[38;5;9m-  "bin": {[m
+[38;5;9m-    "diff-so-fancy": "diff-so-fancy",[m
+[38;5;9m-    "diff-highlight": "third_party/diff-highlight/diff-highlight"[m
+[38;5;9m-  },[m
+[38;5;9m-  "repository": {[m
+[38;5;9m-    "type": "git",[m
+[38;5;9m-    "url": "git+https://github.com/so-fancy/diff-so-fancy.git"[m
+[38;5;9m-  },[m
+[38;5;9m-  "keywords": [[m
+[38;5;9m-    "git",[m
+[38;5;9m-    "diff",[m
+[38;5;9m-    "fancy",[m
+[38;5;9m-    "good-lookin'",[m
+[38;5;9m-    "diff-highlight",[m
+[38;5;9m-    "color",[m
+[38;5;9m-    "readable",[m
+[38;5;9m-    "highlight"[m
+[38;5;9m-  ],[m
+[38;5;9m-  "author": "Paul Irish",[m
+[38;5;9m-  "license": "MIT",[m
+[38;5;9m-  "bugs": {[m
+[38;5;9m-    "url": "https://github.com/so-fancy/diff-so-fancy/issues"[m
+[38;5;9m-  },[m
+[38;5;9m-  "homepage": "https://github.com/so-fancy/diff-so-fancy#readme"[m
+[38;5;9m-}[m
