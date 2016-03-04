@@ -41,6 +41,6 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 
 @test "Reworked hunks" {
 	output=$( load_fixture "file-moves" | $diff_so_fancy )
-	assert_output --partial 'square.yml:3'
-	assert_output --partial 'package.json:4'
+	assert_output --partial '@ square.yml:3 @'
+	assert_output --partial '@ package.json:4 @'
 }

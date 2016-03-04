@@ -23,7 +23,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 	#########################
 	# Look for the filename #
 	#########################
-	if ($line =~ /^${ansi_sequence_regex}diff --(git|cc) (.*?)(\e|$)/) {
+	if ($line =~ /^${ansi_sequence_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
 		$last_file_seen = $5;
 		$last_file_seen =~ s|a/||; # Remove a/
 	########################################
