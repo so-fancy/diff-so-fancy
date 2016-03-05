@@ -15,6 +15,18 @@ get_script_dir () {
   echo "$dir"
 }
 
+get_config() {
+  local -r key="diff-so-fancy.$1"
+  local -r default_value="$2"
+  value="$(git config --get "$key")"
+
+  if [[ -z "$value" && ! -z "$default_value" ]]; then
+    value="$default_value"
+  fi
+  printf "%s" "$value"
+}
+
+
 # find my sed
 hash gsed 2> /dev/null && SED=gsed || SED=sed
 
