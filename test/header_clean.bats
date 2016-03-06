@@ -50,3 +50,8 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 	assert_output --partial '@ setup-a-new-machine.sh:33 @'
 	assert_output --partial '@ setup-a-new-machine.sh:219 @'
 }
+
+@test "Reworked hunks (deleted files)" {
+	output=$( load_fixture "dotfiles" | $diff_so_fancy )
+	assert_output --partial '@ diff-so-fancy:3 @'
+}
