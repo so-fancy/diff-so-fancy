@@ -67,7 +67,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 			print $1; # Print out whatever color we're using
 		}
 
-		my ($start_line) = $file_str =~ m/(.+?),/;
+		my ($start_line) = $file_str =~ m/\+(\d+)/;
 		$start_line      = abs($start_line + 0);
 
 		$last_file_seen = basename($last_file_seen);
