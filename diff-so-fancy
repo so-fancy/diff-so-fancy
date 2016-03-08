@@ -62,7 +62,11 @@ colorize_context_line () {
 }
 
 mark_empty_lines () {
-  $SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_escape/g"
+  if [[ "$diffsymbols" = true ]]; then
+    cat
+  else
+    $SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_escape/g"
+  fi
 }
 
 strip_leading_symbols () {
