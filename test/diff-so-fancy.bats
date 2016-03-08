@@ -51,3 +51,15 @@ if begin[m"
   assert_line --index 1 --partial "modified: fish/functions/ls.fish"
   assert_line --index 2 --partial "[1;33m─────"
 }
+
+# github.com/paulirish/dotfiles/commit/6743b907ff586c28cd36e08d1e1c634e2968893e#commitcomment-13459061
+@test "All removed lines are definitely printed" {
+  output=$( load_fixture "chromium-modaltoelement" | $diff_so_fancy )
+  lines=$( printf "%s" "$output")
+  run printf "%s" "$lines"
+  assert_line --partial --index 7 "WebInspector.Dialog = "
+  assert_line --partial --index 8 "WebInspector.Dialog = "
+  assert_line --partial --index 26 "show: function"
+  assert_line --partial --index 27 "show: function"
+  assert_line --partial --index 33 "Dialog._modalHostView.element.ownerDocument"
+}
