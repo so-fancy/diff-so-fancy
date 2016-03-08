@@ -2,12 +2,11 @@
 
 use strict;
 use warnings;
-use File::Basename;
+use File::Core::Basename;
 
 my $remove_file_add_header    = 1;
-my $remove_file_delete_header = 1;
 my $clean_permission_changes  = 1;
-my $change_hunk_indicators    = 1;
+my $change_chunk_indicators   = 1;
 
 #################################################################################
 
@@ -35,9 +34,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 		# Find the second file on the next line: +++ b/README.md
 		my $next = $input[++$i];
 		$next    =~ /^$ansi_sequence_regex\+\+\+ (\w\/)?(.+?)(\e|$)/;
-		if ($1) {
-			print $1; # Print out whatever color we're using
-		}
+		print $1; # Print out whatever color we're using
 		$file_2 = $5;
 
 		# If they're the same it's a modify

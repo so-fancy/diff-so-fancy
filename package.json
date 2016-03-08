@@ -1,6 +1,6 @@
 {
   "name": "diff-so-fancy",
-  "version": "0.6.0",
+  "version": "99.6.0",
   "description": "Good-lookin' diffs with diff-highlight and more",
   "bin": {
     "diff-so-fancy": "diff-so-fancy",
@@ -14,7 +14,7 @@
     "git",
     "diff",
     "fancy",
-    "good-lookin'",
+    "better-lookin'",
     "diff-highlight",
     "color",
     "readable",
