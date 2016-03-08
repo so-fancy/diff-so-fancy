@@ -112,4 +112,6 @@ sub strip_empty_first_line {
 	if (defined($array->[0]) && $array->[0] =~ /^\s*$/) {
 		shift(@$array); # Throw away the first line
 	}
+
+	return 1;
 }
