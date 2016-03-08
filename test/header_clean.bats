@@ -50,3 +50,8 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 	assert_output --partial '@ setup-a-new-machine.sh:33 @'
 	assert_output --partial '@ setup-a-new-machine.sh:218 @'
 }
+
+@test "mnemonicprefix handling" {
+	output=$( load_fixture "mnemonicprefix" | $diff_so_fancy )
+	assert_output --partial 'modified: test/header_clean.bats'
+}
