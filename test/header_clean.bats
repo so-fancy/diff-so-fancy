@@ -41,14 +41,19 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 
 @test "Reworked hunks" {
 	output=$( load_fixture "file-moves" | $diff_so_fancy )
-	assert_output --partial '@ square.yml:3 @'
-	assert_output --partial '@ package.json:4 @'
+	assert_output --partial '@ square.yml:4 @'
+	assert_output --partial '@ package.json:3 @'
 }
 
 @test "Reworked hunks (noprefix)" {
 	output=$( load_fixture "noprefix" | $diff_so_fancy )
 	assert_output --partial '@ setup-a-new-machine.sh:33 @'
-	assert_output --partial '@ setup-a-new-machine.sh:218 @'
+	assert_output --partial '@ setup-a-new-machine.sh:219 @'
+}
+
+@test "Reworked hunks (deleted files)" {
+	output=$( load_fixture "dotfiles" | $diff_so_fancy )
+	assert_output --partial '@ diff-so-fancy:3 @'
 }
 
 @test "mnemonicprefix handling" {
