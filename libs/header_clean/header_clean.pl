@@ -108,7 +108,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 sub parse_hunk_header {
     my ($line) = @_;
     my ($o_ofs, $o_cnt, $n_ofs, $n_cnt) =
-        $line =~ /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/;
+    	$line =~ /^@@+(?: -(\d+)(?:,(\d+))?)+ \+(\d+)(?:,(\d+))? @@+/;
     $o_cnt = 1 unless defined $o_cnt;
     $n_cnt = 1 unless defined $n_cnt;
     return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
