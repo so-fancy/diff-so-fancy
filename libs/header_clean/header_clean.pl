@@ -128,11 +128,10 @@ sub strip_empty_first_line {
 # Remove + or - at the beginning of the lines
 sub strip_leading_indicators {
 	my $array            = shift(); # Array passed in by reference
-	my $line_count       = scalar(@$array);
 	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
 
-	for (my $i = 0; $i < $line_count; $i++) {
-		$array->[$i] =~ s/^(${ansi_color_regex})[+-]/$1 /;
+	foreach my $line (@$array) {
+		$line =~ s/^(${ansi_color_regex})[+-]/$1 /;
 	}
 
 	return 1;
@@ -141,11 +140,10 @@ sub strip_leading_indicators {
 # Remove the first space so everything aligns left
 sub strip_first_column {
 	my $array            = shift(); # Array passed in by reference
-	my $line_count       = scalar(@$array);
 	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
 
-	for (my $i = 0; $i < $line_count; $i++) {
-		$array->[$i] =~ s/^(${ansi_color_regex})[[:space:]]/$1/;
+	foreach my $line (@$array) {
+		$line =~ s/^(${ansi_color_regex})[[:space:]]/$1/;
 	}
 
 	return 1;
@@ -153,7 +151,6 @@ sub strip_first_column {
 
 sub mark_empty_lines {
 	my $array            = shift(); # Array passed in by reference
-	my $line_count       = scalar(@$array);
 	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
 
 	my $reset_color  = "\e\\[0?m";
