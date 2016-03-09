@@ -16,12 +16,9 @@ get_script_dir () {
 }
 
 get_config() {
-  local -r key="diff-so-fancy.$1"
-  local -r default_value="$2"
-  value="$(git config --get "$key")"
-
-  if [[ -z "$value" && ! -z "$default_value" ]]; then
-    value="$default_value"
+  value="$(git config --get "diff-so-fancy.$1")"
+  if [[ $value && ! -z $2 ]]; then
+    value="$2"
   fi
   printf "%s" "$value"
 }
