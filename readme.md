@@ -36,7 +36,7 @@ For convenience, the recommended installation is via NPM. If you'd prefer, you m
 ```shell
 npm install -g diff-so-fancy
 ```
-This will install and link the `diff-so-fancy` and `diff-highlight` scripts.
+This will install and link the `diff-so-fancy` and `diff-highlight` scripts. You can also upgrade to the latest version with this command.
 
 On Mac, you can install via Homebrew:
 ```shell
