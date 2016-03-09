@@ -1,0 +1,32 @@
+[1;32mcommit 74804e377d4a54d1173d4393827d4e4b27e4d5d0[m
+[1;33mdiff --cc libs/header_clean/header_clean.pl[m
+[1;33mindex e8bcd92,5970580..ae279d0[m
+[1;33m--- a/libs/header_clean/header_clean.pl[m
+[1;33m+++ b/libs/header_clean/header_clean.pl[m
+[1;35m@@@ -105,13 -104,21 +104,23 @@@[m [mfor (my $i = 0; $i <= $#input; $i++) [m
+  	}[m
+  }[m
+  [m
+[1;32m+ # Courtesy of github.com/git/git/blob/ab5d01a/git-add--interactive.perl#L798-L805[m
+[1;32m+ sub parse_hunk_header {[m
+[1;32m+     my ($line) = @_;[m
+[1;32m+     my ($o_ofs, $o_cnt, $n_ofs, $n_cnt) =[m
+[1;32m+         $line =~ /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/;[m
+[1;32m+     $o_cnt = 1 unless defined $o_cnt;[m
+[1;32m+     $n_cnt = 1 unless defined $n_cnt;[m
+[1;32m+     return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);[m
+[1;32m+ }[m
+[1;32m+ [m
+  sub strip_empty_first_line {[m
+[1;31m -	my $foo = shift(); # Array passed in by reference[m
+[1;32m +	my $array = shift(); # Array passed in by reference[m
+  [m
+  	# If the first line is just whitespace remove it[m
+[1;31m -	if (defined($foo->[0]) && $foo->[0] =~ /^\s*$/) {[m
+[1;31m -		shift($foo);[m
+[1;32m +	if (defined($array->[0]) && $array->[0] =~ /^\s*$/) {[m
+[1;32m +		shift(@$array); # Throw away the first line[m
+  	}[m
+[1;32m +[m
+[1;32m +	return 1;[m
+  }[m
