@@ -13,10 +13,10 @@ my $mark_empty_lines          = 1;
 
 #################################################################################
 
+my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
+
 my @input = <>;
 clean_up_input(\@input);
-
-my $ansi_sequence_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
 my ($file_1,$file_2,$last_file_seen);
 for (my $i = 0; $i <= $#input; $i++) {
 	my $line = $input[$i];
@@ -24,18 +24,18 @@ for (my $i = 0; $i <= $#input; $i++) {
 	#########################
 	# Look for the filename #
 	#########################
-	if ($line =~ /^${ansi_sequence_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
+	if ($line =~ /^${ansi_color_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
 		$last_file_seen = $5;
 		$last_file_seen =~ s|a/||; # Remove a/
 	########################################
 	# Find the first file: --- a/README.md #
 	########################################
-	} elsif ($line =~ /^$ansi_sequence_regex--- (\w\/)?(.+?)(\e|$)/) {
+	} elsif ($line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|$)/) {
 		$file_1 = $5;
 
 		# Find the second file on the next line: +++ b/README.md
 		my $next = $input[++$i];
-		$next    =~ /^$ansi_sequence_regex\+\+\+ (\w\/)?(.+?)(\e|$)/;
+		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|$)/;
 		if ($1) {
 			print $1; # Print out whatever color we're using
 		}
@@ -60,7 +60,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 	########################################
 	# Check for "@@ -3,41 +3,63 @@" syntax #
 	########################################
-	} elsif ($change_hunk_indicators && $line =~ /^${ansi_sequence_regex}(@@@* .+? @@@*)(.*)/) {
+	} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
 
 		my $hunk_header  = $4;
 		my $remain       = $5;
@@ -78,17 +78,17 @@ for (my $i = 0; $i <= $#input; $i++) {
 	###################################
 	# Remove any new file permissions #
 	###################################
-	} elsif ($remove_file_add_header && $line =~ /^${ansi_sequence_regex}.*new file mode/) {
+	} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}.*new file mode/) {
 		# Don't print the line (i.e. remove it from the output);
 	######################################
 	# Remove any delete file permissions #
 	######################################
-	} elsif ($remove_file_delete_header && $line =~ /^${ansi_sequence_regex}deleted file mode/) {
+	} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
 		# Don't print the line (i.e. remove it from the output);
 	#####################################################
 	# Check if we're changing the permissions of a file #
 	#####################################################
-	} elsif ($clean_permission_changes && $line =~ /^${ansi_sequence_regex}old mode (\d+)/) {
+	} elsif ($clean_permission_changes && $line =~ /^${ansi_color_regex}old mode (\d+)/) {
 		my $next = $input[++$i];
 
 		if ($1) {
@@ -127,8 +127,7 @@ sub strip_empty_first_line {
 
 # Remove + or - at the beginning of the lines
 sub strip_leading_indicators {
-	my $array            = shift(); # Array passed in by reference
-	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
+	my $array = shift(); # Array passed in by reference
 
 	foreach my $line (@$array) {
 		$line =~ s/^(${ansi_color_regex})[+-]/$1 /;
@@ -139,8 +138,7 @@ sub strip_leading_indicators {
 
 # Remove the first space so everything aligns left
 sub strip_first_column {
-	my $array            = shift(); # Array passed in by reference
-	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
+	my $array = shift(); # Array passed in by reference
 
 	foreach my $line (@$array) {
 		$line =~ s/^(${ansi_color_regex})[[:space:]]/$1/;
@@ -150,15 +148,14 @@ sub strip_first_column {
 }
 
 sub mark_empty_lines {
-	my $array            = shift(); # Array passed in by reference
-	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
+	my $array = shift(); # Array passed in by reference
 
 	my $reset_color  = "\e\\[0?m";
 	my $reset_escape = "\e\[m";
 	my $invert_color = "\e\[7m";
 
 	foreach my $line (@$array) {
-		$line =~ s/^(${ansi_color_regex})[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
+		$line =~ s/^($ansi_color_regex)[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
 	}
 
 	return 1;
