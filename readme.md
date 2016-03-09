@@ -90,6 +90,14 @@ You can pre-seed your `less` pager with a search pattern, so you can move betwee
 
 Pull requests quite welcome, along with any feedback or ideas.
 
+### Reporting bugs
+
+Providing the original diff text inline in the issue is quite helpful.
+
+```sh
+git --no-pager diff > output.diff
+```
+
 ### Hacking
 
 ```sh
