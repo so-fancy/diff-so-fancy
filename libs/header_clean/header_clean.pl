@@ -167,3 +167,23 @@ sub clean_up_input {
 
 	return 1;
 }
+
+# Return git config as a hash
+sub get_git_config {
+	my $cmd = "git config --list";
+	my @out = `$cmd`;
+
+	my %hash;
+	foreach my $line (@out) {
+		my ($key,$value) = split("=",$line,2);
+		$value =~ s/\s+$//;
+		my @path = split(/\./,$key);
+
+		my $last = pop @path;
+		my $p = \%hash;
+		$p = $p->{$_} //= {} for @path;
+		$p->{$last} = $value;
+	}
+
+	return \%hash;
+}
