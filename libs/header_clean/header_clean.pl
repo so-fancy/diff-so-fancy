@@ -9,6 +9,7 @@ my $remove_file_delete_header = 1;
 my $clean_permission_changes  = 1;
 my $change_hunk_indicators    = 1;
 my $strip_leading_indicators  = 1;
+my $mark_empty_lines          = 1;
 
 #################################################################################
 
@@ -150,11 +151,31 @@ sub strip_first_column {
 	return 1;
 }
 
+sub mark_empty_lines {
+	my $array            = shift(); # Array passed in by reference
+	my $line_count       = scalar(@$array);
+	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
+
+	my $reset_color  = "\e\\[0?m";
+	my $reset_escape = "\e\[m";
+	my $invert_color = "\e\[7m";
+
+	foreach my $line (@$array) {
+		$line =~ s/^(${ansi_color_regex})[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
+	}
+
+	return 1;
+}
+
 sub clean_up_input {
 	my $input_array_ref = shift();
 
 	# Usually the first line of a diff is whitespace so we remove that
 	strip_empty_first_line($input_array_ref);
+
+	if ($mark_empty_lines) {
+		mark_empty_lines($input_array_ref);
+	}
 
 	# Remove + or - at the beginning of the lines
 	if ($strip_leading_indicators) {

@@ -48,10 +48,6 @@ colorize_context_line () {
   $SED -E "s/@@$reset_color $reset_color(.*$)/@@ $dim_magenta\1/g"
 }
 
-mark_empty_lines () {
-  $SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_escape/g"
-}
-
 print_horizontal_rule () {
   let width="$(tput cols)"
 
@@ -74,5 +70,4 @@ cat $input \
   | $diff_highlight \
   | format_diff_header \
   | colorize_context_line \
-  | mark_empty_lines \
   | print_header_clean
