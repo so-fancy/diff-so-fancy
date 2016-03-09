@@ -52,15 +52,6 @@ mark_empty_lines () {
   $SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_escape/g"
 }
 
-strip_leading_symbols () {
-  # strip the + and -
-  $SED -E "s/^($color_code_regex)[\+\-]/\1 /g"
-}
-
-strip_first_column () {
-  $SED -E "s/^($color_code_regex)[[:space:]]/\1/g"
-}
-
 print_horizontal_rule () {
   let width="$(tput cols)"
 
