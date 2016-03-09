@@ -8,15 +8,15 @@ my $remove_file_add_header    = 1;
 my $remove_file_delete_header = 1;
 my $clean_permission_changes  = 1;
 my $change_hunk_indicators    = 1;
+my $strip_leading_indicators  = 1;
 
 #################################################################################
 
-my $ansi_sequence_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
-
-my ($file_1,$file_2,$last_file_seen);
 my @input = <>;
-strip_empty_first_line(\@input);
+clean_up_input(\@input);
 
+my $ansi_sequence_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
+my ($file_1,$file_2,$last_file_seen);
 for (my $i = 0; $i <= $#input; $i++) {
 	my $line = $input[$i];
 
@@ -106,12 +106,11 @@ for (my $i = 0; $i <= $#input; $i++) {
 
 # Courtesy of github.com/git/git/blob/ab5d01a/git-add--interactive.perl#L798-L805
 sub parse_hunk_header {
-    my ($line) = @_;
-    my ($o_ofs, $o_cnt, $n_ofs, $n_cnt) =
-    	$line =~ /^@@+(?: -(\d+)(?:,(\d+))?)+ \+(\d+)(?:,(\d+))? @@+/;
-    $o_cnt = 1 unless defined $o_cnt;
-    $n_cnt = 1 unless defined $n_cnt;
-    return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
+	my ($line) = @_;
+	my ($o_ofs, $o_cnt, $n_ofs, $n_cnt) = $line =~ /^@@+(?: -(\d+)(?:,(\d+))?)+ \+(\d+)(?:,(\d+))? @@+/;
+	$o_cnt = 1 unless defined $o_cnt;
+	$n_cnt = 1 unless defined $n_cnt;
+	return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
 }
 
 sub strip_empty_first_line {
@@ -121,6 +120,50 @@ sub strip_empty_first_line {
 	if (defined($array->[0]) && $array->[0] =~ /^\s*$/) {
 		shift(@$array); # Throw away the first line
 	}
+
+	return 1;
+}
+
+# Remove + or - at the beginning of the lines
+sub strip_leading_indicators {
+	my $array            = shift(); # Array passed in by reference
+	my $line_count       = scalar(@$array);
+	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
+
+	for (my $i = 0; $i < $line_count; $i++) {
+		$array->[$i] =~ s/^(${ansi_color_regex})[+-]/$1 /;
+	}
+
+	return 1;
+}
+
+# Remove the first space so everything aligns left
+sub strip_first_column {
+	my $array            = shift(); # Array passed in by reference
+	my $line_count       = scalar(@$array);
+	my $ansi_color_regex = qr/(\e\[[0-9]{1,3}(?:;[0-9]{1,3}){0,3}[mK])?/;
+
+	for (my $i = 0; $i < $line_count; $i++) {
+		$array->[$i] =~ s/^(${ansi_color_regex})[[:space:]]/$1/;
+	}
+
+	return 1;
+}
+
+sub clean_up_input {
+	my $input_array_ref = shift();
+
+	# Usually the first line of a diff is whitespace so we remove that
+	strip_empty_first_line($input_array_ref);
+
+	# Remove + or - at the beginning of the lines
+	if ($strip_leading_indicators) {
+		strip_leading_indicators($input_array_ref);
+
+		# Remove the first space so everything aligns left
+		strip_first_column($input_array_ref);
+	}
+
 
 	return 1;
 }
