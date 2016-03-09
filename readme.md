@@ -10,7 +10,7 @@ your diffs' appearances.
 
 *`git diff` vs `git diff --color | diff-so-fancy`*
 
-![diff-highlight vs diff-so-fancy](https://cloud.githubusercontent.com/assets/39191/10000682/8e849130-6052-11e5-9bd9-bd4505cd24d6.png)
+![diff-highlight vs diff-so-fancy](https://cloud.githubusercontent.com/assets/39191/13622719/7cc7c54c-e555-11e5-86c4-7045d91af041.png)
 
 ## Usage
 
