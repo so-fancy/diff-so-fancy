@@ -34,8 +34,12 @@ for (my $i = 0; $i <= $#input; $i++) {
 		# Find the second file on the next line: +++ b/README.md
 		my $next = $input[++$i];
 		$next    =~ /^$ansi_sequence_regex\++ (\w\/)?(.+?)(\e|$)/;
-		print $1; # Print out whatever color we're using
-		$file_2 = $5;
+		if ($1) {
+			print $1; # Print out whatever color we're using
+		}
+		if ($5) {
+			$file_2 = $5;
+		}
 
 		# If they're the same it's a modify
 		if ($file_1 eq $file_2) {
