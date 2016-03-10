@@ -29,12 +29,12 @@ for (my $i = 0; $i <= $#input; $i++) {
 	########################################
 	# Find the first file: --- a/README.md #
 	########################################
-	} elsif ($line =~ /^$ansi_sequence_regex--- (\w\/)?(.+?)(\e|$)/) {
+	} elsif ($line =~ /^$ansi_sequence_regex--+ (\w\/)?(.+?)(\e|$)/) {
 		$file_1 = $5;
 
 		# Find the second file on the next line: +++ b/README.md
 		my $next = $input[++$i];
-		$next    =~ /^$ansi_sequence_regex\+\+\+ (\w\/)?(.+?)(\e|$)/;
+		$next    =~ /^$ansi_sequence_regex\+\++ (\w\/)?(.+?)(\e|$)/;
 		if ($1) {
 			print $1; # Print out whatever color we're using
 		}
@@ -59,7 +59,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 	########################################
 	# Check for "@@ -3,41 +3,63 @@" syntax #
 	########################################
-	} elsif ($change_hunk_indicators && $line =~ /^${ansi_sequence_regex}(@@@* .+? @@@*)(.*)/) {
+	} elsif ($change_hunk_indicators && $line =~ /^${ansi_sequence_regex}(@@+ .+? @@@*)(.*)/) {
 
 		my $hunk_header  = $4;
 		my $remain       = $5;

@@ -15,6 +15,15 @@ get_script_dir () {
   echo "$dir"
 }
 
+get_config() {
+  value="$(git config --get "diff-so-fancy.$1")"
+  if [[ $value && ! -z $2 ]]; then
+    value="$2"
+  fi
+  printf "%s" "$value"
+}
+
+
 # find my sed
 hash gsed 2> /dev/null && SED=gsed || SED=sed
 
@@ -35,6 +44,7 @@ dim_magenta="${CSI}38;05;146m"
 invert_color="${CSI}7m"
 
 git_index_line_pattern="^($color_code_regex)index .*"
+diffsymbols="$(get_config 'diffsymbols' false)"
 
 format_diff_header () {
   # simplify the unified patch diff header
@@ -49,16 +59,28 @@ colorize_context_line () {
 }
 
 mark_empty_lines () {
-  $SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_escape/g"
+  if [[ "$diffsymbols" = true ]]; then
+    cat
+  else
+    $SED -E "s/^$color_code_regex[\+\-]$reset_color\s*$/$invert_color\1 $reset_escape/g"
+  fi
 }
 
 strip_leading_symbols () {
-  # strip the + and -
-  $SED -E "s/^($color_code_regex)[\+\-]/\1 /g"
+  if [[ "$diffsymbols" = true ]]; then
+    cat
+  else
+    # strip the + and -
+    $SED -E "s/^($color_code_regex)[\+\-]/\1 /g"
+  fi
 }
 
 strip_first_column () {
-  $SED -E "s/^($color_code_regex)[[:space:]]/\1/g"
+  if [[ "$diffsymbols" = true ]]; then
+    cat
+  else
+    $SED -E "s/^($color_code_regex)[[:space:]]/\1/g"
+  fi
 }
 
 print_horizontal_rule () {
