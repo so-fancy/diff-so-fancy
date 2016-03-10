@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 use File::Basename;
 
 my $remove_file_add_header    = 1;
@@ -17,6 +17,7 @@ my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
 
 my @input = <>;
 clean_up_input(\@input);
+
 my ($file_1,$file_2,$last_file_seen);
 for (my $i = 0; $i <= $#input; $i++) {
 	my $line = $input[$i];
