@@ -59,7 +59,7 @@ print_horizontal_rule () {
 }
 
 print_header_clean () {
-  "$(get_script_dir)/libs/header_clean/header_clean.pl"
+  "$(get_script_dir)/lib/diff-so-fancy.pl"
 }
 
 # run it.
