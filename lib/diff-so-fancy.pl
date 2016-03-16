@@ -90,6 +90,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 	# Check if we're changing the permissions of a file #
 	#####################################################
 	} elsif ($clean_permission_changes && $line =~ /^${ansi_color_regex}old mode (\d+)/) {
+		my ($old_mode) = $4;
 		my $next = $input[++$i];
 
 		if ($1) {
@@ -97,7 +98,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 		}
 
 		my ($new_mode) = $next =~ m/new mode (\d+)/;
-		print "$last_file_seen changed file mode to $new_mode\n";
+		print "$last_file_seen changed file mode from $old_mode to $new_mode\n";
 	#####################################
 	# Just a regular line, print it out #
 	#####################################
