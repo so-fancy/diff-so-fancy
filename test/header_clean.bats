@@ -21,7 +21,7 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 
 @test "header_clean permission changes" {
 	output=$( load_fixture "file-perms" | $diff_so_fancy )
-	assert_output --partial 'circle.yml changed file mode to 100755'
+	assert_output --partial 'circle.yml changed file mode from 100644 to 100755'
 }
 
 @test "header_clean 'new file mode' is removed" {
