@@ -73,8 +73,9 @@ for (my $i = 0; $i <= $#input; $i++) {
 		my ($orig_offset, $orig_count, $new_offset, $new_count) = parse_hunk_header($hunk_header);
 		$last_file_seen = basename($last_file_seen);
 
-		# Plus three line for context
-		print "@ $last_file_seen:" . ($new_offset + 3) . " \@${remain}\n";
+		# Figure out the start line
+		my $start_line = start_line_calc($new_offset,$new_count);
+		print "@ $last_file_seen:$start_line \@${remain}\n";
 
 	###################################
 	# Remove any new file permissions #
@@ -203,4 +204,28 @@ sub get_git_config {
 	}
 
 	return \%hash;
+}
+
+# Try and be smart about what line the diff hunk starts on
+sub start_line_calc {
+	my ($line_num,$diff_context) = @_;
+	my $ret;
+
+	# Git defaults to three lines of context
+	my $default_context_lines = 3;
+	# Three lines on either side, and the line itself = 7
+	my $expected_context      = ($default_context_lines * 2 + 1);
+
+	# The first three lines
+	if ($line_num == 1 && $diff_context < $expected_context) {
+		$ret = $diff_context - $default_context_lines;
+	} else {
+		$ret = $line_num + $default_context_lines;
+	}
+
+	if ($ret < 1) {
+		$ret = 1;
+	}
+
+	return $ret;
 }
