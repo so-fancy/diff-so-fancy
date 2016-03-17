@@ -128,28 +128,6 @@ sub strip_empty_first_line {
 	return 1;
 }
 
-# Remove + or - at the beginning of the lines
-sub strip_leading_indicators {
-	my $array = shift(); # Array passed in by reference
-
-	foreach my $line (@$array) {
-		$line =~ s/^(${ansi_color_regex})[+-]/$1 /;
-	}
-
-	return 1;
-}
-
-# Remove the first space so everything aligns left
-sub strip_first_column {
-	my $array = shift(); # Array passed in by reference
-
-	foreach my $line (@$array) {
-		$line =~ s/^(${ansi_color_regex})[[:space:]]/$1/;
-	}
-
-	return 1;
-}
-
 sub mark_empty_lines {
 	my $array = shift(); # Array passed in by reference
 
@@ -177,9 +155,6 @@ sub clean_up_input {
 	# Remove + or - at the beginning of the lines
 	if ($strip_leading_indicators) {
 		strip_leading_indicators($input_array_ref);
-
-		# Remove the first space so everything aligns left
-		strip_first_column($input_array_ref);
 	}
 
 
@@ -225,6 +200,44 @@ sub start_line_calc {
 
 	if ($ret < 1) {
 		$ret = 1;
+	}
+
+	return $ret;
+}
+
+# Remove + or - at the beginning of the lines
+sub strip_leading_indicators {
+	my $array = shift();       # Array passed in by reference
+	my $columns_to_remove = 1; # Default to 1 (two-way merge)
+
+	foreach my $line (@$array) {
+		# If the line is a hunk line, check for two-way vs three-way merge
+		# Two-way   = @@ -132,6 +132,9 @@
+		# Three-way = @@@ -48,10 -48,10 +48,15 @@@
+		if ($line =~ /^${ansi_color_regex}@@@* (.+?) @@@*/) {
+			$columns_to_remove = (char_count(",",$4)) - 1;
+			last;
+		}
+	}
+
+	foreach my $line (@$array) {
+		# Remove a number of "+", "-", or spaces equal to the indent level
+		$line =~ s/^(${ansi_color_regex})[ +-]{${columns_to_remove}}/$1/;
+	}
+
+	return 1;
+}
+
+# Count the number of a given char in a string
+sub char_count {
+	my ($needle,$str) = @_;
+	my $len = length($str);
+	my $ret = 0;
+
+	for (my $i = 0; $i < $len; $i++) {
+		my $found = substr($str,$i,1);
+
+		if ($needle eq $found) { $ret++; }
 	}
 
 	return $ret;
