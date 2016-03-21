@@ -1,0 +1,18 @@
+commit fbf440dd9c32a60f9bc97693a6bd7b5ca87ec9fc
+Author: Steve Mao <maochenyan@gmail.com>
+Date:   Wed Mar 9 19:21:27 2016 +1100
+
+    0.6.2
+
+diff --git package.json package.json
+index 7379c98..3cba6ee 100644
+--- package.json
++++ package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "diff-so-fancy",
+-  "version": "0.6.1",
++  "version": "0.6.2",
+   "description": "Good-lookin' diffs with diff-highlight and more",
+   "bin": {
+     "diff-so-fancy": "diff-so-fancy",
