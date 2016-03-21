@@ -6,6 +6,9 @@
     "diff-so-fancy": "diff-so-fancy",
     "diff-highlight": "third_party/diff-highlight/diff-highlight"
   },
+  "scripts": {
+    "test": "bats test"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/so-fancy/diff-so-fancy.git"
