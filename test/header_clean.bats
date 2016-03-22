@@ -69,6 +69,15 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 	assert_output --partial '@ package.json:3 @'
 }
 
+@test "Three way merge" {
+	# stderr forced into output
+	output=$( load_fixture "complex-hunks" | $diff_so_fancy )
+	# Lines should not have + or - in at the start
+	refute_output --partial '-	my $foo = shift(); # Array passed in by reference'
+	refute_output --partial '+	my $array = shift(); # Array passed in by reference'
+	refute_output --partial ' sub parse_hunk_header {'
+}
+
 @test "mnemonicprefix handling" {
 	output=$( load_fixture "mnemonicprefix" | $diff_so_fancy )
 	assert_output --partial 'modified: test/header_clean.bats'
