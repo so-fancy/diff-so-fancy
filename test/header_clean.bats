@@ -63,6 +63,12 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
     refute_output --partial 'Use of uninitialized value'
 }
 
+@test "Hunk formatting: @@ -1,6 +1,6 @@" {
+	# stderr forced into output
+	output=$( load_fixture "first-three-line" | $diff_so_fancy )
+	assert_output --partial '@ package.json:3 @'
+}
+
 @test "mnemonicprefix handling" {
 	output=$( load_fixture "mnemonicprefix" | $diff_so_fancy )
 	assert_output --partial 'modified: test/header_clean.bats'
