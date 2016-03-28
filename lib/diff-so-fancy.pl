@@ -15,6 +15,8 @@ my $mark_empty_lines          = 1;
 
 my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
 my $dim_magenta      = "\e[38;5;146m";
+my $reset_color      = "\e[0m";
+my $bold             = "\e[1m";
 
 my @input = <>;
 clean_up_input(\@input);
@@ -75,7 +77,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 
 		# Figure out the start line
 		my $start_line = start_line_calc($new_offset,$new_count);
-		print "@ $last_file_seen:$start_line \@${dim_magenta}${remain}\n";
+		print "@ $last_file_seen:$start_line \@${bold}${dim_magenta}${remain}\n";
 	###################################
 	# Remove any new file permissions #
 	###################################
