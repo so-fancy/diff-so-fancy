@@ -82,3 +82,9 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 	output=$( load_fixture "mnemonicprefix" | $diff_so_fancy )
 	assert_output --partial 'modified: test/header_clean.bats'
 }
+
+@test "non-git diff parsing" {
+	output=$( load_fixture "weird" | $diff_so_fancy )
+	assert_output --partial 'modified: doc/manual.xml.head'
+	assert_output --partial '@ manual.xml.head:8355 @'
+}
