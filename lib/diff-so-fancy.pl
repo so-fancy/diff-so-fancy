@@ -21,7 +21,8 @@ my $bold             = "\e[1m";
 my @input = <>;
 clean_up_input(\@input);
 
-my ($file_1,$file_2,$last_file_seen);
+my ($file_1,$file_2);
+my $last_file_seen = "";
 for (my $i = 0; $i <= $#input; $i++) {
 	my $line = $input[$i];
 
@@ -34,16 +35,19 @@ for (my $i = 0; $i <= $#input; $i++) {
 	########################################
 	# Find the first file: --- a/README.md #
 	########################################
-	} elsif ($line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|$)/) {
+	} elsif ($line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
 		$file_1 = $5;
 
 		# Find the second file on the next line: +++ b/README.md
 		my $next = $input[++$i];
-		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|$)/;
+		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|\t|$)/;
 		if ($1) {
 			print $1; # Print out whatever color we're using
 		}
 		$file_2 = $5;
+		if ($file_2 ne "/dev/null") {
+			$last_file_seen = $file_2;
+		}
 
 		# If they're the same it's a modify
 		if ($file_1 eq $file_2) {
@@ -77,7 +81,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 
 		# Figure out the start line
 		my $start_line = start_line_calc($new_offset,$new_count);
-		print "@ $last_file_seen:$start_line \@${bold}${dim_magenta}${remain}\n";
+		print "@ $last_file_seen:$start_line \@${bold}${dim_magenta}${remain}${reset_color}\n";
 	###################################
 	# Remove any new file permissions #
 	###################################
