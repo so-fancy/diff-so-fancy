@@ -18,13 +18,38 @@ my $dim_magenta      = "\e[38;5;146m";
 my $reset_color      = "\e[0m";
 my $bold             = "\e[1m";
 
-my @input = <>;
-clean_up_input(\@input);
+my $columns_to_remove = 0;
 
 my ($file_1,$file_2);
 my $last_file_seen = "";
-for (my $i = 0; $i <= $#input; $i++) {
-	my $line = $input[$i];
+my $i = 0;
+
+while (my $line = <>) {
+
+	######################################################
+	# Pre-process the line before we do any other markup
+	######################################################
+
+	# If the first line of the input is a blank line, skip that
+	if ($i == 0 && $line =~ /^\s*$/) {
+		next;
+	}
+
+	# Mark empty line with a red/green box indicating addition/removal
+	if ($mark_empty_lines) {
+		$line = mark_empty_line($line);
+	}
+
+	# Remove the correct number of leading " " or "+" or "-"
+	if ($strip_leading_indicators) {
+		$line = strip_leading_indicators($line,$columns_to_remove);
+	}
+
+	######################
+	# End pre-processing
+	######################
+
+	#######################################################################
 
 	#########################
 	# Look for the filename #
@@ -35,12 +60,12 @@ for (my $i = 0; $i <= $#input; $i++) {
 	########################################
 	# Find the first file: --- a/README.md #
 	########################################
-	} elsif ($line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
+	} elsif ($line =~ /^$ansi_color_regex---* (\w\/)?(.+?)(\e|\t|$)/) {
 		$file_1 = $5;
 
 		# Find the second file on the next line: +++ b/README.md
-		my $next = $input[++$i];
-		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|\t|$)/;
+		my $next = <>;
+		$next    =~ /^$ansi_color_regex\+\+\+* (\w\/)?(.+?)(\e|\t|$)/;
 		if ($1) {
 			print $1; # Print out whatever color we're using
 		}
@@ -69,8 +94,9 @@ for (my $i = 0; $i <= $#input; $i++) {
 	# Check for "@@ -3,41 +3,63 @@" syntax #
 	########################################
 	} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
-		my $hunk_header  = $4;
-		my $remain       = bleach_text($5);
+		my $hunk_header    = $4;
+		my $remain         = bleach_text($5);
+		$columns_to_remove = (char_count(",",$hunk_header)) - 1;
 
 		if ($1) {
 			print $1; # Print out whatever color we're using
@@ -97,7 +123,7 @@ for (my $i = 0; $i <= $#input; $i++) {
 	#####################################################
 	} elsif ($clean_permission_changes && $line =~ /^${ansi_color_regex}old mode (\d+)/) {
 		my ($old_mode) = $4;
-		my $next = $input[++$i];
+		my $next = <>;
 
 		if ($1) {
 			print $1; # Print out whatever color we're using
@@ -111,7 +137,13 @@ for (my $i = 0; $i <= $#input; $i++) {
 	} else {
 		print $line;
 	}
+
+	$i++;
 }
+
+######################################################################################################
+# End regular code, begin functions
+######################################################################################################
 
 # Courtesy of github.com/git/git/blob/ab5d01a/git-add--interactive.perl#L798-L805
 sub parse_hunk_header {
@@ -122,48 +154,16 @@ sub parse_hunk_header {
 	return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
 }
 
-sub strip_empty_first_line {
-	my $array = shift(); # Array passed in by reference
-
-	# If the first line is just whitespace remove it
-	if (defined($array->[0]) && $array->[0] =~ /^\s*$/) {
-		shift(@$array); # Throw away the first line
-	}
-
-	return 1;
-}
-
-sub mark_empty_lines {
-	my $array = shift(); # Array passed in by reference
+sub mark_empty_line {
+	my $line = shift();
 
 	my $reset_color  = "\e\\[0?m";
 	my $reset_escape = "\e\[m";
 	my $invert_color = "\e\[7m";
 
-	foreach my $line (@$array) {
-		$line =~ s/^($ansi_color_regex)[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
-	}
+	$line =~ s/^($ansi_color_regex)[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
 
-	return 1;
-}
-
-sub clean_up_input {
-	my $input_array_ref = shift();
-
-	# Usually the first line of a diff is whitespace so we remove that
-	strip_empty_first_line($input_array_ref);
-
-	if ($mark_empty_lines) {
-		mark_empty_lines($input_array_ref);
-	}
-
-	# Remove + or - at the beginning of the lines
-	if ($strip_leading_indicators) {
-		strip_leading_indicators($input_array_ref);
-	}
-
-
-	return 1;
+	return $line;
 }
 
 # Return git config as a hash
@@ -212,29 +212,16 @@ sub start_line_calc {
 
 # Remove + or - at the beginning of the lines
 sub strip_leading_indicators {
-	my $array = shift();       # Array passed in by reference
-	my $columns_to_remove = 0; # Don't remove any lines by default
-
-	foreach my $line (@$array) {
-		# If the line is a hunk line, check for two-way vs three-way merge
-		# Two-way   = @@ -132,6 +132,9 @@
-		# Three-way = @@@ -48,10 -48,10 +48,15 @@@
-		if ($line =~ /^${ansi_color_regex}@@@* (.+?) @@@*/) {
-			$columns_to_remove = (char_count(",",$4)) - 1;
-			last;
-		}
-	}
+	my $line              = shift(); # Array passed in by reference
+	my $columns_to_remove = shift(); # Don't remove any lines by default
 
 	if ($columns_to_remove == 0) {
-		return 1; # Nothing to do
+		return $line; # Nothing to do
 	}
 
-	foreach my $line (@$array) {
-		# Remove a number of "+", "-", or spaces equal to the indent level
-		$line =~ s/^(${ansi_color_regex})[ +-]{${columns_to_remove}}/$1/;
-	}
+	$line =~ s/^(${ansi_color_regex})[ +-]{${columns_to_remove}}/$1/;
 
-	return 1;
+	return $line;
 }
 
 # Count the number of a given char in a string
