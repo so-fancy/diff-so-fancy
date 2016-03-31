@@ -213,7 +213,7 @@ sub start_line_calc {
 # Remove + or - at the beginning of the lines
 sub strip_leading_indicators {
 	my $array = shift();       # Array passed in by reference
-	my $columns_to_remove = 1; # Default to 1 (two-way merge)
+	my $columns_to_remove = 0; # Don't remove any lines by default
 
 	foreach my $line (@$array) {
 		# If the line is a hunk line, check for two-way vs three-way merge
@@ -223,6 +223,10 @@ sub strip_leading_indicators {
 			$columns_to_remove = (char_count(",",$4)) - 1;
 			last;
 		}
+	}
+
+	if ($columns_to_remove == 0) {
+		return 1; # Nothing to do
 	}
 
 	foreach my $line (@$array) {
