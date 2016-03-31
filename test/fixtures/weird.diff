@@ -1,0 +1,12 @@
+diff -r 62e478a3f1c8 -r 47aeb87ce9cd doc/manual.xml.head
+--- a/doc/manual.xml.head
++++ b/doc/manual.xml.head
+@@ -8352,7 +8352,7 @@
+ <row><entry>-a</entry><entry>attach a file to a message</entry></row>
+ <row><entry>-b</entry><entry>specify a blind carbon-copy (BCC) address</entry></row>
+ <row><entry>-c</entry><entry>specify a carbon-copy (Cc) address</entry></row>
+-<row><entry>-d</entry><entry>log debugging output to ~/.muttdebug0 if mutt was complied with +DEBUG; it can range from 1-5 and affects verbosity (a value of 2 is recommended)</entry></row>
++<row><entry>-d</entry><entry>log debugging output to ~/.muttdebug0 if mutt was compiled with +DEBUG; it can range from 1-5 and affects verbosity (a value of 2 is recommended)</entry></row>
+ <row><entry>-D</entry><entry>print the value of all Mutt variables to stdout</entry></row>
+ <row><entry>-E</entry><entry>edit the draft (-H) or include (-i) file</entry></row>
+ <row><entry>-e</entry><entry>specify a config command to be run after initialization files are read</entry></row>
