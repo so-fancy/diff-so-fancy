@@ -1,0 +1,13 @@
+diff --git i/lib/awful/widget/keyboardlayout.lua w/lib/awful/widget/keyboardlayout.lua
+index f9142b8..b6e8ce0 100644
+--- i/lib/awful/widget/keyboardlayout.lua
++++ w/lib/awful/widget/keyboardlayout.lua
+@@ -113,7 +113,7 @@ keyboardlayout.xkeyboard_country_code = {
+     ["za"] = true,    -- South Africa
+ }
+
+--- Callback for updaing current layout
++-- Callback for updating current layout.
+ local function update_status (self)
+     self._current = awesome.xkb_get_layout_group();
+     local text = ""
