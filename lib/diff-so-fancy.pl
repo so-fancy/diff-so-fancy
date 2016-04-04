@@ -40,11 +40,6 @@ while (my $line = <>) {
 		$line = mark_empty_line($line);
 	}
 
-	# Remove the correct number of leading " " or "+" or "-"
-	if ($strip_leading_indicators) {
-		$line = strip_leading_indicators($line,$columns_to_remove);
-	}
-
 	######################
 	# End pre-processing
 	######################
@@ -60,12 +55,12 @@ while (my $line = <>) {
 	########################################
 	# Find the first file: --- a/README.md #
 	########################################
-	} elsif ($line =~ /^$ansi_color_regex---* (\w\/)?(.+?)(\e|\t|$)/) {
+	} elsif ($line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
 		$file_1 = $5;
 
 		# Find the second file on the next line: +++ b/README.md
 		my $next = <>;
-		$next    =~ /^$ansi_color_regex\+\+\+* (\w\/)?(.+?)(\e|\t|$)/;
+		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|\t|$)/;
 		if ($1) {
 			print $1; # Print out whatever color we're using
 		}
@@ -135,6 +130,10 @@ while (my $line = <>) {
 	# Just a regular line, print it out #
 	#####################################
 	} else {
+		# Remove the correct number of leading " " or "+" or "-"
+		if ($strip_leading_indicators) {
+			$line = strip_leading_indicators($line,$columns_to_remove);
+		}
 		print $line;
 	}
 
