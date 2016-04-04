@@ -46,7 +46,7 @@ while (my $line = <>) {
 	#########################
 	if ($line =~ /^${ansi_color_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
 		$last_file_seen = $5;
-		$last_file_seen =~ s|a/||; # Remove a/
+		$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
 	########################################
 	# Find the first file: --- a/README.md #
 	########################################
