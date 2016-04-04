@@ -35,11 +35,6 @@ while (my $line = <>) {
 		next;
 	}
 
-	# Mark empty line with a red/green box indicating addition/removal
-	if ($mark_empty_lines) {
-		$line = mark_empty_line($line);
-	}
-
 	######################
 	# End pre-processing
 	######################
@@ -130,6 +125,11 @@ while (my $line = <>) {
 	# Just a regular line, print it out #
 	#####################################
 	} else {
+		# Mark empty line with a red/green box indicating addition/removal
+		if ($mark_empty_lines) {
+			$line = mark_empty_line($line);
+		}
+
 		# Remove the correct number of leading " " or "+" or "-"
 		if ($strip_leading_indicators) {
 			$line = strip_leading_indicators($line,$columns_to_remove);
