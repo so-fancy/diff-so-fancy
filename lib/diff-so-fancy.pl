@@ -23,6 +23,7 @@ my $columns_to_remove = 0;
 my ($file_1,$file_2);
 my $last_file_seen = "";
 my $i = 0;
+my $in_hunk = 0;
 
 while (my $line = <>) {
 
@@ -33,16 +34,6 @@ while (my $line = <>) {
 	# If the first line of the input is a blank line, skip that
 	if ($i == 0 && $line =~ /^\s*$/) {
 		next;
-	}
-
-	# Mark empty line with a red/green box indicating addition/removal
-	if ($mark_empty_lines) {
-		$line = mark_empty_line($line);
-	}
-
-	# Remove the correct number of leading " " or "+" or "-"
-	if ($strip_leading_indicators) {
-		$line = strip_leading_indicators($line,$columns_to_remove);
 	}
 
 	######################
@@ -56,16 +47,17 @@ while (my $line = <>) {
 	#########################
 	if ($line =~ /^${ansi_color_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
 		$last_file_seen = $5;
-		$last_file_seen =~ s|a/||; # Remove a/
+		$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
+		$in_hunk = 0;
 	########################################
 	# Find the first file: --- a/README.md #
 	########################################
-	} elsif ($line =~ /^$ansi_color_regex---* (\w\/)?(.+?)(\e|\t|$)/) {
+	} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
 		$file_1 = $5;
 
 		# Find the second file on the next line: +++ b/README.md
 		my $next = <>;
-		$next    =~ /^$ansi_color_regex\+\+\+* (\w\/)?(.+?)(\e|\t|$)/;
+		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|\t|$)/;
 		if ($1) {
 			print $1; # Print out whatever color we're using
 		}
@@ -94,6 +86,7 @@ while (my $line = <>) {
 	# Check for "@@ -3,41 +3,63 @@" syntax #
 	########################################
 	} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
+		$in_hunk = 1;
 		my $hunk_header    = $4;
 		my $remain         = bleach_text($5);
 		$columns_to_remove = (char_count(",",$hunk_header)) - 1;
@@ -135,6 +128,15 @@ while (my $line = <>) {
 	# Just a regular line, print it out #
 	#####################################
 	} else {
+		# Mark empty line with a red/green box indicating addition/removal
+		if ($mark_empty_lines) {
+			$line = mark_empty_line($line);
+		}
+
+		# Remove the correct number of leading " " or "+" or "-"
+		if ($strip_leading_indicators) {
+			$line = strip_leading_indicators($line,$columns_to_remove);
+		}
 		print $line;
 	}
 

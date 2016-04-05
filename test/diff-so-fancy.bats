@@ -51,3 +51,8 @@ if begin[m"
   assert_line --index 1 --partial "modified: fish/functions/ls.fish"
   assert_line --index 2 --partial "[1;33m─────"
 }
+
+@test "Leading dashes are not handled as modified" {
+  output=$( load_fixture "leading-dashes" | $diff_so_fancy )
+  refute_output --partial "modified: Callback"
+}

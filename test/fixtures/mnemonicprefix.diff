@@ -62,3 +62,10 @@
 [1;32m+[m	[1;32moutput=$( load_fixture "mnemonicprefix" | $diff_so_fancy )[m
 [1;32m+[m	[1;32massert_output --partial '@ setup-a-new-machine.sh:33 @'[m
 [1;32m+[m[1;32m}[m
+[38;5;11mdiff --git c/hello.txt i/hello.txt[m
+[38;5;11mdeleted file mode 100644[m
+[38;5;11mindex 0c767bc..0000000[m
+[38;5;11m--- c/hello.txt[m
+[38;5;11m+++ /dev/null[m
+[36m@@ -1 +0,0 @@[m
+[38;5;10m-[m[38;5;10mHI THERE[m
