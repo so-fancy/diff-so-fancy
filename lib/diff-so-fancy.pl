@@ -7,9 +7,9 @@ use File::Basename;
 my $remove_file_add_header    = 1;
 my $remove_file_delete_header = 1;
 my $clean_permission_changes  = 1;
-my $change_hunk_indicators    = 1;
-my $strip_leading_indicators  = 1;
-my $mark_empty_lines          = 1;
+my $change_hunk_indicators    = git_config_boolean("diff-so-fancy.changeHunkIndicators","true");
+my $strip_leading_indicators  = git_config_boolean("diff-so-fancy.stripLeadingSymbols","true");
+my $mark_empty_lines          = git_config_boolean("diff-so-fancy.markEmptyLines","true");
 
 #################################################################################
 
@@ -168,13 +168,95 @@ sub mark_empty_line {
 	return $line;
 }
 
+sub boolean {
+	my $str = shift();
+	$str    = trim($str);
+
+	if ($str eq "" || $str =~ /^(no|false|0)$/i) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+# Memoize getting the git config
+{
+	my $static_config;
+
+	sub git_config_raw {
+		if ($static_config) {
+			# If we already have the config return that
+			return $static_config;
+		}
+
+		my $cmd = "git config --list";
+		my @out = `$cmd`;
+
+		$static_config = \@out;
+
+		return \@out;
+	}
+}
+
+# Fetch a textual item from the git config
+sub git_config {
+	my $search_key    = lc($_[0] // "");
+	my $default_value = lc($_[1] // "");
+
+	my $out = git_config_raw();
+
+	# If we're in a unit test, use the default (don't read the users config)
+	if (in_unit_test()) {
+		return $default_value;
+	}
+
+	my $raw = {};
+	foreach my $line (@$out) {
+		my ($key,$value) = split("=",$line,2);
+		$value =~ s/\s+$//;
+
+		$raw->{$key} = $value;
+	}
+
+	# If we're given a search key return that, else return the hash
+	if ($search_key) {
+		return $raw->{$search_key} // $default_value;
+	} else {
+		return $raw;
+	}
+}
+
+# Fetch a boolean item from the git config
+sub git_config_boolean {
+	my $search_key    = lc($_[0] // "");
+	my $default_value = lc($_[1] // 0); # Default to false
+
+	# If we're in a unit test, use the default (don't read the users config)
+	if (in_unit_test()) {
+		return $default_value;
+	}
+
+	my $result = git_config($search_key,$default_value);
+	my $ret    = boolean($result);
+
+	return $ret;
+}
+
+# Check if we're inside of BATS
+sub in_unit_test {
+	if ($ENV{BATS_CWD}) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 # Return git config as a hash
-sub get_git_config {
-	my $cmd = "git config --list";
-	my @out = `$cmd`;
+sub get_git_config_hash {
+	my $out = git_config_raw();
 
 	my %hash;
-	foreach my $line (@out) {
+	foreach my $line (@$out) {
 		my ($key,$value) = split("=",$line,2);
 		$value =~ s/\s+$//;
 		my @path = split(/\./,$key);
@@ -246,4 +328,12 @@ sub bleach_text {
 	$str    =~ s/\e\[\d*(;\d+)*m//mg;
 
 	return $str;
+}
+
+sub trim {
+	my $s = shift();
+	if (!$s) { return ""; }
+	$s =~ s/^\s*|\s*$//g;
+
+	return $s;
 }
