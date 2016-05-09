@@ -71,6 +71,27 @@ If you want, you can choose to install manually:
 
 Note: The `diff-highlight` dependency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience. If you prefer less fancy in your diff, you also use diff-highlight [on it's own](https://news.ycombinator.com/item?id=11068436).
 
+## options
+
+### markEmptyLines
+
+Should the first block of an empty line be colored.
+
+### changeHunkIndicators
+
+Should the header of a hunk be changed.
+
+### stripLeadingSymbols
+
+Should the pesky `+` or `-` at line-start be removed.
+
+By default all the configs are true. You can turn any off by running:
+
+```
+git config --unset --global diff-so-fancy.markEmptyLines
+git config --unset --global diff-so-fancy.changeHunkIndicators
+git config --unset --global diff-so-fancy.stripLeadingSymbols
+```
 
 ## Pro-tips
 
