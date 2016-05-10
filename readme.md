@@ -79,13 +79,21 @@ Should the first block of an empty line be colored.
 
 ### changeHunkIndicators
 
-Should the header of a hunk be changed.
+Simplify git header chunks to a more human readable format.
 
 ### stripLeadingSymbols
 
 Should the pesky `+` or `-` at line-start be removed.
 
 By default all the configs are true. You can turn any off by running:
+
+```
+git config --bool --global diff-so-fancy.markEmptyLines false
+git config --bool --global diff-so-fancy.changeHunkIndicators false
+git config --bool --global diff-so-fancy.stripLeadingSymbols false
+```
+
+To reset them to default (`true`):
 
 ```
 git config --unset --global diff-so-fancy.markEmptyLines
