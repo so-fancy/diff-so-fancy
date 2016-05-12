@@ -212,10 +212,11 @@ sub git_config {
 
 	my $raw = {};
 	foreach my $line (@$out) {
-		my ($key,$value) = split("=",$line,2);
-		$value =~ s/\s+$//;
-
-		$raw->{$key} = $value;
+		if ($line =~ /=/) {
+			my ($key,$value) = split("=",$line,2);
+			$value =~ s/\s+$//;
+			$raw->{$key} = $value;
+		}
 	}
 
 	# If we're given a search key return that, else return the hash
