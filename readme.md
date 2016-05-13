@@ -3,7 +3,7 @@
 diff-so-fancy builds on the good-lookin' output of [git contrib](https://github.com/git/git/tree/master/contrib)'s [diff-highlight](https://github.com/git/git/tree/master/contrib/diff-highlight) to upgrade
 your diffs' appearances.
 
-* Output will not be in standard patch format, but will be readable.p
+* Output will not be in standard patch format, but will be readable.
 * No pesky `+` or `-` at line-start, making for easier copy-paste.
 
 ## Screenshot
