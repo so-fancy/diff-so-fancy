@@ -3,7 +3,7 @@
 diff-so-fancy builds on the good-lookin' output of [git contrib](https://github.com/git/git/tree/master/contrib)'s [diff-highlight](https://github.com/git/git/tree/master/contrib/diff-highlight) to upgrade
 your diffs' appearances.
 
-* Output will not be in standard patch format, but will be readable.
+* Output will not be in standard patch format, but will be readable.p
 * No pesky `+` or `-` at line-start, making for easier copy-paste.
 
 ## Screenshot
@@ -19,10 +19,11 @@ You can do one-off fanciness:
 git diff --color | diff-so-fancy
 ```
 
-**But**, you'll probably want to fancify all your diffs. Run this so `git diff` (and `git show`) will use it:
+**But**, you'll probably want to fancify all your diffs. Run this so `git diff` (and `git show` and `git log`) will use it:
 ```shell
 git config --global pager.diff "diff-so-fancy | less --tabs=4 -RFX"
 git config --global pager.show "diff-so-fancy | less --tabs=4 -RFX"
+git config --global pager.log "diff-so-fancy | less --tabs=4 -RFX"
 ```
 
 However, if you'd prefer to do the fanciness on-demand with `git dsf`, drop an alias in your `~/.gitconfig`:
