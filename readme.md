@@ -55,7 +55,6 @@ git config --global color.diff-highlight.newHighlight "green bold 22"
 ```
 You may also want to configure [general diff colors](https://github.com/paulirish/dotfiles/blob/63cb8193b0e66cf80ab6332477f1f52c7fbb9311/.gitconfig#L23-L36).
 
-
 ## Manual install
 
 If you want, you can choose to install manually:
@@ -63,7 +62,7 @@ If you want, you can choose to install manually:
 1. Grab the two scripts (`diff-highlight` and `diff-so-fancy`) via either downloading or cloning the repo.
 1. If you download `diff-highlight` from the official git repo, give it a `chmod +x`.
 1. Place them in a location that is in your `PATH` directly or with symlinks.
-1. Place `lib/diff-so-fancy.pl` in the same directory as `diff-so-fancy`.  You will end up something like this:
+1. Place `lib/diff-so-fancy.pl` in the same directory as `diff-so-fancy`. You will end up something like this:
    * `~/bin/diff-highlight`
    * `~/bin/diff-so-fancy`
    * `~/bin/lib/diff-so-fancy.pl`
@@ -150,7 +149,7 @@ Grab the output file and attach to the GitHub issue you create. A base64 version
 git clone https://github.com/so-fancy/diff-so-fancy/ && cd diff-so-fancy
 
 # test a saved diff against your local version
-cat test/fixtures/ls-function.diff  | ./diff-so-fancy
+cat test/fixtures/ls-function.diff | ./diff-so-fancy
 
 # setup symlinks to use local copy
 npm link
@@ -163,7 +162,7 @@ You'll need to install [bats](https://github.com/sstephenson/bats#installing-bat
 
 ```sh
 git submodule sync
-git submodule update --init  # pull in the assertion library, bats-assert
+git submodule update --init # pull in the assertion library, bats-assert
 
 # Run the test suite once:
 bats test
@@ -173,7 +172,6 @@ brew install entr
 ls --color=never diff-so-fancy test/*.bats | entr bats test
 ```
 When writing assertions, you'll likely want to compare to expected output. To grab that reliably, you can use something like `git --no-pager diff | diff-so-fancy > output.txt`
-
 
 You can lint your scripts via shellcheck, our CI bots will also check.
 
