@@ -19,10 +19,9 @@ You can do one-off fanciness:
 git diff --color | diff-so-fancy
 ```
 
-**But**, you'll probably want to fancify all your diffs. Run this so `git diff` (and `git show`) will use it:
+**But**, you'll probably want to fancify all your diffs. Run this so `git diff` will use it:
 ```shell
-git config --global pager.diff "diff-so-fancy | less --tabs=4 -RFX"
-git config --global pager.show "diff-so-fancy | less --tabs=4 -RFX"
+git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
 ```
 
 However, if you'd prefer to do the fanciness on-demand with `git dsf`, drop an alias in your `~/.gitconfig`:
@@ -66,7 +65,7 @@ If you want, you can choose to install manually:
    * `~/bin/diff-highlight`
    * `~/bin/diff-so-fancy`
    * `~/bin/lib/diff-so-fancy.pl`
-1. Set up the git `pager.diff` and `pager.show` configs, as described above.
+1. Set up the git `core.pager` config, as described above.
 
 Note: The `diff-highlight` dependency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience. If you prefer less fancy in your diff, you also use diff-highlight [on it's own](https://news.ycombinator.com/item?id=11068436).
 
