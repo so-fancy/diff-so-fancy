@@ -121,6 +121,12 @@ while (my $line = <>) {
 	######################################
 	} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
 		# Don't print the line (i.e. remove it from the output);
+	######################################
+	# Look for binary file changes
+	######################################
+	} elsif ($line =~ /Binary files \w\/(.+?) and \w\/(.+?) differ/) {
+		print "${horizontal_color}modified: $2 (binary)\n";
+		print horizontal_rule($horizontal_color);
 	#####################################################
 	# Check if we're changing the permissions of a file #
 	#####################################################
