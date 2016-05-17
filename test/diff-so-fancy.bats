@@ -4,6 +4,7 @@ load 'test_helper/bats-support/load'
 load 'test_helper/bats-assert/load'
 load 'test_helper/util'
 
+set_env
 
 # bats fails to handle our multiline result, so we save to $output ourselves
 output=$( load_fixture "ls-function" | $diff_so_fancy )
@@ -50,6 +51,18 @@ if begin[m"
   assert_line --index 0 --partial "[1;33m─────"
   assert_line --index 1 --partial "modified: fish/functions/ls.fish"
   assert_line --index 2 --partial "[1;33m─────"
+}
+
+# see https://git.io/vrOF4
+@test "Should not show unicode bytes in hex if missing LC_*/LANG _and_ piping the output" {
+  unset LESSCHARSET LESSCHARDEF LC_ALL LC_CTYPE LANG
+  # pipe to cat(1) so we don't open stdout
+  header=$( printf "%s" "$(load_fixture "ls-function" | $diff_so_fancy | cat)" | head -n3 )
+  run printf "%s" "$header"
+  assert_line --index 0 --partial "[1;33m-----"
+  assert_line --index 1 --partial "modified: fish/functions/ls.fish"
+  assert_line --index 2 --partial "[1;33m-----"
+  set_env # reset env
 }
 
 @test "Leading dashes are not handled as modified" {
