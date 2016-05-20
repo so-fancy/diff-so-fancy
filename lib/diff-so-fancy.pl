@@ -32,7 +32,7 @@ my $in_hunk = 0;
 while (my $line = <>) {
 
 	######################################################
-	# Pre-process the line before we do any other markup
+	# Pre-process the line before we do any other markup #
 	######################################################
 
 	# If the first line of the input is a blank line, skip that
@@ -41,11 +41,14 @@ while (my $line = <>) {
 	}
 
 	######################
-	# End pre-processing
+	# End pre-processing #
 	######################
 
 	#######################################################################
 
+	####################################################################
+	# Look for git index and replace it horizontal line (header later) #
+	####################################################################
 	if ($line =~ /^${ansi_color_regex}index /) {
 		# Print the line color and then the actual line
 		$horizontal_color = $1;
@@ -91,6 +94,7 @@ while (my $line = <>) {
 			print "$file_1 -> $file_2\n";
 		}
 
+		# Print out the bottom horizontal line of the header
 		print horizontal_rule($horizontal_color);
 	########################################
 	# Check for "@@ -3,41 +3,63 @@" syntax #
@@ -172,6 +176,7 @@ sub parse_hunk_header {
 	return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
 }
 
+# Mark the first char of an empty line
 sub mark_empty_line {
 	my $line = shift();
 
@@ -184,6 +189,7 @@ sub mark_empty_line {
 	return $line;
 }
 
+# String to boolean
 sub boolean {
 	my $str = shift();
 	$str    = trim($str);
@@ -340,6 +346,7 @@ sub char_count {
 	return $ret;
 }
 
+# Remove all ANSI codes from a string
 sub bleach_text {
 	my $str = shift();
 	$str    =~ s/\e\[\d*(;\d+)*m//mg;
@@ -347,6 +354,7 @@ sub bleach_text {
 	return $str;
 }
 
+# Remove all trailing and leading spaces
 sub trim {
 	my $s = shift();
 	if (!$s) { return ""; }
@@ -355,7 +363,7 @@ sub trim {
 	return $s;
 }
 
-
+# Print a line of em-dash or line-drawing chars the full width of the screen
 sub horizontal_rule {
 	my $color = $_[0] || "";
 	my $width = `tput cols`;
