@@ -1,0 +1,21 @@
+[1;33mdiff --git a/cancel.png b/cancel.png[m
+[1;33mindex 667e10c..06fc49c 100644[m
+Binary files a/cancel.png and b/cancel.png differ
+[1;33mdiff --git a/diff-so-fancy b/diff-so-fancy[m
+[1;33mindex 0f2911c..5811717 100755[m
+[1;33m--- a/diff-so-fancy[m
+[1;33m+++ b/diff-so-fancy[m
+[1;35m@@ -32,13 +32,6 @@[m [mcolor_code_regex="(${CSI}([0-9]{1,3}(;[0-9]{1,3}){0,3})[m|K])?"[m
+ [m
+ git_index_line_pattern="^($color_code_regex)index .*"[m
+ [m
+[1;31m-format_diff_header () {[m
+[1;31m-  # simplify the unified patch diff header[m
+[1;31m-    $SED -E "/$git_index_line_pattern/{N;s/$git_index_line_pattern\n//;}" \[m
+[1;31m-    | $SED -E "s/^($color_code_regex)\-\-\-(.*)$/\1$(print_horizontal_rule)\\${NL}\1---\5/g" \[m
+[1;31m-    | $SED -E "s/^($color_code_regex)\+\+\+(.*)$/\1+++\5\\${NL}\1$(print_horizontal_rule)/g"[m
+[1;31m-}[m
+[1;31m-[m
+ print_horizontal_rule () {[m
+   let width="$(tput cols)"[m
+ [m

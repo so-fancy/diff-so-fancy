@@ -4,6 +4,9 @@ use strict;
 use warnings FATAL => 'all';
 use File::Basename;
 
+use utf8;
+binmode STDOUT,':utf8';
+
 my $remove_file_add_header    = 1;
 my $remove_file_delete_header = 1;
 my $clean_permission_changes  = 1;
@@ -17,6 +20,7 @@ my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
 my $dim_magenta      = "\e[38;5;146m";
 my $reset_color      = "\e[0m";
 my $bold             = "\e[1m";
+my $horizontal_color = "";
 
 my $columns_to_remove = 0;
 
@@ -28,7 +32,7 @@ my $in_hunk = 0;
 while (my $line = <>) {
 
 	######################################################
-	# Pre-process the line before we do any other markup
+	# Pre-process the line before we do any other markup #
 	######################################################
 
 	# If the first line of the input is a blank line, skip that
@@ -37,15 +41,22 @@ while (my $line = <>) {
 	}
 
 	######################
-	# End pre-processing
+	# End pre-processing #
 	######################
 
 	#######################################################################
 
+	####################################################################
+	# Look for git index and replace it horizontal line (header later) #
+	####################################################################
+	if ($line =~ /^${ansi_color_regex}index /) {
+		# Print the line color and then the actual line
+		$horizontal_color = $1;
+		print horizontal_rule($horizontal_color);
 	#########################
 	# Look for the filename #
 	#########################
-	if ($line =~ /^${ansi_color_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
+	} elsif ($line =~ /^${ansi_color_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
 		$last_file_seen = $5;
 		$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
 		$in_hunk = 0;
@@ -82,6 +93,9 @@ while (my $line = <>) {
 		} else {
 			print "$file_1 -> $file_2\n";
 		}
+
+		# Print out the bottom horizontal line of the header
+		print horizontal_rule($horizontal_color);
 	########################################
 	# Check for "@@ -3,41 +3,63 @@" syntax #
 	########################################
@@ -111,6 +125,12 @@ while (my $line = <>) {
 	######################################
 	} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
 		# Don't print the line (i.e. remove it from the output);
+	######################################
+	# Look for binary file changes
+	######################################
+	} elsif ($line =~ /Binary files \w\/(.+?) and \w\/(.+?) differ/) {
+		print "${horizontal_color}modified: $2 (binary)\n";
+		print horizontal_rule($horizontal_color);
 	#####################################################
 	# Check if we're changing the permissions of a file #
 	#####################################################
@@ -156,6 +176,7 @@ sub parse_hunk_header {
 	return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
 }
 
+# Mark the first char of an empty line
 sub mark_empty_line {
 	my $line = shift();
 
@@ -168,6 +189,7 @@ sub mark_empty_line {
 	return $line;
 }
 
+# String to boolean
 sub boolean {
 	my $str = shift();
 	$str    = trim($str);
@@ -324,6 +346,7 @@ sub char_count {
 	return $ret;
 }
 
+# Remove all ANSI codes from a string
 sub bleach_text {
 	my $str = shift();
 	$str    =~ s/\e\[\d*(;\d+)*m//mg;
@@ -331,10 +354,32 @@ sub bleach_text {
 	return $str;
 }
 
+# Remove all trailing and leading spaces
 sub trim {
 	my $s = shift();
 	if (!$s) { return ""; }
 	$s =~ s/^\s*|\s*$//g;
 
 	return $s;
+}
+
+# Print a line of em-dash or line-drawing chars the full width of the screen
+sub horizontal_rule {
+	my $color = $_[0] || "";
+	my $width = `tput cols`;
+	my $uname = `uname -s`;
+
+	if ($uname =~ /MINGW32|MSYS/) {
+		$width--;
+	}
+
+	# em-dash http://www.fileformat.info/info/unicode/char/2014/index.htm
+	#my $dash = "\x{2014}";
+	# BOX DRAWINGS LIGHT HORIZONTAL http://www.fileformat.info/info/unicode/char/2500/index.htm
+	my $dash = "\x{2500}";
+
+	# Draw the line
+	my $ret = $color . ($dash x $width) . "\n";
+
+	return $ret;
 }

@@ -56,3 +56,9 @@ if begin[m"
   output=$( load_fixture "leading-dashes" | $diff_so_fancy )
   refute_output --partial "modified: Callback"
 }
+
+@test "Handle binary modifications" {
+  output=$( load_fixture "binary-modified" | $diff_so_fancy )
+  run printf "%s" "$output"
+  assert_line --index 1 --partial "modified: cancel.png (binary)";
+}
