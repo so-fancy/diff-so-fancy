@@ -62,3 +62,9 @@ if begin[m"
   run printf "%s" "$output"
   assert_line --index 1 --partial "modified: cancel.png (binary)";
 }
+
+@test "Handle unicode characters in diff output" {
+  output=$( load_fixture "unicode" | $diff_so_fancy )
+  run printf "%s" "$output"
+  assert_line --index 5 --partial "åäöç"
+}

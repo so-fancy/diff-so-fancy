@@ -5,6 +5,7 @@ use warnings FATAL => 'all';
 use File::Basename;
 
 use utf8;
+use open qw(:std :utf8); # http://stackoverflow.com/a/519359
 binmode STDOUT,':utf8';
 
 my $remove_file_add_header    = 1;
