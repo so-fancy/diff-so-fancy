@@ -6,6 +6,10 @@ load_fixture() {
   cat "$BATS_TEST_DIRNAME/fixtures/${name}.diff"
 }
 
+set_env() {
+  export LC_CTYPE="en_US.UTF-8"
+}
+
 
 # applying colors so ANSI color values will match
 # FIXME: not everyone will have these set, so we need to test for that.

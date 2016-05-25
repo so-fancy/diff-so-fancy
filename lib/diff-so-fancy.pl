@@ -275,6 +275,22 @@ sub in_unit_test {
 	}
 }
 
+sub get_less_charset {
+	my @less_char_vars = ("LESSCHARSET", "LESSCHARDEF", "LC_ALL", "LC_CTYPE", "LANG");
+	foreach (@less_char_vars) {
+		return $ENV{$_} if defined $ENV{$_};
+	}
+}
+
+sub should_print_unicode {
+	if (-t STDOUT) {
+		# Always print unicode chars if we're not piping stuff, e.g. to less(1)
+		return 1;
+	}
+	# Otherwise, assume we're piping to less(1)
+	return get_less_charset() =~ /utf-?8/i;
+}
+
 # Return git config as a hash
 sub get_git_config_hash {
 	my $out = git_config_raw();
@@ -377,7 +393,12 @@ sub horizontal_rule {
 	# em-dash http://www.fileformat.info/info/unicode/char/2014/index.htm
 	#my $dash = "\x{2014}";
 	# BOX DRAWINGS LIGHT HORIZONTAL http://www.fileformat.info/info/unicode/char/2500/index.htm
-	my $dash = "\x{2500}";
+	my $dash;
+	if (should_print_unicode()) {
+		$dash = "\x{2500}";
+	} else {
+		$dash = "-";
+	}
 
 	# Draw the line
 	my $ret = $color . ($dash x $width) . "\n";
