@@ -9,9 +9,9 @@ load 'test_helper/util'
 output=$( load_fixture "ls-function" | $diff_so_fancy )
 
 
-setup(){
+setup() {
   users_path=$PATH
-  mv $BATS_TEST_DIRNAME/../third_party/diff-highlight/diff-highlight $BATS_TEST_DIRNAME
+  mv "$BATS_TEST_DIRNAME/../third_party/diff-highlight/diff-highlight" "$BATS_TEST_DIRNAME"
   export PATH=$BATS_TEST_DIRNAME:$PATH
 }
 
@@ -20,7 +20,7 @@ setup(){
   assert_output --partial 'eval [m[1;32;48;5;22m$ls $param "[m[1;32m$argv"[m'
 }
 
-teardown(){
+teardown() {
   export PATH=$users_path
-  mv $BATS_TEST_DIRNAME/diff-highlight $BATS_TEST_DIRNAME/../third_party/diff-highlight
+  mv "$BATS_TEST_DIRNAME/diff-highlight" "$BATS_TEST_DIRNAME/../third_party/diff-highlight"
 }
