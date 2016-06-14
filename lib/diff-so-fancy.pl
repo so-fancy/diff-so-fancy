@@ -78,7 +78,7 @@ while (my $line = <>) {
 			$last_file_seen = $file_2;
 		}
 
-		print "${\file_change_string($file_1,$file_2)}\n";
+		print file_change_string($file_1,$file_2) . "\n";
 
 		# Print out the bottom horizontal line of the header
 		print horizontal_rule($horizontal_color);
@@ -115,7 +115,8 @@ while (my $line = <>) {
 	# Look for binary file changes #
 	################################
 	} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
-		print "${horizontal_color}${\file_change_string($2,$4)} (binary)\n";
+		my $change = file_change_string($2,$4);
+		print "$horizontal_color$change (binary)\n";
 		print horizontal_rule($horizontal_color);
 	#####################################################
 	# Check if we're changing the permissions of a file #
