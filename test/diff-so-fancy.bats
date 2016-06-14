@@ -81,3 +81,9 @@ if begin[m"
   run printf "%s" "$output"
   assert_line --index 5 --partial "åäöç"
 }
+
+@test "Handle latin1 encoding sanely" {
+  output=$( load_fixture "latin1" | $diff_so_fancy )
+  # Make sure the output contains SOME of the english text (i.e. it doesn't barf on the whole line)
+  assert_output --partial "saw he conqu"
+}
