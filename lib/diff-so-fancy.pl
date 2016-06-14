@@ -78,22 +78,7 @@ while (my $line = <>) {
 			$last_file_seen = $file_2;
 		}
 
-		# If they're the same it's a modify
-		if ($file_1 eq $file_2) {
-			print "modified: $file_1\n";
-		# If the first is /dev/null it's a new file
-		} elsif ($file_1 eq "/dev/null") {
-			print "added: $file_2\n";
-		# If the second is /dev/null it's a deletion
-		} elsif ($file_2 eq "/dev/null") {
-			print "deleted: $file_1\n";
-		# If the files aren't the same it's a rename
-		} elsif ($file_1 ne $file_2) {
-			print "renamed: $file_1 to $file_2\n";
-		# Something we haven't thought of yet
-		} else {
-			print "$file_1 -> $file_2\n";
-		}
+		print "${\file_change_string($file_1,$file_2)}\n";
 
 		# Print out the bottom horizontal line of the header
 		print horizontal_rule($horizontal_color);
@@ -126,11 +111,11 @@ while (my $line = <>) {
 	######################################
 	} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
 		# Don't print the line (i.e. remove it from the output);
-	######################################
-	# Look for binary file changes
-	######################################
-	} elsif ($line =~ /Binary files \w\/(.+?) and \w\/(.+?) differ/) {
-		print "${horizontal_color}modified: $2 (binary)\n";
+	################################
+	# Look for binary file changes #
+	################################
+	} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
+		print "${horizontal_color}${\file_change_string($2,$4)} (binary)\n";
 		print horizontal_rule($horizontal_color);
 	#####################################################
 	# Check if we're changing the permissions of a file #
@@ -404,4 +389,26 @@ sub horizontal_rule {
 	my $ret = $color . ($dash x $width) . "\n";
 
 	return $ret;
+}
+
+sub file_change_string {
+	my $file_1 = shift();
+	my $file_2 = shift();
+
+	# If they're the same it's a modify
+	if ($file_1 eq $file_2) {
+		return "modified: $file_1";
+	# If the first is /dev/null it's a new file
+	} elsif ($file_1 eq "/dev/null") {
+		return "added: $file_2";
+	# If the second is /dev/null it's a deletion
+	} elsif ($file_2 eq "/dev/null") {
+		return "deleted: $file_1";
+	# If the files aren't the same it's a rename
+	} elsif ($file_1 ne $file_2) {
+		return "renamed: $file_1 to $file_2";
+	# Something we haven't thought of yet
+	} else {
+		return "$file_1 -> $file_2";
+	}
 }
