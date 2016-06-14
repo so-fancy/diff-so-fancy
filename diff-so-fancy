@@ -23,11 +23,11 @@ else
 fi
 
 print_header_clean () {
-  "$(get_script_dir)/lib/diff-so-fancy.pl"
+  exec "$(get_script_dir)/lib/diff-so-fancy.pl" "$@"
 }
 
 # run it.
 # shellcheck disable=SC2002
 cat $input \
   | $diff_highlight \
-  | print_header_clean
+  | print_header_clean "$@"
