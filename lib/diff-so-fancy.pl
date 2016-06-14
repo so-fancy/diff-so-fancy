@@ -22,22 +22,29 @@ my $dim_magenta      = "\e[38;5;146m";
 my $reset_color      = "\e[0m";
 my $bold             = "\e[1m";
 my $horizontal_color = "";
+my $args             = join(" ",@ARGV);
 
 my $columns_to_remove = 0;
+my $line_num          = 0;
+my $in_hunk           = 0;
+my $patch_mode        = 0;
+
+# If --patch-mode is set at the CLI we add extra \n for line count
+if ($args =~ /--patch-mode/) {
+	$patch_mode = 1;
+}
 
 my ($file_1,$file_2);
 my $last_file_seen = "";
-my $i = 0;
-my $in_hunk = 0;
 
-while (my $line = <>) {
+while (my $line = <STDIN>) {
 
 	######################################################
 	# Pre-process the line before we do any other markup #
 	######################################################
 
 	# If the first line of the input is a blank line, skip that
-	if ($i == 0 && $line =~ /^\s*$/) {
+	if ($line_num == 0 && $line =~ /^\s*$/) {
 		next;
 	}
 
@@ -68,7 +75,7 @@ while (my $line = <>) {
 		$file_1 = $5;
 
 		# Find the second file on the next line: +++ b/README.md
-		my $next = <>;
+		my $next = <STDIN>;
 		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|\t|$)/;
 		if ($1) {
 			print $1; # Print out whatever color we're using
@@ -82,6 +89,10 @@ while (my $line = <>) {
 
 		# Print out the bottom horizontal line of the header
 		print horizontal_rule($horizontal_color);
+
+		if ($patch_mode) {
+			print "\n";
+		}
 	########################################
 	# Check for "@@ -3,41 +3,63 @@" syntax #
 	########################################
@@ -118,6 +129,10 @@ while (my $line = <>) {
 		my $change = file_change_string($2,$4);
 		print "$horizontal_color$change (binary)\n";
 		print horizontal_rule($horizontal_color);
+
+		if ($patch_mode) {
+			print "\n";
+		}
 	#####################################################
 	# Check if we're changing the permissions of a file #
 	#####################################################
@@ -147,7 +162,7 @@ while (my $line = <>) {
 		print $line;
 	}
 
-	$i++;
+	$line_num++;
 }
 
 ######################################################################################################
