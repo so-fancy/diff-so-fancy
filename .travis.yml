@@ -1,4 +1,4 @@
-language: bash
+language: perl
 before_install:
   - git clone --depth 1 https://github.com/sstephenson/bats.git
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
@@ -10,9 +10,12 @@ before_install:
       sudo apt-get -y update;
       sudo apt-get -y install shellcheck;
     fi
+install:
+  - "cpanm --quiet --notest Test::Perl::Critic"
 script:
   - ./bats/bin/bats test/*.bats
   - shellcheck diff-so-fancy update-deps.sh
+  - perlcritic -1 -q lib/diff-so-fancy.pl
 os:
   - linux
   - osx
