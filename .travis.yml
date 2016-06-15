@@ -1,12 +1,15 @@
-language: generic
+os: linux
+language: perl
+perl:
+  - 5.18
+  - 5.14
 
 matrix:
   include:
     - os: osx
       osx_image: xcode7.3
-    - os: linux
-      language: perl
-      perl: 5.18
+      language: generic
+      perl: 5.24
 
 before_install:
   - git clone --depth 1 https://github.com/sstephenson/bats.git
