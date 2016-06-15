@@ -165,7 +165,9 @@ while (my $line = <STDIN>) {
 	$line_num++;
 }
 
-print "\n";
+if ($patch_mode) {
+    print "\n";
+}
 
 ######################################################################################################
 # End regular code, begin functions
