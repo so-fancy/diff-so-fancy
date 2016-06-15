@@ -9,7 +9,7 @@ use open qw(:std :utf8); # http://stackoverflow.com/a/519359
 no warnings 'utf8';
 
 # Set the output to always be UTF8
-binmode STDOUT,':utf8';
+binmode STDOUT,':encoding(UTF-8)';
 
 my $remove_file_add_header    = 1;
 my $remove_file_delete_header = 1;
