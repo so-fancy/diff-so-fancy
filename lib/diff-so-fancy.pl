@@ -269,6 +269,8 @@ sub get_less_charset {
 	foreach (@less_char_vars) {
 		return $ENV{$_} if defined $ENV{$_};
 	}
+
+	return "";
 }
 
 sub should_print_unicode {
@@ -276,8 +278,14 @@ sub should_print_unicode {
 		# Always print unicode chars if we're not piping stuff, e.g. to less(1)
 		return 1;
 	}
+
 	# Otherwise, assume we're piping to less(1)
-	return get_less_charset() =~ /utf-?8/i;
+	my $less_charset = get_less_charset();
+	if ($less_charset =~ /utf-?8/i) {
+		return 1;
+	}
+
+	return 0;
 }
 
 # Return git config as a hash
