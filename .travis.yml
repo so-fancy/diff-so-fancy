@@ -11,11 +11,16 @@ before_install:
       sudo apt-get -y install shellcheck;
     fi
 install:
-  - "cpanm --quiet --notest Test::Perl::Critic"
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib);
+      cpanm --quiet --notest Test::Perl::Critic Perl::Critic::Freenode
+    fi
 script:
   - ./bats/bin/bats test/*.bats
   - shellcheck diff-so-fancy update-deps.sh
-  - perlcritic -1 -q lib/diff-so-fancy.pl
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      perlcritic -1 -q --theme freenode lib/diff-so-fancy.pl;
+    fi
 os:
   - linux
   - osx
