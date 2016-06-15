@@ -1,12 +1,15 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use strict;
 use warnings FATAL => 'all';
 use File::Basename;
 
-use utf8;
+# Set the input (STDIN) as UTF8, but don't give warnings about unknown chars
 use open qw(:std :utf8); # http://stackoverflow.com/a/519359
-binmode STDOUT,':utf8';
+no warnings 'utf8';
+
+# Set the output to always be UTF8
+binmode STDOUT,':encoding(UTF-8)';
 
 my $remove_file_add_header    = 1;
 my $remove_file_delete_header = 1;
@@ -138,7 +141,7 @@ while (my $line = <STDIN>) {
 	#####################################################
 	} elsif ($clean_permission_changes && $line =~ /^${ansi_color_regex}old mode (\d+)/) {
 		my ($old_mode) = $4;
-		my $next = <>;
+		my $next = <STDIN>;
 
 		if ($1) {
 			print $1; # Print out whatever color we're using
@@ -285,6 +288,8 @@ sub get_less_charset {
 	foreach (@less_char_vars) {
 		return $ENV{$_} if defined $ENV{$_};
 	}
+
+	return "";
 }
 
 sub should_print_unicode {
@@ -292,8 +297,14 @@ sub should_print_unicode {
 		# Always print unicode chars if we're not piping stuff, e.g. to less(1)
 		return 1;
 	}
+
 	# Otherwise, assume we're piping to less(1)
-	return get_less_charset() =~ /utf-?8/i;
+	my $less_charset = get_less_charset();
+	if ($less_charset =~ /utf-?8/i) {
+		return 1;
+	}
+
+	return 0;
 }
 
 # Return git config as a hash
