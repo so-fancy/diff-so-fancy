@@ -241,8 +241,8 @@ sub git_config {
 
 # Fetch a boolean item from the git config
 sub git_config_boolean {
-	my $search_key    = lc($_[0] // "");
-	my $default_value = lc($_[1] // 0); # Default to false
+	my $search_key    = lc($_[0] || "");
+	my $default_value = lc($_[1] || 0); # Default to false
 
 	# If we're in a unit test, use the default (don't read the users config)
 	if (in_unit_test()) {
