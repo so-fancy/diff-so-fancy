@@ -160,7 +160,7 @@ while (my $line = <>) {
 # Courtesy of github.com/git/git/blob/ab5d01a/git-add--interactive.perl#L798-L805
 sub parse_hunk_header {
 	my ($line) = @_;
-	my ($o_ofs, $o_cnt, $n_ofs, $n_cnt) = $line =~ /^@@+(?: -(\d+)(?:,(\d+))?)+ \+(\d+)(?:,(\d+))? @@+/;
+	my ($o_ofs, $o_cnt, $n_ofs, $n_cnt) = $line =~ /^\@\@+(?: -(\d+)(?:,(\d+))?)+ \+(\d+)(?:,(\d+))? \@\@+/;
 	$o_cnt = 1 unless defined $o_cnt;
 	$n_cnt = 1 unless defined $n_cnt;
 	return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
