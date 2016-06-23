@@ -212,8 +212,8 @@ sub boolean {
 
 # Fetch a textual item from the git config
 sub git_config {
-	my $search_key    = lc($_[0] // "");
-	my $default_value = lc($_[1] // "");
+	my $search_key    = lc($_[0] || "");
+	my $default_value = lc($_[1] || "");
 
 	my $out = git_config_raw();
 
@@ -233,7 +233,7 @@ sub git_config {
 
 	# If we're given a search key return that, else return the hash
 	if ($search_key) {
-		return $raw->{$search_key} // $default_value;
+		return $raw->{$search_key} || $default_value;
 	} else {
 		return $raw;
 	}
@@ -300,7 +300,7 @@ sub get_git_config_hash {
 
 		my $last = pop @path;
 		my $p = \%hash;
-		$p = $p->{$_} //= {} for @path;
+		$p = $p->{$_} ||= {} for @path;
 		$p->{$last} = $value;
 	}
 
