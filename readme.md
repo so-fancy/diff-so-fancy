@@ -84,12 +84,18 @@ Simplify git header chunks to a more human readable format.
 
 Should the pesky `+` or `-` at line-start be removed.
 
+### useUnicodeRuler
+
+Should the horizonal line above and below the name of the changed file be displayed using unicode.  
+Try setting this to `false` if those lines are displayed to long to fit your screen.
+
 By default all the configs are true. You can turn any off by running:
 
 ```
 git config --bool --global diff-so-fancy.markEmptyLines false
 git config --bool --global diff-so-fancy.changeHunkIndicators false
 git config --bool --global diff-so-fancy.stripLeadingSymbols false
+git config --bool --global diff-so-fancy.useUnicodeRuler false
 ```
 
 To reset them to default (`true`):
@@ -98,6 +104,7 @@ To reset them to default (`true`):
 git config --unset --global diff-so-fancy.markEmptyLines
 git config --unset --global diff-so-fancy.changeHunkIndicators
 git config --unset --global diff-so-fancy.stripLeadingSymbols
+git config --unset --global diff-so-fancy.useUnicodeRuler
 ```
 
 ## Pro-tips
