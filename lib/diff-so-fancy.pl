@@ -11,12 +11,13 @@ no warnings 'utf8';
 # Set the output to always be UTF8
 binmode STDOUT,':encoding(UTF-8)';
 
-my $remove_file_add_header    = 1;
-my $remove_file_delete_header = 1;
-my $clean_permission_changes  = 1;
-my $change_hunk_indicators    = git_config_boolean("diff-so-fancy.changeHunkIndicators","true");
-my $strip_leading_indicators  = git_config_boolean("diff-so-fancy.stripLeadingSymbols","true");
-my $mark_empty_lines          = git_config_boolean("diff-so-fancy.markEmptyLines","true");
+my $remove_file_add_header     = 1;
+my $remove_file_delete_header  = 1;
+my $clean_permission_changes   = 1;
+my $change_hunk_indicators     = git_config_boolean("diff-so-fancy.changeHunkIndicators","true");
+my $strip_leading_indicators   = git_config_boolean("diff-so-fancy.stripLeadingSymbols","true");
+my $mark_empty_lines           = git_config_boolean("diff-so-fancy.markEmptyLines","true");
+my $use_unicode_dash_for_ruler = git_config_boolean("diff-so-fancy.useUnicodeRuler","true");
 
 #################################################################################
 
@@ -391,7 +392,7 @@ sub horizontal_rule {
 	#my $dash = "\x{2014}";
 	# BOX DRAWINGS LIGHT HORIZONTAL http://www.fileformat.info/info/unicode/char/2500/index.htm
 	my $dash;
-	if (should_print_unicode()) {
+	if ($use_unicode_dash_for_ruler && should_print_unicode()) {
 		$dash = "\x{2500}";
 	} else {
 		$dash = "-";
