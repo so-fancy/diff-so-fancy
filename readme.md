@@ -86,8 +86,8 @@ Should the pesky `+` or `-` at line-start be removed.
 
 ### useUnicodeRuler
 
-Should the horizonal line above and below the name of the changed file be displayed using unicode.  
-Try setting this to `false` if those lines are displayed to long to fit your screen.
+By default the separator for the file header uses unicode line drawing characters.  
+If this is causing output errors on your terminal set this to `false` to use ASCII characters instead.
 
 By default all the configs are true. You can turn any off by running:
 
