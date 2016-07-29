@@ -119,7 +119,12 @@ git --no-pager diff
 
 #### Moving around in the diff
 
-You can pre-seed your `less` pager with a search pattern, so you can move between files with `n`/`p` keys. Add `--pattern='^(Date|added|deleted|modified): '` to the end of the less flags for your git pager config.
+You can pre-seed your `less` pager with a search pattern, so you can move
+between files with `n`/`p` keys:
+```ini
+[pager]
+    diff = diff-so-fancy | less --tabs=4 -RFX --pattern'^(Date|added|deleted|modified): '
+```
 
 ## History
 
