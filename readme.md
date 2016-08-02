@@ -19,7 +19,7 @@ You can do one-off fanciness:
 git diff --color | diff-so-fancy
 ```
 
-**But**, you'll probably want to fancify all your diffs. Run this so `git diff` will use it:
+**But**, you'll probably want to fancify all your diffs. Set your `core.pager` to run `diff-so-fancy`, and pipe the output through your existing pager, or if unset we recommend `less --tabs=4 -RFX`:
 ```shell
 git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
 ```
