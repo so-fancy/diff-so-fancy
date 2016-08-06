@@ -27,11 +27,13 @@ print_header_clean () {
   "$(get_script_dir)/lib/diff-so-fancy.pl"
 }
 
-if [[ -t 1 ]]; then
+FD_is_pipe=$(perl -e 'exit(-p STDOUT ? 0 : 1);')
+FD_is_terminal=$(test -t 1)
+if $FD_is_terminal || $FD_is_pipe; then
     # run it.
     # shellcheck disable=SC2002
     cat $input | $diff_highlight | print_header_clean | less -R $less_opts
 else
-    # stdout is not going to a terminal; probably a patch file
+    # stdout is not going to a terminal or pipe; probably a patch file
     cat $input
 fi
