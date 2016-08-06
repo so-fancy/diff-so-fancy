@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 [[ $# -ge 1 ]] && [[ -f "$1" ]] && input="$1" || input="-"
+[[ $# -ge 1 ]] && less_opts="${*:1}" || less_opts=
 
 get_script_dir () {
   src="${BASH_SOURCE[0]}"
@@ -26,8 +27,11 @@ print_header_clean () {
   "$(get_script_dir)/lib/diff-so-fancy.pl"
 }
 
-# run it.
-# shellcheck disable=SC2002
-cat $input \
-  | $diff_highlight \
-  | print_header_clean
+if [[ -t 1 ]]; then
+    # run it.
+    # shellcheck disable=SC2002
+    cat $input | $diff_highlight | print_header_clean | less -R $less_opts
+else
+    # stdout is not going to a terminal; probably a patch file
+    cat $input
+fi
