@@ -23,7 +23,7 @@ else
 fi
 
 print_header_clean () {
-  "$(get_script_dir)/lib/diff-so-fancy.pl"
+  "$(get_script_dir)/libexec/diff-so-fancy.pl"
 }
 
 # run it.

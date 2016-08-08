@@ -33,4 +33,4 @@ install:
 script:
   - ./bats/bin/bats test/*.bats
   - shellcheck diff-so-fancy update-deps.sh
-  - perlcritic -1 -q --theme freenode lib/diff-so-fancy.pl
+  - perlcritic -1 -q --theme freenode libexec/diff-so-fancy.pl
