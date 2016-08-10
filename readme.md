@@ -5,6 +5,8 @@ your diffs' appearances.
 
 * Output will not be in standard patch format, but will be readable.
 * No pesky `+` or `-` at line-start, making for easier copy-paste.
+* Standard [Unified Format](http://www.gnu.org/software/diffutils/manual/html_node/Unified-Format.html)
+ is reverted to on redirection, for GNU-compatible `.patch` files
 
 ## Screenshot
 
@@ -21,13 +23,22 @@ git diff --color | diff-so-fancy
 
 **But**, you'll probably want to fancify all your diffs. Set your `core.pager` to run `diff-so-fancy`, and pipe the output through your existing pager, or if unset we recommend `less --tabs=4 -RFX`:
 ```shell
-git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+git config --global core.pager "diff-so-fancy"
 ```
+
+If your existing pager is `less` with some other options, you can add them too, e.g.
+```shell
+git config --global core.pager "diff-so-fancy --tabs=4 -FX"
+```
+diff-so-fancy requires `--RAW-CONTROL-CHARS` (`-R`) for fancy colouring; you don't need to supply this.
+
+Other pagers are not currently supported; piping to e.g. `vim -` will render the
+same as without diff-so-fancy.
 
 However, if you'd prefer to do the fanciness on-demand with `git dsf`, add an alias to your `~/.gitconfig` by running:
 ```shell
 git config --global alias.dsf '!f() { [ -z "$GIT_PREFIX" ] || cd "$GIT_PREFIX" '\
-'&& git diff --color "$@" | diff-so-fancy  | less --tabs=4 -RFX; }; f'
+'&& git diff --color "$@" | diff-so-fancy; }; f'
 ```
 
 ## Install
@@ -119,13 +130,13 @@ git --no-pager diff
 
 #### Raw patches
 
-As a shortcut for a 'normal' diff to save as a patch for emailing or later
-application, it may be helpful to configure an alias:
-```ini
-[alias]
-    patch = --no-pager diff --no-color
+Fancification is disabled when diff-so-fancy's output is redirected, so if you
+want to save a 'normal' [Unified Format](http://www.gnu.org/software/diffutils/manual/html_node/Unified-Format.html)
+diff, you don't need to do anything different.
+```shell
+git diff > changes.patch # no colours; standard format
+git diff # fancy colours and formatting
 ```
-which can then be used as `git patch > changes.patch`.
 
 #### Moving around in the diff
 
@@ -133,7 +144,7 @@ You can pre-seed your `less` pager with a search pattern, so you can move
 between files with `n`/`p` keys:
 ```ini
 [pager]
-    diff = diff-so-fancy | less --tabs=4 -RFX --pattern'^(Date|added|deleted|modified): '
+    diff = diff-so-fancy --pattern'^(Date|added|deleted|modified): '
 ```
 
 ## History
