@@ -133,7 +133,7 @@ You can pre-seed your `less` pager with a search pattern, so you can move
 between files with `n`/`p` keys:
 ```ini
 [pager]
-    diff = diff-so-fancy | less --tabs=4 -RFX --pattern'^(Date|added|deleted|modified): '
+    diff = diff-so-fancy | less --tabs=4 -RFX --pattern '^(Date|added|deleted|modified): '
 ```
 
 ## History
