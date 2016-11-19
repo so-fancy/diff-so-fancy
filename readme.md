@@ -44,6 +44,11 @@ brew update
 brew install diff-so-fancy
 ```
 
+A package is available in Arch linux:
+```
+pacman -S diff-so-fancy
+```
+
 ### Improved colors for the highlighted bits
 
 `diff-highlight` has default colors that are arguably a little nasty. They'll work fine, but you can try some fancier colors:
