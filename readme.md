@@ -130,7 +130,7 @@ which can then be used as `git patch > changes.patch`.
 #### Moving around in the diff
 
 You can pre-seed your `less` pager with a search pattern, so you can move
-between files with `n`/`p` keys:
+between files with `n`/`N` keys:
 ```ini
 [pager]
     diff = diff-so-fancy | less --tabs=4 -RFX --pattern '^(Date|added|deleted|modified): '
