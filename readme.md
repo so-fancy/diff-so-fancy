@@ -91,7 +91,7 @@ Should the pesky `+` or `-` at line-start be removed.
 
 ### useUnicodeRuler
 
-By default the separator for the file header uses unicode line drawing characters.  
+By default the separator for the file header uses Unicode line drawing characters.  
 If this is causing output errors on your terminal set this to `false` to use ASCII characters instead.
 
 By default all the configs are true. You can turn any off by running:
