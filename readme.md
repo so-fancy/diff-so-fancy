@@ -128,7 +128,7 @@ As a shortcut for a 'normal' diff to save as a patch for emailing or later
 application, it may be helpful to configure an alias:
 ```ini
 [alias]
-    patch = --no-pager diff --no-color
+    patch = !git --no-pager diff --no-color
 ```
 which can then be used as `git patch > changes.patch`.
 
