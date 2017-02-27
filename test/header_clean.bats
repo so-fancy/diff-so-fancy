@@ -69,6 +69,13 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 	assert_output --partial '@ package.json:3 @'
 }
 
+@test "Hunk formatting: @@ -1 0,0 @@" {
+	# stderr forced into output
+	output=$( load_fixture "single-line-remove" | $diff_so_fancy )
+	run printf "%s" "$output"
+	assert_line --index 4 'var delayedMessage = "It worked";'
+}
+
 @test "Three way merge" {
 	# stderr forced into output
 	output=$( load_fixture "complex-hunks" | $diff_so_fancy )

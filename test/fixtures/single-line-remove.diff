@@ -1,0 +1,7 @@
+diff --git test/data/readywaitasset.js test/data/readywaitasset.js
+deleted file mode 100644
+index 2308965..0000000
+--- test/data/readywaitasset.js
++++ /dev/null
+@@ -1 +0,0 @@
+-var delayedMessage = "It worked";
