@@ -44,6 +44,11 @@ brew update
 brew install diff-so-fancy
 ```
 
+A package is available in Arch linux:
+```
+pacman -S diff-so-fancy
+```
+
 ### Improved colors for the highlighted bits
 
 `diff-highlight` has default colors that are arguably a little nasty. They'll work fine, but you can try some fancier colors:
@@ -86,7 +91,7 @@ Should the pesky `+` or `-` at line-start be removed.
 
 ### useUnicodeRuler
 
-By default the separator for the file header uses unicode line drawing characters.  
+By default the separator for the file header uses Unicode line drawing characters.  
 If this is causing output errors on your terminal set this to `false` to use ASCII characters instead.
 
 By default all the configs are true. You can turn any off by running:
@@ -123,14 +128,14 @@ As a shortcut for a 'normal' diff to save as a patch for emailing or later
 application, it may be helpful to configure an alias:
 ```ini
 [alias]
-    patch = --no-pager diff --no-color
+    patch = !git --no-pager diff --no-color
 ```
 which can then be used as `git patch > changes.patch`.
 
 #### Moving around in the diff
 
 You can pre-seed your `less` pager with a search pattern, so you can move
-between files with `n`/`p` keys:
+between files with `n`/`N` keys:
 ```ini
 [pager]
     diff = diff-so-fancy | less --tabs=4 -RFX --pattern '^(Date|added|deleted|modified): '
