@@ -42,7 +42,7 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 @test "Reworked hunks" {
 	output=$( load_fixture "file-moves" | $diff_so_fancy )
 	assert_output --partial '@ square.yml:4 @'
-	assert_output --partial '@ package.json:3 @'
+	assert_output --partial '@ package.json:1 @'
 }
 
 @test "Reworked hunks (noprefix)" {
@@ -53,7 +53,7 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 
 @test "Reworked hunks (deleted files)" {
 	output=$( load_fixture "dotfiles" | $diff_so_fancy )
-	assert_output --partial '@ diff-so-fancy:3 @'
+	assert_output --partial '@ diff-so-fancy:1 @'
 }
 
 @test "Hunk formatting: @@@ -A,B -C,D +E,F @@@" {

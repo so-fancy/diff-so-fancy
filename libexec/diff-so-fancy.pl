@@ -313,6 +313,10 @@ sub start_line_calc {
 	my ($line_num,$diff_context) = @_;
 	my $ret;
 
+	if ($line_num == 0 && $diff_context == 0) {
+		return 1;
+	}
+
 	# Git defaults to three lines of context
 	my $default_context_lines = 3;
 	# Three lines on either side, and the line itself = 7
