@@ -247,7 +247,7 @@ sub git_config_boolean {
 
 	# If we're in a unit test, use the default (don't read the users config)
 	if (in_unit_test()) {
-		return $default_value;
+		return boolean($default_value);
 	}
 
 	my $result = git_config($search_key,$default_value);
