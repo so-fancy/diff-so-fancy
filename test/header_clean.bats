@@ -42,7 +42,7 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 @test "Reworked hunks" {
 	output=$( load_fixture "file-moves" | $diff_so_fancy )
 	assert_output --partial '@ square.yml:4 @'
-	assert_output --partial '@ package.json:3 @'
+	assert_output --partial '@ package.json:1 @'
 }
 
 @test "Reworked hunks (noprefix)" {
@@ -53,7 +53,7 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 
 @test "Reworked hunks (deleted files)" {
 	output=$( load_fixture "dotfiles" | $diff_so_fancy )
-	assert_output --partial '@ diff-so-fancy:3 @'
+	assert_output --partial '@ diff-so-fancy:1 @'
 }
 
 @test "Hunk formatting: @@@ -A,B -C,D +E,F @@@" {
@@ -67,6 +67,13 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 	# stderr forced into output
 	output=$( load_fixture "first-three-line" | $diff_so_fancy )
 	assert_output --partial '@ package.json:3 @'
+}
+
+@test "Hunk formatting: @@ -1 0,0 @@" {
+	# stderr forced into output
+	output=$( load_fixture "single-line-remove" | $diff_so_fancy )
+	run printf "%s" "$output"
+	assert_line --index 4 'var delayedMessage = "It worked";'
 }
 
 @test "Three way merge" {
