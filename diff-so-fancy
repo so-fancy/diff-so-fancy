@@ -1,33 +1,38 @@
 #!/usr/bin/env bash
 
-[[ $# -ge 1 ]] && [[ -f "$1" ]] && input="$1" || input="-"
-
 get_script_dir () {
-  src="${BASH_SOURCE[0]}"
+	src="${BASH_SOURCE[0]}"
 
-  while [[ -h "$src" ]]; do
-    dir="$(cd -P "$( dirname "$src" )" && pwd)"
-    src="$(readlink "$src")"
-    [[ $src != /* ]] && src="$dir/$src"
-  done
+	while [[ -h "$src" ]]; do
+		dir="$(cd -P "$( dirname "$src" )" && pwd)"
+		src="$(readlink "$src")"
+		[[ $src != /* ]] && src="$dir/$src"
+	done
 
-  dir="$(cd -P "$( dirname "$src" )" && pwd)"
-  echo "$dir"
+	dir="$(cd -P "$( dirname "$src" )" && pwd)"
+	echo "$dir"
 }
 
-# find my diff-highlight
-if hash diff-highlight 2> /dev/null; then
-  diff_highlight=diff-highlight
+call_dsf () {
+	"$(get_script_dir)/libexec/diff-so-fancy.pl" "$@"
+}
+
+call_dh () {
+	# find my diff-highlight
+	if hash diff-highlight 2> /dev/null; then
+		"diff-highlight"
+	else
+		"$(get_script_dir)/third_party/diff-highlight/diff-highlight"
+	fi
+}
+
+################################################################################
+
+# Check to see if there is an STDIN
+if [[ ! -t 0 ]]; then
+	call_dh | call_dsf
+# We've been called stand-alone, pass options directly through
 else
-  diff_highlight="$(get_script_dir)/third_party/diff-highlight/diff-highlight"
+	call_dsf "$@"
+	exit
 fi
-
-print_header_clean () {
-  "$(get_script_dir)/libexec/diff-so-fancy.pl"
-}
-
-# run it.
-# shellcheck disable=SC2002
-cat $input \
-  | $diff_highlight \
-  | print_header_clean
