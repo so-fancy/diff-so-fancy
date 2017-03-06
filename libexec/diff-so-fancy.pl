@@ -1,5 +1,9 @@
 #!/usr/bin/env perl
 
+my $VERSION = "0.12.0";
+
+#################################################################################
+
 use strict;
 use warnings FATAL => 'all';
 use File::Basename;
@@ -513,7 +517,7 @@ sub usage {
 # Output the current version string
 sub version {
 	my $ret  = "Diff-so-fancy: https://github.com/so-fancy/diff-so-fancy\n";
-	$ret    .= "Version      : 0.12.0\n\n";
+	$ret    .= "Version      : $VERSION\n\n";
 
 	return $ret;
 }
