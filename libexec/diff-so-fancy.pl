@@ -19,6 +19,21 @@ my $strip_leading_indicators   = git_config_boolean("diff-so-fancy.stripLeadingS
 my $mark_empty_lines           = git_config_boolean("diff-so-fancy.markEmptyLines","true");
 my $use_unicode_dash_for_ruler = git_config_boolean("diff-so-fancy.useUnicodeRuler","true");
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
+my $has_stdin                  = has_stdin();
+
+# We only process ARGV if we don't have STDIN
+if (!$has_stdin) {
+	my $args = argv();
+
+	if ($args->{v} || $args->{version}) {
+		die(version());
+	}
+
+	if (!%$args) {
+		print usage(); exit;
+		die(usage());
+	}
+}
 
 #################################################################################
 
@@ -444,4 +459,61 @@ sub file_change_string {
 	} else {
 		return "$file_1 -> $file_2";
 	}
+}
+
+# Check to see if STDIN is connected to an interactive terminal
+sub has_stdin {
+	my $i   = -t STDIN;
+	my $ret = int(!$i);
+
+	return $ret;
+}
+
+# We use this instead of Getopt::Long because it's faster and we're not parsing any
+# crazy arguments
+# Borrowed from: https://www.perturb.org/display/1153_Perl_Quick_extract_variables_from_ARGV.html
+sub argv {
+	my $ret = {};
+
+	for (my $i = 0; $i < scalar(@ARGV); $i++) {
+		# If the item starts with "-" it's a key
+		if ((my ($key) = $ARGV[$i] =~ /^--?([a-zA-Z_]\w*)/) && ($ARGV[$i] !~ /^-\w\w/)) {
+			# If the next item does not start with "--" it's the value for this item
+			if (defined($ARGV[$i + 1]) && ($ARGV[$i + 1] !~ /^--?\D/)) {
+				$ret->{$key} = $ARGV[$i + 1];
+			# Bareword like --verbose with no options
+			} else {
+				$ret->{$key}++;
+			}
+		}
+	}
+
+	# We're looking for a certain item
+	if ($_[0]) { return $ret->{$_[0]}; }
+
+	return $ret;
+}
+
+# Output the command line usage for d-s-f
+sub usage {
+	my $out = "Usage:
+
+  # One off fanciness
+  git diff --color | diff-so-fancy
+
+  # Configure git to use d-s-f for all diff operations
+  git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"
+
+  # Create a git alias to run d-s-f on demand
+  git config --global alias.dsf '!f() { [ -z \"\$GIT_PREFIX\" ] || cd \"\$GIT_PREFIX\" && git diff --color \"\$@\" | diff-so-fancy  | less --tabs=4 -RFX; }; f'\n\n";
+
+	return $out;
+}
+
+# Output the current version string
+sub version {
+	my $ret  = "Diff-so-fancy: https://github.com/so-fancy/diff-so-fancy\n";
+	$ret    .= "Version      : 0.12.0\n\n";
+
+	return $ret;
 }
