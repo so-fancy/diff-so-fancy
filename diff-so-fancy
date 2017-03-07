@@ -538,6 +538,7 @@ sub filter_stdin_through_diff_highlight {
 	}
 
 	close($cmd_input);
+	waitpid $pid, 0;
 
 	return $cmd_output;
 }
