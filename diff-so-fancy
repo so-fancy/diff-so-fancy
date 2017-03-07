@@ -36,7 +36,6 @@ if (!$has_stdin) {
 	} elsif ($args->{colors}) {
 		die(output_default_colors());
 	} elsif (!%$args) {
-		print usage(); exit;
 		die(usage());
 	} else {
 		die("Missing input on STDIN\n");
