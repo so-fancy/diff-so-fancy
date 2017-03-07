@@ -33,6 +33,8 @@ if (!$has_stdin) {
 
 	if ($args->{v} || $args->{version}) {
 		die(version());
+	} elsif ($args->{colors}) {
+		die(output_default_colors());
 	} elsif (!%$args) {
 		print usage(); exit;
 		die(usage());
@@ -519,6 +521,28 @@ sub usage {
 
   # Create a git alias to run d-s-f on demand
   git config --global alias.dsf '!f() { [ -z \"\$GIT_PREFIX\" ] || cd \"\$GIT_PREFIX\" && git diff --color \"\$@\" | diff-so-fancy  | less --tabs=4 -RFX; }; f'\n\n";
+
+	return $out;
+}
+
+sub output_default_colors {
+	my $out  = "Recommended default colors for diff-so-fancy\n";
+	$out    .= "--------------------------------------------\n";
+	$out    .= 'git config --global color.ui true
+
+git config --global color.diff-highlight.oldNormal "red bold"
+git config --global color.diff-highlight.oldHighlight "red bold 52"
+git config --global color.diff-highlight.newNormal "green bold"
+git config --global color.diff-highlight.newHighlight "green bold 22"
+
+git config --global color.diff.meta "227"
+git config --global color.diff.frag "magenta bold"
+git config --global color.diff.commit "227 bold"
+git config --global color.diff.old "red bold"
+git config --global color.diff.new "green bold"
+git config --global color.diff.whitespace "red reverse"
+
+';
 
 	return $out;
 }
