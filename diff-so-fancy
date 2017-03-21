@@ -6,8 +6,9 @@ my $VERSION = "1.0.0";
 
 use strict;
 use warnings FATAL => 'all';
-use File::Basename;
-use IPC::Open2;
+
+use File::Basename; # for dirname
+use Cwd;            # For realpath()
 
 # Set the input (STDIN) as UTF8, but don't give warnings about unknown chars
 use open qw(:std :utf8); # http://stackoverflow.com/a/519359
@@ -558,16 +559,10 @@ sub version {
 #
 # Note: This returns a file handle
 sub filter_stdin_through_diff_highlight {
-	my ($cmd_output,$cmd_input);
 	my $dh  = find_diff_highlight();
-	my $pid = open2($cmd_output, $cmd_input, $dh);
 
-	foreach (<STDIN>) {
-		print $cmd_input "$_";
-	}
-
-	close($cmd_input);
-	waitpid $pid, 0;
+	# Pipe the STDIN of this to diff-highlight
+	my $pid = open(my $cmd_output, "-|", $dh);
 
 	return $cmd_output;
 }
@@ -583,7 +578,8 @@ sub find_diff_highlight {
 		$ret = $dh_in_path;
 	# We use the one bundled with d-s-f
 	} else {
-		$ret = dirname($0) . "/third_party/$dh/diff-highlight";
+		my $path = dirname($0) . "/third_party/$dh/diff-highlight";
+		$ret     = Cwd::realpath($path);
 	}
 
 	if (!-X $ret) {
