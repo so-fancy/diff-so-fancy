@@ -32,5 +32,4 @@ install:
   - cpanm --quiet --notest Test::Perl::Critic Perl::Critic::Freenode
 script:
   - ./bats/bin/bats test/*.bats
-  - shellcheck diff-so-fancy update-deps.sh
-  - perlcritic -1 -q --theme freenode libexec/diff-so-fancy.pl
+  - perlcritic -1 -q --theme freenode diff-so-fancy
