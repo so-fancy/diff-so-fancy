@@ -66,11 +66,9 @@ If you want, you can choose to install manually:
 
 1. Grab the two scripts (`diff-highlight` and `diff-so-fancy`) via either downloading or cloning the repo.
 1. If you download `diff-highlight` from the official git repo, give it a `chmod +x`.
-1. Place them in a location that is in your `PATH` directly or with symlinks.
-1. Place `libexec/diff-so-fancy.pl` in the same directory as `diff-so-fancy`. You will end up something like this:
+1. Place them in a location that is in your `PATH` directly or with symlinks. You will end up something like this:
    * `~/bin/diff-highlight`
    * `~/bin/diff-so-fancy`
-   * `~/bin/libexec/diff-so-fancy.pl`
 1. Set up the git `core.pager` config, as described above.
 
 Note: The `diff-highlight` dependency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience. If you prefer less fancy in your diff, you also use diff-highlight [on it's own](https://news.ycombinator.com/item?id=11068436).
