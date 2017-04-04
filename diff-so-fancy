@@ -578,7 +578,7 @@ sub find_diff_highlight {
 		$ret = $dh_in_path;
 	# We use the one bundled with d-s-f
 	} else {
-		my $path = dirname($0) . "/third_party/$dh/diff-highlight";
+		my $path = dirname(Cwd::realpath($0)) . "/third_party/$dh/diff-highlight";
 		$ret     = Cwd::realpath($path);
 	}
 
