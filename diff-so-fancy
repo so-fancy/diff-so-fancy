@@ -569,21 +569,29 @@ sub filter_stdin_through_diff_highlight {
 
 # Find the location of diff-highlight
 sub find_diff_highlight {
-	my $dh         = "diff-highlight";
-	my $dh_in_path = trim(`which $dh 2>/dev/null`);
-	my $ret;
+    my $dh         = "diff-highlight";
+    my $dh_in_path = trim(`which $dh 2>/dev/null`);
+    my $ret;
 
-	# The user may have a local version of diff-highlight
-	if ($dh_in_path) {
-		$ret = $dh_in_path;
-	# We use the one bundled with d-s-f
-	} else {
-		$ret = dirname(Cwd::realpath($0)) . "/third_party/$dh/diff-highlight";
-	}
+    # We check for diff-highlight in three places:
+    # 1) System path
+    # 2) Same dir as d-s-f
+    # 3) third_party/diff-highlight/
 
-	if (!-X $ret) {
-		die("Error locating diff-highlight\n");
-	}
+    # This is #1
+    if ($dh_in_path) {
+        $ret = $dh_in_path;
+    # This is #2 and #3
+    } else {
+        $ret = dirname(Cwd::realpath($0)) . "/diff-highlight";
+        if (!-X $ret) {
+            $ret = dirname(Cwd::realpath($0)) . "/third_party/$dh/diff-highlight";
+        }
+    }
 
-	return $ret;
+    if (!-X $ret) {
+        die("Error locating diff-highlight\n");
+    }
+
+    return $ret;
 }
