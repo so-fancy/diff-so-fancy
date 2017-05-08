@@ -73,6 +73,19 @@ If you want, you can choose to install manually:
 
 Note: The `diff-highlight` dependency is an [official git-contrib script](https://github.com/git/git/tree/master/contrib/diff-highlight), duplicated here for convenience. If you prefer less fancy in your diff, you also use diff-highlight [on it's own](https://news.ycombinator.com/item?id=11068436).
 
+## Docker install
+You can run `diff-so-fancy` in a docker container. Downside of this approach is that `diff-so-fancy` doesn't have any direct access on the git repository to load its configuration. Benefit is that there will be hopefully a public docker container in the future which only requires you to run one simple `git config` command to set up `diff-so-fancy`.
+
+```shell
+# Clone this repository
+git clone https://github.com/so-fancy/diff-so-fancy.git
+# Build the docker container
+cd diff-so-fancy
+docker build -t diff-so-fancy .
+# Configure git to use diff-so-fancy
+git config --global core.pager "docker run --rm -i diff-so-fancy| less --tabs=4 -RFX"
+```
+
 ## options
 
 ### markEmptyLines
@@ -89,7 +102,7 @@ Should the pesky `+` or `-` at line-start be removed.
 
 ### useUnicodeRuler
 
-By default the separator for the file header uses Unicode line drawing characters.  
+By default the separator for the file header uses Unicode line drawing characters.
 If this is causing output errors on your terminal set this to `false` to use ASCII characters instead.
 
 By default all the configs are true. You can turn any off by running:
