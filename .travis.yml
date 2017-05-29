@@ -33,3 +33,4 @@ install:
 script:
   - ./bats/bin/bats test/*.bats
   - perlcritic -1 -q --theme freenode diff-so-fancy
+  - shellcheck *.sh
