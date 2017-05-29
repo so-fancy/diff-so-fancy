@@ -18,4 +18,4 @@ checkout:
 test:
   override:
     - bats/bin/bats test/*.bats
-    - shellcheck diff-so-fancy update-deps.sh
+    - shellcheck *.sh
