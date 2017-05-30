@@ -3,7 +3,7 @@
 clipboard() {
   local copy_cmd
   if [ -n "$PBCOPY_SERVER" ]; then
-    local body="" buffer
+    local body="" # buffer
     body=$(cat)
     # while IFS= read -r buffer; do
     #   body="$body$buffer\n";
