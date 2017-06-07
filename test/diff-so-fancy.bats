@@ -87,3 +87,11 @@ if begin[m"
   # Make sure the output contains SOME of the english text (i.e. it doesn't barf on the whole line)
   assert_output --partial "saw he conqu"
 }
+
+@test "Correctly handle hunk definition with no comma" {
+  output=$( load_fixture "hunk_no_comma" | $diff_so_fancy )
+  # On single line removes there is NO comma in the hunk,
+  # make sure the first column is still correctly stripped.
+  run printf "%s" "$output"
+  assert_line --index 5 "after"
+}
