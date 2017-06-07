@@ -35,7 +35,9 @@ if (!$has_stdin) {
 	if ($args->{v} || $args->{version}) {
 		die(version());
 	} elsif ($args->{colors}) {
-		die(output_default_colors());
+		# We print this to STDOUT so we can redirect to bash to auto-set the colors
+		print output_default_colors();
+		exit;
 	} elsif (!%$args || $args->{help} || $args->{h}) {
 		die(usage());
 	} else {
@@ -509,27 +511,27 @@ sub argv {
 sub usage {
 	my $out = "Usage:
 
-  # Print diff-so-fancy version
-  diff-so-fancy --version
+# Print diff-so-fancy version
+diff-so-fancy --version
 
-  # One off fanciness
-  git diff --color | diff-so-fancy
+# One off fanciness
+git diff --color | diff-so-fancy
 
-  # Configure git to use d-s-f for *all* diff operations
-  git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"
+# Configure git to use d-s-f for *all* diff operations
+git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"
 
-  # If core.pager config is set, this can opt-out of using d-s-f
-  git --no-pager <command>
+# If core.pager config is set, this can opt-out of using d-s-f
+git --no-pager <command>
 
-  # Create a git alias to run d-s-f on demand
-  git config --global alias.dsf '!f() { [ -z \"\$GIT_PREFIX\" ] || cd \"\$GIT_PREFIX\" && git diff --color \"\$@\" | diff-so-fancy  | less --tabs=4 -RFX; }; f'\n\n";
+# Create a git alias to run d-s-f on demand
+git config --global alias.dsf '!f() { [ -z \"\$GIT_PREFIX\" ] || cd \"\$GIT_PREFIX\" && git diff --color \"\$@\" | diff-so-fancy  | less --tabs=4 -RFX; }; f'\n";
 
 	return $out;
 }
 
 sub output_default_colors {
-	my $out  = "Recommended default colors for diff-so-fancy\n";
-	$out    .= "--------------------------------------------\n";
+	my $out  = "# Recommended default colors for diff-so-fancy\n";
+	$out    .= "# --------------------------------------------\n";
 	$out    .= 'git config --global color.ui true
 
 git config --global color.diff-highlight.oldNormal "red bold"
@@ -543,7 +545,6 @@ git config --global color.diff.commit "227 bold"
 git config --global color.diff.old "red bold"
 git config --global color.diff.new "green bold"
 git config --global color.diff.whitespace "red reverse"
-
 ';
 
 	return $out;
@@ -552,7 +553,7 @@ git config --global color.diff.whitespace "red reverse"
 # Output the current version string
 sub version {
 	my $ret  = "Diff-so-fancy: https://github.com/so-fancy/diff-so-fancy\n";
-	$ret    .= "Version      : $VERSION\n\n";
+	$ret    .= "Version      : $VERSION\n";
 
 	return $ret;
 }
