@@ -1,0 +1,7 @@
+diff --git i/file w/file
+index 90be1f3..294186e 100644
+--- i/file
++++ w/file
+@@ -1 +1 @@
+-before
++after
