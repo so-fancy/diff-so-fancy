@@ -3,12 +3,12 @@
 clipboard() {
   local copy_cmd
   if [ -n "$PBCOPY_SERVER" ]; then
-    local body="" buffer
+    local body="" # buffer
     body=$(cat)
     # while IFS= read -r buffer; do
     #   body="$body$buffer\n";
     # done
-    curl $PBCOPY_SERVER --data-urlencode body="$body" >/dev/null 2>&1
+    curl "$PBCOPY_SERVER" --data-urlencode body="$body" >/dev/null 2>&1
     return $?
   fi
   if type putclip >/dev/null 2>&1; then
@@ -32,7 +32,7 @@ clipboard() {
     local copy_cmd="xsel -b"
   fi
   if [ -n "$copy_cmd" ] ;then
-    eval $copy_cmd
+    eval "$copy_cmd"
   else
     echo "clipboard is unavailable" 1>&2
   fi
@@ -40,20 +40,21 @@ clipboard() {
 
 file=${2:-diff.txt}
 
-echo $1 > $file
-eval $1 >> $file
+{
+  echo "$1"
+  eval "$1"
+  echo ""
+  echo ""
+  echo ""
 
-echo "
+  echo "$1 --color"
+  eval "$1 --color"
 
-" >> $file
+  echo "git config pager.diff"
+  eval "git config pager.diff"
 
-echo "$1 --color" >> $file
-eval "$1 --color" >> $file
+  echo "git config pager.show"
+  eval "git config pager.show"
+} > "$file"
 
-echo "git config pager.diff" >> $file
-eval "git config pager.diff" >> $file
-
-echo "git config pager.show" >> $file
-eval "git config pager.show" >> $file
-
-cat $file | base64 | clipboard
+base64 < "$file" | clipboard
