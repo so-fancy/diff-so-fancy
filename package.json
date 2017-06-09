@@ -1,6 +1,6 @@
 {
   "name": "diff-so-fancy",
-  "version": "0.11.4",
+  "version": "1.0.0",
   "description": "Good-lookin' diffs with diff-highlight and more",
   "bin": {
     "diff-so-fancy": "diff-so-fancy",
