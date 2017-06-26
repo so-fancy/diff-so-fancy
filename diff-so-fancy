@@ -595,7 +595,7 @@ sub find_diff_highlight {
     if (!$ret) {
         die("Error #75913: Unable to locate diff-highlight\n");
     } elsif (!-X $ret) {
-        die("Error #19391: diff-highlight not executable\n");
+        die("Error #19391: diff-highlight ($ret) not executable\n");
     }
 
     return $ret;
