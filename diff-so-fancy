@@ -565,7 +565,7 @@ sub filter_stdin_through_diff_highlight {
 	my $dh  = find_diff_highlight();
 
 	# Pipe the STDIN of this to diff-highlight
-	my $pid = open(my $cmd_output, "-|", $dh);
+	my $pid = open(my $cmd_output, "-|", "\"$dh\"");
 
 	return $cmd_output;
 }
