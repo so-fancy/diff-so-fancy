@@ -189,10 +189,10 @@ You'll need to install [bats](https://github.com/sstephenson/bats#installing-bat
 git submodule sync
 git submodule update --init # pull in the assertion library, bats-assert
 
-# Run the test suite once:
+# run the test suite once:
 bats test
 
-# Run it on every change with `entr`
+# run it on every change with `entr`
 brew install entr
 ls --color=never diff-so-fancy test/*.bats | entr bats test
 ```
