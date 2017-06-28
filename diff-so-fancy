@@ -560,8 +560,6 @@ sub version {
 }
 
 # Feed the raw git input through diff-highlight to get line level highlights
-#
-# Note: This returns a file handle
 sub filter_stdin_through_diff_highlight {
 	my @dh_lines;
 
@@ -585,4 +583,4 @@ sub is_windows {
 	}
 }
 
-# vim: tabstop=4 shiftwidth=4 expandtab autoindent softtabstop=4
+# vim: tabstop=4 shiftwidth=4 autoindent softtabstop=4
