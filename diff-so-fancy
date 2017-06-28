@@ -1,14 +1,16 @@
 #!/usr/bin/env perl
 
-my $VERSION = "1.0.0";
+my $VERSION = "1.1.0";
 
 #################################################################################
 
+use Cwd qw(abs_path);                   # For realpath()
+use File::Basename;                     # for dirname
+use lib dirname(abs_path($0)) . "/lib"; # Add the local lib/ to @INC
+use DiffHighlight;
+
 use strict;
 use warnings FATAL => 'all';
-
-use File::Basename; # for dirname
-use Cwd;            # For realpath()
 
 # Set the input (STDIN) as UTF8, but don't give warnings about unknown chars
 use open qw(:std :utf8); # http://stackoverflow.com/a/519359
@@ -28,7 +30,7 @@ my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
 
 # We only process ARGV if we don't have STDIN
-my $input;
+my @input;
 if (!$has_stdin) {
 	my $args = argv();
 
@@ -44,7 +46,7 @@ if (!$has_stdin) {
 		die("Missing input on STDIN\n");
 	}
 } else {
-	$input = filter_stdin_through_diff_highlight();
+	@input = filter_stdin_through_diff_highlight();
 }
 
 #################################################################################
@@ -62,7 +64,7 @@ my $last_file_seen = "";
 my $i = 0;
 my $in_hunk = 0;
 
-while (my $line = <$input>) {
+while (my $line = shift(@input)) {
 	######################################################
 	# Pre-process the line before we do any other markup #
 	######################################################
@@ -104,7 +106,7 @@ while (my $line = <$input>) {
 		}
 
 		# Find the second file on the next line: +++ b/README.md
-		my $next = <$input>;
+		my $next = shift(@input);
 		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|\t|$)/;
 		if ($1) {
 			print $1; # Print out whatever color we're using
@@ -171,7 +173,7 @@ while (my $line = <$input>) {
 	#####################################################
 	} elsif ($clean_permission_changes && $line =~ /^${ansi_color_regex}old mode (\d+)/) {
 		my ($old_mode) = $4;
-		my $next = <$input>;
+		my $next = shift(@input);
 
 		if ($1) {
 			print $1; # Print out whatever color we're using
@@ -430,9 +432,8 @@ sub trim {
 sub horizontal_rule {
 	my $color = $_[0] || "";
 	my $width = `tput cols`;
-	my $uname = `uname -s`;
 
-	if ($uname =~ /MINGW32|MSYS/) {
+	if (is_windows()) {
 		$width--;
 	}
 
@@ -562,43 +563,26 @@ sub version {
 #
 # Note: This returns a file handle
 sub filter_stdin_through_diff_highlight {
-	my $dh  = find_diff_highlight();
+	my @dh_lines;
 
-	# Pipe the STDIN of this to diff-highlight
-	my $pid = open(my $cmd_output, "-|", "\"$dh\"");
+	# Have DH put the lines it's modified in an array
+	local $DiffHighlight::line_cb = sub { push(@dh_lines,@_) };
 
-	return $cmd_output;
+	while (my $line = <STDIN>) {
+		my $ok = DiffHighlight::handle_line($line);
+	}
+
+	DiffHighlight::flush();
+
+	return @dh_lines;
 }
 
-# Find the location of diff-highlight
-sub find_diff_highlight {
-    my $dh         = "diff-highlight";
-    my $dh_in_path = trim(`which $dh 2>/dev/null`);
-    my $ret;
-
-    # We check for diff-highlight in three places:
-    # 1) System path
-    # 2) Same dir as d-s-f
-    # 3) third_party/diff-highlight/
-
-    # This is #1
-    if ($dh_in_path) {
-        $ret = $dh_in_path;
-    # This is #2 and #3
-    } else {
-        $ret = dirname(Cwd::realpath($0)) . "/diff-highlight";
-        if (!-X $ret) {
-            $ret = dirname(Cwd::realpath($0)) . "/third_party/$dh/diff-highlight";
-        }
-    }
-
-    if (!$ret) {
-        die("Error #75913: Unable to locate diff-highlight\n");
-    } elsif (!-X $ret) {
-        die("Error #19391: diff-highlight ($ret) not executable\n");
-    }
-
-    return $ret;
+sub is_windows {
+	if ($^O eq 'MSWin32' or $^O eq 'dos' or $^O eq 'os2' or $^O eq 'cygwin') {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 # vim: tabstop=4 shiftwidth=4 expandtab autoindent softtabstop=4
