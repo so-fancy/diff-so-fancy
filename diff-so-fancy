@@ -600,3 +600,5 @@ sub find_diff_highlight {
 
     return $ret;
 }
+
+# vim: tabstop=4 shiftwidth=4 expandtab autoindent softtabstop=4
