@@ -1,0 +1,22 @@
+diff --git a/Changes.new b/bin/Changes.new
+similarity index 100%
+rename from Changes.new
+rename to bin/Changes.new
+diff --git a/dist.ini b/dist.ini
+index ca8c2ad..d2874a4 100644
+--- a/dist.ini
++++ b/dist.ini
+@@ -1,4 +1,4 @@
+-name    = csvgrep
++name    = csvgrepper
+ author  = Neil Bowers <neilb@cpan.org>
+ license = Perl_5
+ copyright_holder = Neil Bowers
+@@ -9,6 +9,7 @@ version = 0.05
+ [@Basic]
+ [PkgVersion]
+ [AutoPrereqs]
++[BAZ]
+ 
+ [GithubMeta]
+ [MetaJSON]
