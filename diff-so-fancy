@@ -55,14 +55,13 @@ my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
 my $dim_magenta      = "\e[38;5;146m";
 my $reset_color      = "\e[0m";
 my $bold             = "\e[1m";
-my $horizontal_color = "";
-
-my $columns_to_remove = 0;
+my $meta_color       = "";
 
 my ($file_1,$file_2);
-my $last_file_seen = "";
-my $i = 0;
-my $in_hunk = 0;
+my $last_file_seen    = "";
+my $i                 = 0;
+my $in_hunk           = 0;
+my $columns_to_remove = 0;
 
 while (my $line = shift(@input)) {
 	######################################################
@@ -85,8 +84,8 @@ while (my $line = shift(@input)) {
 	####################################################################
 	if ($line =~ /^${ansi_color_regex}index /) {
 		# Print the line color and then the actual line
-		$horizontal_color = $1;
-		print horizontal_rule($horizontal_color);
+		$meta_color = $1;
+		print horizontal_rule($meta_color);
 	#########################
 	# Look for the filename #
 	#########################
@@ -125,7 +124,7 @@ while (my $line = shift(@input)) {
 		print file_change_string($file_1,$file_2) . "\n";
 
 		# Print out the bottom horizontal line of the header
-		print horizontal_rule($horizontal_color);
+		print horizontal_rule($meta_color);
 	########################################
 	# Check for "@@ -3,41 +3,63 @@" syntax #
 	########################################
@@ -166,8 +165,8 @@ while (my $line = shift(@input)) {
 	################################
 	} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
 		my $change = file_change_string($2,$4);
-		print "$horizontal_color$change (binary)\n";
-		print horizontal_rule($horizontal_color);
+		print "$meta_color$change (binary)\n";
+		print horizontal_rule($meta_color);
 	#####################################################
 	# Check if we're changing the permissions of a file #
 	#####################################################
@@ -181,6 +180,30 @@ while (my $line = shift(@input)) {
 
 		my ($new_mode) = $next =~ m/new mode (\d+)/;
 		print "$last_file_seen changed file mode from $old_mode to $new_mode\n";
+
+	###############
+	# File rename #
+	###############
+	} elsif ($line =~ /^${ansi_color_regex}similarity index 100%/) {
+		my $next    = shift(@input);
+		my ($file1) = $next =~ /rename from (.+)/;
+
+		$next       = shift(@input);
+		my ($file2) = $next =~ /rename to (.+)/;
+
+		if ($file1 && $file2) {
+			# We may not have extracted this yet, so we pull from the config if not
+			$meta_color ||= DiffHighlight::color_config('color.diff.meta',"\e[38;5;227m");
+
+			my $change = file_change_string($file1,$file2);
+
+			print horizontal_rule($meta_color);
+			print $meta_color . $change . "\n";
+			print horizontal_rule($meta_color);
+		}
+
+		$i += 3; # We've consumed three lines
+		next;
 	#####################################
 	# Just a regular line, print it out #
 	#####################################
@@ -468,7 +491,15 @@ sub file_change_string {
 		return "deleted: $file_1";
 	# If the files aren't the same it's a rename
 	} elsif ($file_1 ne $file_2) {
-		return "renamed: $file_1 to $file_2";
+		my ($old, $new) = DiffHighlight::highlight_pair($file_1,$file_2,{only_diff => 1});
+		$old = trim($old);
+		$new = trim($new);
+
+		# highlight_pair resets the colors, but we want it to be the meta color
+		$old =~ s/(\e0?\[m)/$1$meta_color/g;
+		$new =~ s/(\e0?\[m)/$1$meta_color/g;
+
+		return "renamed: $old to $new";
 	# Something we haven't thought of yet
 	} else {
 		return "$file_1 -> $file_2";

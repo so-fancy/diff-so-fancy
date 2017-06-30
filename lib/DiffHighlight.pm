@@ -9,12 +9,12 @@ use strict;
 my @OLD_HIGHLIGHT = (
 	color_config('color.diff-highlight.oldnormal'),
 	color_config('color.diff-highlight.oldhighlight', "\x1b[7m"),
-	color_config('color.diff-highlight.oldreset', "\x1b[27m")
+	"\x1b[27m",
 );
 my @NEW_HIGHLIGHT = (
 	color_config('color.diff-highlight.newnormal', $OLD_HIGHLIGHT[0]),
 	color_config('color.diff-highlight.newhighlight', $OLD_HIGHLIGHT[1]),
-	color_config('color.diff-highlight.newreset', $OLD_HIGHLIGHT[2])
+	$OLD_HIGHLIGHT[2],
 );
 
 my $RESET = "\x1b[m";
@@ -121,6 +121,7 @@ sub show_hunk {
 sub highlight_pair {
 	my @a = split_line(shift);
 	my @b = split_line(shift);
+	my $opts = shift();
 
 	# Find common prefix, taking care to skip any ansi
 	# color codes.
@@ -165,9 +166,18 @@ sub highlight_pair {
 		}
 	}
 
+	my @OLD_COLOR_SPEC = @OLD_HIGHLIGHT;
+	my @NEW_COLOR_SPEC = @NEW_HIGHLIGHT;
+
+	# If we're only highlight the differences temp disable the old/new normal colors
+	if ($opts->{'only_diff'}) {
+		$OLD_COLOR_SPEC[0] = '';
+		$NEW_COLOR_SPEC[0] = '';
+	}
+
 	if (is_pair_interesting(\@a, $pa, $sa, \@b, $pb, $sb)) {
-		return highlight_line(\@a, $pa, $sa, \@OLD_HIGHLIGHT),
-		       highlight_line(\@b, $pb, $sb, \@NEW_HIGHLIGHT);
+		return highlight_line(\@a, $pa, $sa, \@OLD_COLOR_SPEC),
+		       highlight_line(\@b, $pb, $sb, \@NEW_COLOR_SPEC);
 	}
 	else {
 		return join('', @a),
