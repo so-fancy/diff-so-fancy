@@ -17,7 +17,7 @@ Installation is as simple as downloading the [diff-so-fancy](https://raw.githubu
 
 ## Usage
 
-Configure git to use `diff-so-fancy` for all diff output (recommended):
+Configure git to use `diff-so-fancy` for all diff output:
 ```shell
 git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
 ```
