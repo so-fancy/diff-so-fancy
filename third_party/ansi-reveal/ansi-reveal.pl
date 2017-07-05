@@ -136,3 +136,5 @@ BEGIN {
 		*k = sub { print Data::Dumper::Dumper($_[0]) };
 	}
 }
+
+# vim: tabstop=4 shiftwidth=4 autoindent softtabstop=4
