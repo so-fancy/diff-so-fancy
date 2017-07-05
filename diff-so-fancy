@@ -43,7 +43,11 @@ if (!$has_stdin) {
 		print get_default_colors();
 		exit;
 	} elsif (!%$args || $args->{help} || $args->{h}) {
-		die(usage());
+		my $first = check_first_run();
+
+		if (!$first) {
+			die(usage());
+		}
 	} else {
 		die("Missing input on STDIN\n");
 	}
@@ -619,6 +623,7 @@ sub is_windows {
 	}
 }
 
+# Return value is whether this is the first time they've run d-s-f
 sub check_first_run {
 	my $i   = get_git_config_hash();
 	my $ret = 0;
@@ -628,8 +633,8 @@ sub check_first_run {
 	# See if they're previously set SOME diff-highlight colors
 	my $has_dh_colors = boolean($i->{color}->{'diff-highlight'}->{oldnormal} || $i->{color}->{'diff-highlight'}->{newnormal});
 
-	if ($first_run || $has_dh_colors) {
-		return 1;
+	if (!$first_run || $has_dh_colors) {
+		return 0;
 	} else {
 		my $interactive_shell = !has_stdin();
 
@@ -659,10 +664,11 @@ sub check_first_run {
 		# Just set the first-run flag to false so we don't pop this up again
 		} else {
 			my $cmd = 'git config --global diff-so-fancy.first-run false';
-			print "CMD: $cmd\n";
 			system($cmd);
 		}
 	}
+
+	return 1;
 }
 
 sub set_defaults {
