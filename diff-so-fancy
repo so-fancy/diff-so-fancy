@@ -36,9 +36,11 @@ if (!$has_stdin) {
 
 	if ($args->{v} || $args->{version}) {
 		die(version());
+	} elsif ($args->{set_defaults}) {
+		my $ok = set_defaults();
 	} elsif ($args->{colors}) {
 		# We print this to STDOUT so we can redirect to bash to auto-set the colors
-		print output_default_colors();
+		print get_default_colors();
 		exit;
 	} elsif (!%$args || $args->{help} || $args->{h}) {
 		die(usage());
@@ -46,6 +48,9 @@ if (!$has_stdin) {
 		die("Missing input on STDIN\n");
 	}
 } else {
+	# Check to see if were using default settings
+	check_first_run();
+
 	@input = filter_stdin_through_diff_highlight();
 }
 
@@ -561,7 +566,7 @@ git config --global alias.dsf '!f() { [ -z \"\$GIT_PREFIX\" ] || cd \"\$GIT_PREF
 	return $out;
 }
 
-sub output_default_colors {
+sub get_default_colors {
 	my $out  = "# Recommended default colors for diff-so-fancy\n";
 	$out    .= "# --------------------------------------------\n";
 	$out    .= 'git config --global color.ui true
@@ -612,6 +617,108 @@ sub is_windows {
 	} else {
 		return 0;
 	}
+}
+
+sub check_first_run {
+	my $i   = get_git_config_hash();
+	my $ret = 0;
+
+	# If first-run is not set, or it's set to "true"
+	my $first_run     = boolean(!$i->{'diff-so-fancy'}->{'first-run'} || ($i->{'diff-so-fancy'}->{'first-run'} eq "true"));
+	# See if they're previously set SOME diff-highlight colors
+	my $has_dh_colors = boolean($i->{color}->{'diff-highlight'}->{oldnormal} || $i->{color}->{'diff-highlight'}->{newnormal});
+
+	if ($first_run || $has_dh_colors) {
+		return 1;
+	} else {
+		my $interactive_shell = !has_stdin();
+
+		# d-s-f run inside of LESS (can't prompt user)
+		if (!$interactive_shell) {
+			my $warn  = color("yellow_on_red");
+			my $bold  = color("bold");
+			my $blink = color("blink");
+			my $reset = color("reset");
+
+			printf("\n%s%s%sWarning:%s This appears to be the first time you've run diff-so-fancy. Please note that the\n",$blink,$bold,$warn,$reset);
+			printf("default colors may not be optimal. Please run 'diff-so-fancy --colors' to see our color recommendations.\n\n");
+
+			return 0;
+		}
+
+		print "This appears to be the first time you've run diff-so-fancy, would you like to\n";
+		print "configure git to use diff-so-fancy for all diff operations and use the\n";
+		print "recommended color scheme (y/N)?\n";
+
+		my $input = <STDIN>;
+		$input    = uc(trim($input));
+
+		# Set the default colors and git alias
+		if ($input eq "Y") {
+			set_defaults();
+		# Just set the first-run flag to false so we don't pop this up again
+		} else {
+			my $cmd = 'git config --global diff-so-fancy.first-run false';
+			print "CMD: $cmd\n";
+			system($cmd);
+		}
+	}
+}
+
+sub set_defaults {
+	my $color_config = get_default_colors();
+	my $git_config   = 'git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"';
+	my $first_cmd    = 'git config --global diff-so-fancy.first-run false';
+
+	my @cmds = split(/\n/,$color_config);
+	push(@cmds,$git_config);
+	push(@cmds,$first_cmd);
+
+	# Remove all comments from the commands
+	foreach my $x (@cmds) {
+		$x =~ s/#.*//g;
+	}
+
+	# Remove any empty commands
+	@cmds = grep($_,@cmds);
+
+	foreach my $cmd (@cmds) {
+		system($cmd);
+		my $exit = ($? >> 8);
+
+		if ($exit != 0) {
+			die("Error running: '$cmd' (error #18941)\n");
+		}
+	}
+
+	return 1;
+}
+
+# String format: '115', '165_bold', '10_on_140', 'reset', 'on_173', 'red_bold', 'red_on_blue', 'blink', 'italic'
+sub color {
+	my $str = shift();
+
+	# No string sent in, so we just reset
+	if (!length($str) || $str eq 'reset') { return "\e[0m"; }
+
+	# Some predefined colors
+	my %color_map = qw(red 160 blue 21 green 34 yellow 226 orange 214 purple 93 white 15 black 0);
+	$str =~ s/$_/$color_map{$_}/g for keys %color_map;
+
+	# Get foreground/background and any commands
+	my ($fc,$cmd) = $str =~ /^(\d+)?_?(\w+)?/g;
+	my ($bc)      = $str =~ /on_?(\d+)$/g;
+
+	# Some predefined commands
+	my %cmd_map = qw(bold 1 italic 3 underline 4 blink 5 inverse 7);
+	my $cmd_num = $cmd_map{$cmd || 0};
+
+	my $ret = '';
+	if ($cmd_num)     { $ret .= "\e[${cmd_num}m"; }
+	if (defined($fc)) { $ret .= "\e[38;5;${fc}m"; }
+	if (defined($bc)) { $ret .= "\e[48;5;${bc}m"; }
+
+	return $ret;
 }
 
 # vim: tabstop=4 shiftwidth=4 autoindent softtabstop=4
