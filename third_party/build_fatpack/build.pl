@@ -17,7 +17,7 @@ my $args = argv();
 my $ok   = has_fatpack();
 
 if (!$ok) {
-	printf("%sError:%s App::Fatpack must be installed to build diff-so-fancy\n",color('red_bold'),color('reset'));
+	printf("%sError:%s App::FatPacker must be installed to build diff-so-fancy\n",color('red_bold'),color('reset'));
 	exit;
 }
 
