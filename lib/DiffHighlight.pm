@@ -3,7 +3,7 @@ package DiffHighlight;
 use 5.008;
 use warnings FATAL => 'all';
 use strict;
-no warnings 'utf8';
+use Encode;
 
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
@@ -191,8 +191,8 @@ sub highlight_pair {
 # or "+"
 sub split_line {
 	local $_ = shift;
-	return utf8::decode($_) ?
-		map { utf8::encode($_); $_ }
+	return eval { $_ = Encode::decode('UTF-8', $_, 1); 1 } ?
+		map { Encode::encode('UTF-8', $_) }
 			map { /$COLOR/ ? $_ : (split //) }
 			split /($COLOR+)/ :
 		map { /$COLOR/ ? $_ : (split //) }
