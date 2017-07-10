@@ -616,7 +616,7 @@ sub filter_stdin_through_diff_highlight {
 }
 
 sub is_windows {
-	if ($^O eq 'MSWin32' or $^O eq 'dos' or $^O eq 'os2' or $^O eq 'cygwin') {
+	if ($^O eq 'MSWin32' or $^O eq 'dos' or $^O eq 'os2' or $^O eq 'cygwin' or $^O eq 'msys') {
 		return 1;
 	} else {
 		return 0;
