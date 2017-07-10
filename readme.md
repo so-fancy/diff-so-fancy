@@ -30,6 +30,11 @@ git config --global alias.dsf '!f() { [ -z "$GIT_PREFIX" ] || cd "$GIT_PREFIX" '
 '&& git diff --color "$@" | diff-so-fancy  | less --tabs=4 -RFX; }; f'
 ```
 
+As of **git 2.9** you can also fancy up the output of interactive patch selection (`git add/checkout/stash/reset --patch`). This requires the `--patch-mode` option to ensure everything lines up. Apply it like this:
+```shell
+git config --global interactive.diffFilter "diff-so-fancy --patch-mode | less --tabs=4 -RFX"
+```
+
 ## Install
 
 For convenience, the recommended installation is via NPM. If you'd prefer, you may choose to do a [manual installation](#manual-install) instead.
