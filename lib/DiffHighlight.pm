@@ -3,6 +3,7 @@ package DiffHighlight;
 use 5.008;
 use warnings FATAL => 'all';
 use strict;
+no warnings 'utf8';
 
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
