@@ -12,13 +12,6 @@ use DiffHighlight;
 use strict;
 use warnings FATAL => 'all';
 
-# Set the input (STDIN) as UTF8, but don't give warnings about unknown chars
-#use open qw(:std :utf8); # http://stackoverflow.com/a/519359
-no warnings 'utf8';
-
-# Set the output to always be UTF8
-#binmode STDOUT,':encoding(UTF-8)';
-
 my $remove_file_add_header     = 1;
 my $remove_file_delete_header  = 1;
 my $clean_permission_changes   = 1;
@@ -474,7 +467,7 @@ sub horizontal_rule {
 	# BOX DRAWINGS LIGHT HORIZONTAL http://www.fileformat.info/info/unicode/char/2500/index.htm
 	my $dash;
 	if ($use_unicode_dash_for_ruler && should_print_unicode()) {
-		$dash = "\x{2500}";
+		$dash = Encode::encode('UTF-8', "\x{2500}");
 	} else {
 		$dash = "-";
 	}
