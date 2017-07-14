@@ -1,20 +1,21 @@
-#!/usr/bin/env perl
+package DiffHighlight;
 
 use 5.008;
 use warnings FATAL => 'all';
 use strict;
+use Encode;
 
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
 my @OLD_HIGHLIGHT = (
 	color_config('color.diff-highlight.oldnormal'),
 	color_config('color.diff-highlight.oldhighlight', "\x1b[7m"),
-	color_config('color.diff-highlight.oldreset', "\x1b[27m")
+	"\x1b[27m",
 );
 my @NEW_HIGHLIGHT = (
 	color_config('color.diff-highlight.newnormal', $OLD_HIGHLIGHT[0]),
 	color_config('color.diff-highlight.newhighlight', $OLD_HIGHLIGHT[1]),
-	color_config('color.diff-highlight.newreset', $OLD_HIGHLIGHT[2])
+	$OLD_HIGHLIGHT[2],
 );
 
 my $RESET = "\x1b[m";
@@ -29,13 +30,14 @@ my @removed;
 my @added;
 my $in_hunk;
 
-# Some scripts may not realize that SIGPIPE is being ignored when launching the
-# pager--for instance scripts written in Python.
-$SIG{PIPE} = 'DEFAULT';
+our $line_cb = sub { print @_ };
+our $flush_cb = sub { local $| = 1 };
 
-while (<>) {
+sub handle_line {
+	local $_ = shift;
+
 	if (!$in_hunk) {
-		print;
+		$line_cb->($_);
 		$in_hunk = /^$GRAPH*$COLOR*\@\@ /;
 	}
 	elsif (/^$GRAPH*$COLOR*-/) {
@@ -49,7 +51,7 @@ while (<>) {
 		@removed = ();
 		@added = ();
 
-		print;
+		$line_cb->($_);
 		$in_hunk = /^$GRAPH*$COLOR*[\@ ]/;
 	}
 
@@ -62,15 +64,22 @@ while (<>) {
 	# place to flush. Flushing on a blank line is a heuristic that
 	# happens to match git-log output.
 	if (!length) {
-		local $| = 1;
+		$flush_cb->();
 	}
 }
 
-# Flush any queued hunk (this can happen when there is no trailing context in
-# the final diff of the input).
-show_hunk(\@removed, \@added);
+sub flush {
+	# Flush any queued hunk (this can happen when there is no trailing
+	# context in the final diff of the input).
+	show_hunk(\@removed, \@added);
+}
 
-exit 0;
+sub highlight_stdin {
+	while (<STDIN>) {
+		handle_line($_);
+	}
+	flush();
+}
 
 # Ideally we would feed the default as a human-readable color to
 # git-config as the fallback value. But diff-highlight does
@@ -88,7 +97,7 @@ sub show_hunk {
 
 	# If one side is empty, then there is nothing to compare or highlight.
 	if (!@$a || !@$b) {
-		print @$a, @$b;
+		$line_cb->(@$a, @$b);
 		return;
 	}
 
@@ -97,22 +106,23 @@ sub show_hunk {
 	# stupid, and only handle multi-line hunks that remove and add the same
 	# number of lines.
 	if (@$a != @$b) {
-		print @$a, @$b;
+		$line_cb->(@$a, @$b);
 		return;
 	}
 
 	my @queue;
 	for (my $i = 0; $i < @$a; $i++) {
 		my ($rm, $add) = highlight_pair($a->[$i], $b->[$i]);
-		print $rm;
+		$line_cb->($rm);
 		push @queue, $add;
 	}
-	print @queue;
+	$line_cb->(@queue);
 }
 
 sub highlight_pair {
 	my @a = split_line(shift);
 	my @b = split_line(shift);
+	my $opts = shift();
 
 	# Find common prefix, taking care to skip any ansi
 	# color codes.
@@ -157,9 +167,18 @@ sub highlight_pair {
 		}
 	}
 
+	my @OLD_COLOR_SPEC = @OLD_HIGHLIGHT;
+	my @NEW_COLOR_SPEC = @NEW_HIGHLIGHT;
+
+	# If we're only highlight the differences temp disable the old/new normal colors
+	if ($opts->{'only_diff'}) {
+		$OLD_COLOR_SPEC[0] = '';
+		$NEW_COLOR_SPEC[0] = '';
+	}
+
 	if (is_pair_interesting(\@a, $pa, $sa, \@b, $pb, $sb)) {
-		return highlight_line(\@a, $pa, $sa, \@OLD_HIGHLIGHT),
-		       highlight_line(\@b, $pb, $sb, \@NEW_HIGHLIGHT);
+		return highlight_line(\@a, $pa, $sa, \@OLD_COLOR_SPEC),
+		       highlight_line(\@b, $pb, $sb, \@NEW_COLOR_SPEC);
 	}
 	else {
 		return join('', @a),
@@ -172,8 +191,8 @@ sub highlight_pair {
 # or "+"
 sub split_line {
 	local $_ = shift;
-	return utf8::decode($_) ?
-		map { utf8::encode($_); $_ }
+	return eval { $_ = Encode::decode('UTF-8', $_, 1); 1 } ?
+		map { Encode::encode('UTF-8', $_) }
 			map { /$COLOR/ ? $_ : (split //) }
 			split /($COLOR+)/ :
 		map { /$COLOR/ ? $_ : (split //) }

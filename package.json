@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Good-lookin' diffs with diff-highlight and more",
   "bin": {
-    "diff-so-fancy": "diff-so-fancy",
-    "diff-highlight": "third_party/diff-highlight/diff-highlight"
+    "diff-so-fancy": "diff-so-fancy"
   },
   "scripts": {
     "test": "bats test"
