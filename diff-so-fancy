@@ -616,7 +616,7 @@ sub check_first_run {
 	my $ret = 0;
 
 	# If first-run is not set, or it's set to "true"
-	my $first_run     = boolean(!$i->{'diff-so-fancy'}->{'first-run'} || ($i->{'diff-so-fancy'}->{'first-run'} eq "true"));
+	my $first_run     = git_config_boolean($i->{'diff-so-fancy'}->{'first-run'});
 	# See if they're previously set SOME diff-highlight colors
 	my $has_dh_colors = boolean($i->{color}->{'diff-highlight'}->{oldnormal} || $i->{color}->{'diff-highlight'}->{newnormal});
 
