@@ -633,7 +633,8 @@ sub check_first_run {
 			my $reset = color("reset");
 
 			printf("\n%s%s%sWarning:%s This appears to be the first time you've run diff-so-fancy. Please note that the\n",$blink,$bold,$warn,$reset);
-			printf("default colors may not be optimal. Please run 'diff-so-fancy --colors' to see our color recommendations.\n\n");
+			printf("default colors may not be optimal. Please run 'diff-so-fancy --colors' to see our color recommendations.\n");
+			printf("If you see this message multiple times, either run 'diff-so-fancy' standalone, or 'git config --global diff-so-fancy.first-run false'.\n\n");
 
 			return 0;
 		}
