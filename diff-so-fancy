@@ -367,13 +367,17 @@ sub get_git_config_hash {
 	my %hash;
 	foreach my $line (@$out) {
 		my ($key,$value) = split("=",$line,2);
-		$value =~ s/\s+$//;
-		my @path = split(/\./,$key);
 
-		my $last = pop @path;
-		my $p = \%hash;
-		$p = $p->{$_} ||= {} for @path;
-		$p->{$last} = $value;
+		if ($key && $value) {
+			$value   =~ s/\s+$//;
+			my @path = split(/\./,$key);
+			my $last = pop @path;
+			my $p    = \%hash;
+
+			# Build the tree for each section
+			$p = $p->{$_} ||= {} for @path;
+			$p->{$last} = $value;
+		}
 	}
 
 	return \%hash;
