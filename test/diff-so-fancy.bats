@@ -95,3 +95,15 @@ if begin[m"
   run printf "%s" "$output"
   assert_line --index 5 "after"
 }
+
+@test "Empty file add" {
+  output=$( load_fixture "add_empty_file" | $diff_so_fancy )
+  run printf "%s" "$output"
+  assert_line --index 5 --partial "added: empty_file.txt"
+}
+
+@test "Empty file delete" {
+  output=$( load_fixture "remove_empty_file" | $diff_so_fancy )
+  run printf "%s" "$output"
+  assert_line --index 5 --partial "deleted: empty_file.txt"
+}

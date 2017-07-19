@@ -1,0 +1,9 @@
+commit 0148734e753690a9207ebcb8cd117f343e230dec
+Author: Scott Baker <fake@domain.com>
+Date:   Wed Jul 19 08:12:45 2017 -0700
+
+    remvo
+
+diff --git a/empty_file.txt b/empty_file.txt
+deleted file mode 100644
+index e69de29..0000000
