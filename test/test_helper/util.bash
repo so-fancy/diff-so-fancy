@@ -13,9 +13,9 @@ set_env() {
 
 # applying colors so ANSI color values will match
 # FIXME: not everyone will have these set, so we need to test for that.
-git config color.diff.meta "yellow bold"
-git config color.diff.commit "green bold"
+git config color.diff.meta "227"
 git config color.diff.frag "magenta bold"
+git config color.diff.commit "227 bold"
 git config color.diff.old "red bold"
 git config color.diff.new "green bold"
 git config color.diff.whitespace "red reverse"
