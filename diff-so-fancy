@@ -30,12 +30,12 @@ my $meta_color       = "";
 
 my ($file_1,$file_2);
 my $last_file_seen    = "";
+my $last_file_mode    = "";
 my $i                 = 0;
 my $in_hunk           = 0;
 my $columns_to_remove = 0;
 
 # We only process ARGV if we don't have STDIN
-my @input;
 if (!$has_stdin) {
 	my $args = argv();
 
@@ -104,8 +104,31 @@ sub do_dsf_stuff {
 		####################################################################
 		if ($line =~ /^${ansi_color_regex}index /) {
 			# Print the line color and then the actual line
-			$meta_color = $1;
+			$meta_color = $1 || DiffHighlight::color_config('color.diff.meta',"\e[38;5;227m");
 			print horizontal_rule($meta_color);
+
+			# Get the next line without incrementing counter while loop
+			my $next = $input->[0] || "";
+			my ($file_1,$file_2);
+
+			# The line immediately after the "index" line should be the --- file line
+			# If it's not it's an empty file add/delete
+			if ($next !~ /^$ansi_color_regex---/) {
+
+				# We fake out the file names since it's a raw add/delete
+				if ($last_file_mode eq "add") {
+					$file_1 = "/dev/null";
+					$file_2 = $last_file_seen;
+				} elsif ($last_file_mode eq "delete") {
+					$file_1 = $last_file_seen;
+					$file_2 = "/dev/null";
+				}
+			}
+
+			if ($file_1 && $file_2) {
+				print $meta_color . file_change_string($file_1,$file_2) . "\n";
+				print horizontal_rule($meta_color);
+			}
 		#########################
 		# Look for the filename #
 		#########################
@@ -175,11 +198,13 @@ sub do_dsf_stuff {
 		###################################
 		} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}.*new file mode/) {
 			# Don't print the line (i.e. remove it from the output);
+			$last_file_mode = "add";
 		######################################
 		# Remove any delete file permissions #
 		######################################
 		} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
 			# Don't print the line (i.e. remove it from the output);
+			$last_file_mode = "delete";
 		################################
 		# Look for binary file changes #
 		################################
