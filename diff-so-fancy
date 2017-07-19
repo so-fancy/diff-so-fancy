@@ -64,8 +64,17 @@ if (!$has_stdin) {
 	local $DiffHighlight::line_cb = sub {
 		push(@lines,@_);
 
-		# Buffer 100 lines before we try and output anything
-		if (@lines > 100) {
+		my $last_line = $lines[-1];
+
+		# Buffer X lines before we try and output anything
+		# Also make sure we're sending enough data to d-s-f to do it's magic.
+		# Certain things require a look-ahead line or two to function so
+		# we make sure we don't break on those sections prematurely
+		if (@lines > 24 && ($last_line !~ /---|old mode|similarity index/)) {
+			#print "START -------------------------------------------------\n";
+			#print join("",@lines);
+			#print "END ---------------------------------------------------\n";
+
 			do_dsf_stuff(\@lines);
 			@lines = ();
 		}
