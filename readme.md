@@ -24,20 +24,20 @@ git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
 
 ### Improved colors for the highlighted bits
 
-The default colors are not the best so we recommend the following color settings as a base.
+The default Git colors are not optimal. We suggest the following colors instead.
 ```shell
 git config --global color.ui true
 
-git config --global color.diff-highlight.oldNormal "red bold"
+git config --global color.diff-highlight.oldNormal    "red bold"
 git config --global color.diff-highlight.oldHighlight "red bold 52"
-git config --global color.diff-highlight.newNormal "green bold"
+git config --global color.diff-highlight.newNormal    "green bold"
 git config --global color.diff-highlight.newHighlight "green bold 22"
 
-git config --global color.diff.meta "227"
-git config --global color.diff.frag "magenta bold"
-git config --global color.diff.commit "227 bold"
-git config --global color.diff.old "red bold"
-git config --global color.diff.new "green bold"
+git config --global color.diff.meta       "227"
+git config --global color.diff.frag       "magenta bold"
+git config --global color.diff.commit     "227 bold"
+git config --global color.diff.old        "red bold"
+git config --global color.diff.new        "green bold"
 git config --global color.diff.whitespace "red reverse"
 ```
 
