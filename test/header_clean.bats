@@ -16,7 +16,7 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 }
 
 @test "header_clean 'added:'" {
-	assert_output --partial 'added: hello.txt'
+	assert_output --regexp 'added:.*hello.txt'
 }
 
 @test "header_clean 'modified:'" {
@@ -24,7 +24,7 @@ output=$( load_fixture "file-moves" | $diff_so_fancy )
 }
 
 @test "header_clean 'deleted:'" {
-	assert_output --partial 'deleted: circle.yml'
+	assert_output --regexp 'deleted:.*circle.yml'
 }
 
 @test "header_clean permission changes" {
