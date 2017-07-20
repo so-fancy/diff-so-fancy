@@ -7,12 +7,12 @@ use Encode;
 
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
-my @OLD_HIGHLIGHT = (
+our @OLD_HIGHLIGHT = (
 	color_config('color.diff-highlight.oldnormal'),
 	color_config('color.diff-highlight.oldhighlight', "\x1b[7m"),
 	"\x1b[27m",
 );
-my @NEW_HIGHLIGHT = (
+our@NEW_HIGHLIGHT = (
 	color_config('color.diff-highlight.newnormal', $OLD_HIGHLIGHT[0]),
 	color_config('color.diff-highlight.newhighlight', $OLD_HIGHLIGHT[1]),
 	$OLD_HIGHLIGHT[2],

@@ -545,10 +545,12 @@ sub file_change_string {
 		return "modified: $file_1";
 	# If the first is /dev/null it's a new file
 	} elsif ($file_1 eq "/dev/null") {
-		return "added: $file_2";
+		my $add_color = $DiffHighlight::NEW_HIGHLIGHT[1];
+		return "added: $add_color$file_2$reset_color";
 	# If the second is /dev/null it's a deletion
 	} elsif ($file_2 eq "/dev/null") {
-		return "deleted: $file_1";
+		my $del_color = $DiffHighlight::OLD_HIGHLIGHT[1];
+		return "deleted: $del_color$file_1$reset_color";
 	# If the files aren't the same it's a rename
 	} elsif ($file_1 ne $file_2) {
 		my ($old, $new) = DiffHighlight::highlight_pair($file_1,$file_2,{only_diff => 1});
