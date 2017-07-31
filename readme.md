@@ -73,7 +73,7 @@ git config --bool --global diff-so-fancy.useUnicodeRuler false
 
 ## Contributing
 
-Pull requests quite welcome, along with any feedback or ideas.
+Any feedback or ideas are welcome. Please submit your pull requests against the [`next` branch](https://github.com/so-fancy/diff-so-fancy/tree/next).
 
 ### Other documentation
 
