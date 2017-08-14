@@ -107,3 +107,9 @@ if begin[m"
   run printf "%s" "$output"
   assert_line --index 5 --regexp "deleted:.*empty_file.txt"
 }
+
+@test "Move with content change" {
+  output=$( load_fixture "move_with_content_change" | $diff_so_fancy )
+  run printf "%s" "$output"
+  assert_line --index 1 --regexp "renamed:"
+}

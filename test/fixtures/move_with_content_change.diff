@@ -1,0 +1,13 @@
+diff --git a/a.txt b/b.txt
+similarity index 84%
+rename from a.txt
+rename to b.txt
+index 6674929..1c877ab 100644
+--- a/a.txt
++++ b/b.txt
+@@ -2,4 +2,4 @@ height: '10px',
+ width: '100%',
+ display: 'block',
+ position: 'absolute',
+-bottom: '0',
++bottom: '0'
