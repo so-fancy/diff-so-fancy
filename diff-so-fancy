@@ -6,6 +6,7 @@ my $VERSION = "1.2.0";
 
 use Cwd qw(abs_path);                   # For realpath()
 use File::Basename;                     # for dirname
+use Encode;                             # For handling UTF8 stuff
 use lib dirname(abs_path($0)) . "/lib"; # Add the local lib/ to @INC
 use DiffHighlight;
 
