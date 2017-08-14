@@ -260,6 +260,10 @@ sub do_dsf_stuff {
 
 			$i += 3; # We've consumed three lines
 			next;
+		} elsif ($line =~ /^${ansi_color_regex}similarity index/) {
+			shift(@$input);
+			shift(@$input);
+			next;
 		#####################################
 		# Just a regular line, print it out #
 		#####################################
