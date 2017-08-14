@@ -240,7 +240,16 @@ sub do_dsf_stuff {
 		###############
 		# File rename #
 		###############
-		} elsif ($line =~ /^${ansi_color_regex}similarity index 100%/) {
+		} elsif ($line =~ /^${ansi_color_regex}similarity index (\d+)%/) {
+			my $simil = $4;
+
+			# If it's a move with content change we ignore this and the next two lines
+			if ($simil != 100) {
+				shift(@$input);
+				shift(@$input);
+				next;
+			}
+
 			my $next    = shift(@$input);
 			my ($file1) = $next =~ /rename from (.+)/;
 
@@ -259,10 +268,6 @@ sub do_dsf_stuff {
 			}
 
 			$i += 3; # We've consumed three lines
-			next;
-		} elsif ($line =~ /^${ansi_color_regex}similarity index/) {
-			shift(@$input);
-			shift(@$input);
 			next;
 		#####################################
 		# Just a regular line, print it out #
