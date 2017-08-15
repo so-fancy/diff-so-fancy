@@ -71,7 +71,7 @@ if (!$has_stdin) {
 		# Also make sure we're sending enough data to d-s-f to do it's magic.
 		# Certain things require a look-ahead line or two to function so
 		# we make sure we don't break on those sections prematurely
-		if (@lines > 24 && ($last_line !~ /^${ansi_color_regex}(---|old mode|similarity index|rename (from|to))/)) {
+		if (@lines > 24 && ($last_line !~ /^${ansi_color_regex}(---|index|old mode|similarity index|rename (from|to))/)) {
 			do_dsf_stuff(\@lines);
 			@lines = ();
 		}
