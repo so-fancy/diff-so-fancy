@@ -4,10 +4,11 @@ my $VERSION = "1.2.0";
 
 #################################################################################
 
-use File::Spec;                                     # For catdir
-use File::Basename;                                 # For dirname
-use Encode;                                         # For handling UTF8 stuff
-use lib dirname(File::Spec->catdir($0)) . "/lib";   # Add the local lib/ to @INC
+use File::Spec;                                             # For catdir
+use File::Basename;                                         # For dirname
+use Encode;                                                 # For handling UTF8 stuff
+use Cwd qw(abs_path);                                       # For realpath()
+use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
 use DiffHighlight;
 
 use strict;
