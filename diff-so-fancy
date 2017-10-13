@@ -125,7 +125,7 @@ sub do_dsf_stuff {
 
 			# The line immediately after the "index" line should be the --- file line
 			# If it's not it's an empty file add/delete
-			if ($next !~ /^$ansi_color_regex---/) {
+			if ($next !~ /^$ansi_color_regex(---|Binary files)/) {
 
 				# We fake out the file names since it's a raw add/delete
 				if ($last_file_mode eq "add") {
