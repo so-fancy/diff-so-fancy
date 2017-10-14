@@ -13,7 +13,7 @@ Vanilla `git diff` vs `git` and `diff-so-fancy`
 
 Installation is as simple as downloading the [diff-so-fancy](https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy) script to a directory in your path
 
-`diff-so-fancy` is also available from NPM, brew, and as a package on Arch Linux.
+`diff-so-fancy` is also available from NPM, Nix, brew, and as a package on Arch Linux.
 
 ## Usage
 
