@@ -1,0 +1,6 @@
+{
+  "name" : "diff-so-fancy-test",
+  "description" : "test for diff-so-fancy parser",
+  "version" : "0.0.1",
+  "category": "test tools"
+}
