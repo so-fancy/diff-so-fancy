@@ -1,0 +1,7 @@
+begin:
+@ dist.ini:1 @
+regexp: csvgrep\x1b\[7m\x1b\[27m
+regexp: csvgrep\x1b\[7mper\x1b\[27m
+author  = Neil Bowers <neilb@cpan.org>
+end:
+

@@ -31,8 +31,11 @@ before_install:
 install:
   - cpanm --quiet --notest --local-lib=~/perl5 local::lib
   - eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
-  - cpanm --quiet --notest Test::Perl::Critic Perl::Critic::Freenode
+  - cpanm --quiet --notest Test::Perl::Critic Perl::Critic::Freenode Sparrow
+  - sparrow index update
+  - sparrow plg install diff-so-fancy-test
 script:
   - ./bats/bin/bats test/*.bats
   - perlcritic -1 -q --theme freenode diff-so-fancy
   - shellcheck *.sh
+  - sparrow plg run diff-so-fancy-test --param fixtures_dir=$PWD/test/fixtures/ --param diff_so_fancy_bin=$PWD/diff-so-fancy
