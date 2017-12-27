@@ -690,40 +690,22 @@ sub check_first_run {
 	# See if they're previously set SOME diff-highlight colors
 	my $has_dh_colors = git_config_boolean('color.diff-highlight.oldnormal') || git_config_boolean('color.diff-highlight.newnormal');
 
+	#$first_run = 1; $has_dh_colors = 0;
+
 	if (!$first_run || $has_dh_colors) {
 		return 0;
 	} else {
-		my $interactive_shell = !has_stdin();
+		print "This appears to be the first time you've run diff-so-fancy, please note\n";
+		print "that the default git colors are not ideal. Diff-so-fancy recommends the\n";
+		print "following colors.\n\n";
 
-		# d-s-f run inside of LESS (can't prompt user)
-		if (!$interactive_shell) {
-			my $warn  = color("yellow_on_red");
-			my $bold  = color("bold");
-			my $blink = color("blink");
-			my $reset = color("reset");
+		print get_default_colors();
 
-			printf("\n%s%s%sWarning:%s This appears to be the first time you've run diff-so-fancy. Please note that the\n",$blink,$bold,$warn,$reset);
-			printf("default colors may not be optimal. Please run 'diff-so-fancy --colors' to see our color recommendations.\n");
-			printf("To silence this error run: 'git config --global diff-so-fancy.first-run false'.\n\n");
+		# Set the first run flag to false
+		my $cmd = 'git config --global diff-so-fancy.first-run false';
+		system($cmd);
 
-			return 0;
-		}
-
-		print "This appears to be the first time you've run diff-so-fancy, would you like to\n";
-		print "configure git to use diff-so-fancy for all diff operations and use the\n";
-		print "recommended color scheme (y/N)?\n";
-
-		my $input = <STDIN>;
-		$input    = uc(trim($input));
-
-		# Set the default colors and git alias
-		if ($input eq "Y") {
-			set_defaults();
-		# Just set the first-run flag to false so we don't pop this up again
-		} else {
-			my $cmd = 'git config --global diff-so-fancy.first-run false';
-			system($cmd);
-		}
+		exit;
 	}
 
 	return 1;
