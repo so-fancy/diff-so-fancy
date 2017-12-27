@@ -116,7 +116,7 @@ sub do_dsf_stuff {
 		####################################################################
 		if ($line =~ /^${ansi_color_regex}index /) {
 			# Print the line color and then the actual line
-			$meta_color = $1 || DiffHighlight::color_config('color.diff.meta',"\e[38;5;227m");
+			$meta_color = $1 || DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
 			print horizontal_rule($meta_color);
 
 			# Get the next line without incrementing counter while loop
@@ -259,7 +259,7 @@ sub do_dsf_stuff {
 
 			if ($file1 && $file2) {
 				# We may not have extracted this yet, so we pull from the config if not
-				$meta_color ||= DiffHighlight::color_config('color.diff.meta',"\e[38;5;227m");
+				$meta_color ||= DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
 
 				my $change = file_change_string($file1,$file2);
 
@@ -638,9 +638,9 @@ git config --global color.diff-highlight.oldHighlight "red bold 52"
 git config --global color.diff-highlight.newNormal "green bold"
 git config --global color.diff-highlight.newHighlight "green bold 22"
 
-git config --global color.diff.meta "227"
+git config --global color.diff.meta "yellow"
 git config --global color.diff.frag "magenta bold"
-git config --global color.diff.commit "227 bold"
+git config --global color.diff.commit "yellow bold"
 git config --global color.diff.old "red bold"
 git config --global color.diff.new "green bold"
 git config --global color.diff.whitespace "red reverse"
