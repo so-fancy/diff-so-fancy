@@ -7,7 +7,7 @@
 
 Vanilla `git diff` vs `git` and `diff-so-fancy`
 
-![diff-highlight vs diff-so-fancy](https://cloud.githubusercontent.com/assets/39191/13622719/7cc7c54c-e555-11e5-86c4-7045d91af041.png)
+![diff-highlight vs diff-so-fancy](https://user-images.githubusercontent.com/3429760/32387617-44c873da-c082-11e7-829c-6160b853adcb.png)
 
 ## Install
 
