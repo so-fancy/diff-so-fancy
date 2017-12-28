@@ -1,0 +1,9 @@
+commit ef0e63dbd7e8df6cde4ee5599ad65db7820888ef
+Author: Scott Baker <fake@domain.com>
+Date:   Wed Jul 19 08:00:11 2017 -0700
+
+    Add empty file
+
+diff --git a/empty_file.txt b/empty_file.txt
+new file mode 100644
+index 0000000..e69de29

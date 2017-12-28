@@ -1,12 +1,14 @@
 #!/usr/bin/env perl
 
-my $VERSION = "1.1.1";
+my $VERSION = "1.2.0";
 
 #################################################################################
 
-use Cwd qw(abs_path);                   # For realpath()
-use File::Basename;                     # for dirname
-use lib dirname(abs_path($0)) . "/lib"; # Add the local lib/ to @INC
+use File::Spec;                                             # For catdir
+use File::Basename;                                         # For dirname
+use Encode;                                                 # For handling UTF8 stuff
+use Cwd qw(abs_path);                                       # For realpath()
+use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
 use DiffHighlight;
 
 use strict;
@@ -22,8 +24,20 @@ my $use_unicode_dash_for_ruler = git_config_boolean("diff-so-fancy.useUnicodeRul
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
 
+my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
+my $dim_magenta      = "\e[38;5;146m";
+my $reset_color      = "\e[0m";
+my $bold             = "\e[1m";
+my $meta_color       = "";
+
+my ($file_1,$file_2);
+my $last_file_seen    = "";
+my $last_file_mode    = "";
+my $i                 = 0;
+my $in_hunk           = 0;
+my $columns_to_remove = 0;
+
 # We only process ARGV if we don't have STDIN
-my @input;
 if (!$has_stdin) {
 	my $args = argv();
 
@@ -48,181 +62,232 @@ if (!$has_stdin) {
 	# Check to see if were using default settings
 	check_first_run();
 
-	@input = filter_stdin_through_diff_highlight();
+	my @lines;
+	local $DiffHighlight::line_cb = sub {
+		push(@lines,@_);
+
+		my $last_line = $lines[-1];
+
+		# Buffer X lines before we try and output anything
+		# Also make sure we're sending enough data to d-s-f to do it's magic.
+		# Certain things require a look-ahead line or two to function so
+		# we make sure we don't break on those sections prematurely
+		if (@lines > 24 && ($last_line !~ /^${ansi_color_regex}(---|index|old mode|similarity index|rename (from|to))/)) {
+			do_dsf_stuff(\@lines);
+			@lines = ();
+		}
+	};
+
+	while (my $line = <STDIN>) {
+		my $ok = DiffHighlight::handle_line($line);
+	}
+
+	DiffHighlight::flush();
+	do_dsf_stuff(\@lines);
 }
 
 #################################################################################
 
-my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
-my $dim_magenta      = "\e[38;5;146m";
-my $reset_color      = "\e[0m";
-my $bold             = "\e[1m";
-my $meta_color       = "";
+sub do_dsf_stuff {
+	my $input = shift();
 
-my ($file_1,$file_2);
-my $last_file_seen    = "";
-my $i                 = 0;
-my $in_hunk           = 0;
-my $columns_to_remove = 0;
+	#print STDERR "START -------------------------------------------------\n";
+	#print STDERR join("",@$input);
+	#print STDERR "END ---------------------------------------------------\n";
 
-while (my $line = shift(@input)) {
-	######################################################
-	# Pre-process the line before we do any other markup #
-	######################################################
+	while (my $line = shift(@$input)) {
+		######################################################
+		# Pre-process the line before we do any other markup #
+		######################################################
 
-	# If the first line of the input is a blank line, skip that
-	if ($i == 0 && $line =~ /^\s*$/) {
-		next;
-	}
-
-	######################
-	# End pre-processing #
-	######################
-
-	#######################################################################
-
-	####################################################################
-	# Look for git index and replace it horizontal line (header later) #
-	####################################################################
-	if ($line =~ /^${ansi_color_regex}index /) {
-		# Print the line color and then the actual line
-		$meta_color = $1;
-		print horizontal_rule($meta_color);
-	#########################
-	# Look for the filename #
-	#########################
-	} elsif ($line =~ /^${ansi_color_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
-		$last_file_seen = $5;
-		$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
-		$in_hunk = 0;
-	########################################
-	# Find the first file: --- a/README.md #
-	########################################
-	} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
-		if ($git_strip_prefix) {
-			my $file_dir = $4 || "";
-			$file_1 = $file_dir . $5;
-		} else {
-			$file_1 = $5;
+		# If the first line of the input is a blank line, skip that
+		if ($i == 0 && $line =~ /^\s*$/) {
+			next;
 		}
 
-		# Find the second file on the next line: +++ b/README.md
-		my $next = shift(@input);
-		$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|\t|$)/;
-		if ($1) {
-			print $1; # Print out whatever color we're using
-		}
-		if ($git_strip_prefix) {
-			my $file_dir = $4 || "";
-			$file_2 = $file_dir . $5;
-		} else {
-			$file_2 = $5;
-		}
+		######################
+		# End pre-processing #
+		######################
 
-		if ($file_2 ne "/dev/null") {
-			$last_file_seen = $file_2;
-		}
+		#######################################################################
 
-		print file_change_string($file_1,$file_2) . "\n";
-
-		# Print out the bottom horizontal line of the header
-		print horizontal_rule($meta_color);
-	########################################
-	# Check for "@@ -3,41 +3,63 @@" syntax #
-	########################################
-	} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
-		$in_hunk        = 1;
-		my $hunk_header = $4;
-		my $remain      = bleach_text($5);
-
-		# The number of colums to remove (1 or 2) is based on how many commas in the hunk header
-		$columns_to_remove   = (char_count(",",$hunk_header)) - 1;
-		# On single line removes there is NO comma in the hunk so we force one
-		if ($columns_to_remove <= 0) {
-			$columns_to_remove = 1;
-		}
-
-		if ($1) {
-			print $1; # Print out whatever color we're using
-		}
-
-		my ($orig_offset, $orig_count, $new_offset, $new_count) = parse_hunk_header($hunk_header);
-		$last_file_seen = basename($last_file_seen);
-
-		# Figure out the start line
-		my $start_line = start_line_calc($new_offset,$new_count);
-		print "@ $last_file_seen:$start_line \@${bold}${dim_magenta}${remain}${reset_color}\n";
-	###################################
-	# Remove any new file permissions #
-	###################################
-	} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}.*new file mode/) {
-		# Don't print the line (i.e. remove it from the output);
-	######################################
-	# Remove any delete file permissions #
-	######################################
-	} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
-		# Don't print the line (i.e. remove it from the output);
-	################################
-	# Look for binary file changes #
-	################################
-	} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
-		my $change = file_change_string($2,$4);
-		print "$meta_color$change (binary)\n";
-		print horizontal_rule($meta_color);
-	#####################################################
-	# Check if we're changing the permissions of a file #
-	#####################################################
-	} elsif ($clean_permission_changes && $line =~ /^${ansi_color_regex}old mode (\d+)/) {
-		my ($old_mode) = $4;
-		my $next = shift(@input);
-
-		if ($1) {
-			print $1; # Print out whatever color we're using
-		}
-
-		my ($new_mode) = $next =~ m/new mode (\d+)/;
-		print "$last_file_seen changed file mode from $old_mode to $new_mode\n";
-
-	###############
-	# File rename #
-	###############
-	} elsif ($line =~ /^${ansi_color_regex}similarity index 100%/) {
-		my $next    = shift(@input);
-		my ($file1) = $next =~ /rename from (.+)/;
-
-		$next       = shift(@input);
-		my ($file2) = $next =~ /rename to (.+)/;
-
-		if ($file1 && $file2) {
-			# We may not have extracted this yet, so we pull from the config if not
-			$meta_color ||= DiffHighlight::color_config('color.diff.meta',"\e[38;5;227m");
-
-			my $change = file_change_string($file1,$file2);
-
+		####################################################################
+		# Look for git index and replace it horizontal line (header later) #
+		####################################################################
+		if ($line =~ /^${ansi_color_regex}index /) {
+			# Print the line color and then the actual line
+			$meta_color = $1 || DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
 			print horizontal_rule($meta_color);
-			print $meta_color . $change . "\n";
+
+			# Get the next line without incrementing counter while loop
+			my $next = $input->[0] || "";
+			my ($file_1,$file_2);
+
+			# The line immediately after the "index" line should be the --- file line
+			# If it's not it's an empty file add/delete
+			if ($next !~ /^$ansi_color_regex(---|Binary files)/) {
+
+				# We fake out the file names since it's a raw add/delete
+				if ($last_file_mode eq "add") {
+					$file_1 = "/dev/null";
+					$file_2 = $last_file_seen;
+				} elsif ($last_file_mode eq "delete") {
+					$file_1 = $last_file_seen;
+					$file_2 = "/dev/null";
+				}
+			}
+
+			if ($file_1 && $file_2) {
+				print $meta_color . file_change_string($file_1,$file_2) . "\n";
+				print horizontal_rule($meta_color);
+			}
+		#########################
+		# Look for the filename #
+		#########################
+		} elsif ($line =~ /^${ansi_color_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
+			$last_file_seen = $5;
+			$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
+			$in_hunk = 0;
+		########################################
+		# Find the first file: --- a/README.md #
+		########################################
+		} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
+			if ($git_strip_prefix) {
+				my $file_dir = $4 || "";
+				$file_1 = $file_dir . $5;
+			} else {
+				$file_1 = $5;
+			}
+
+			# Find the second file on the next line: +++ b/README.md
+			my $next = shift(@$input);
+			$next    =~ /^$ansi_color_regex\+\+\+ (\w\/)?(.+?)(\e|\t|$)/;
+			if ($1) {
+				print $1; # Print out whatever color we're using
+			}
+			if ($git_strip_prefix) {
+				my $file_dir = $4 || "";
+				$file_2 = $file_dir . $5;
+			} else {
+				$file_2 = $5;
+			}
+
+			if ($file_2 ne "/dev/null") {
+				$last_file_seen = $file_2;
+			}
+
+			print file_change_string($file_1,$file_2) . "\n";
+
+			# Print out the bottom horizontal line of the header
 			print horizontal_rule($meta_color);
+		########################################
+		# Check for "@@ -3,41 +3,63 @@" syntax #
+		########################################
+		} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
+			$in_hunk        = 1;
+			my $hunk_header = $4;
+			my $remain      = bleach_text($5);
+
+			# The number of colums to remove (1 or 2) is based on how many commas in the hunk header
+			$columns_to_remove   = (char_count(",",$hunk_header)) - 1;
+			# On single line removes there is NO comma in the hunk so we force one
+			if ($columns_to_remove <= 0) {
+				$columns_to_remove = 1;
+			}
+
+			if ($1) {
+				print $1; # Print out whatever color we're using
+			}
+
+			my ($orig_offset, $orig_count, $new_offset, $new_count) = parse_hunk_header($hunk_header);
+			$last_file_seen = basename($last_file_seen);
+
+			# Figure out the start line
+			my $start_line = start_line_calc($new_offset,$new_count);
+			print "@ $last_file_seen:$start_line \@${bold}${dim_magenta}${remain}${reset_color}\n";
+		###################################
+		# Remove any new file permissions #
+		###################################
+		} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}.*new file mode/) {
+			# Don't print the line (i.e. remove it from the output);
+			$last_file_mode = "add";
+		######################################
+		# Remove any delete file permissions #
+		######################################
+		} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
+			# Don't print the line (i.e. remove it from the output);
+			$last_file_mode = "delete";
+		################################
+		# Look for binary file changes #
+		################################
+		} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
+			my $change = file_change_string($2,$4);
+			print "$meta_color$change (binary)\n";
+			print horizontal_rule($meta_color);
+		#####################################################
+		# Check if we're changing the permissions of a file #
+		#####################################################
+		} elsif ($clean_permission_changes && $line =~ /^${ansi_color_regex}old mode (\d+)/) {
+			my ($old_mode) = $4;
+			my $next = shift(@$input);
+
+			if ($1) {
+				print $1; # Print out whatever color we're using
+			}
+
+			my ($new_mode) = $next =~ m/new mode (\d+)/;
+			print "$last_file_seen changed file mode from $old_mode to $new_mode\n";
+
+		###############
+		# File rename #
+		###############
+		} elsif ($line =~ /^${ansi_color_regex}similarity index (\d+)%/) {
+			my $simil = $4;
+
+			# If it's a move with content change we ignore this and the next two lines
+			if ($simil != 100) {
+				shift(@$input);
+				shift(@$input);
+				next;
+			}
+
+			my $next    = shift(@$input);
+			my ($file1) = $next =~ /rename from (.+)/;
+
+			$next       = shift(@$input);
+			my ($file2) = $next =~ /rename to (.+)/;
+
+			if ($file1 && $file2) {
+				# We may not have extracted this yet, so we pull from the config if not
+				$meta_color ||= DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
+
+				my $change = file_change_string($file1,$file2);
+
+				print horizontal_rule($meta_color);
+				print $meta_color . $change . "\n";
+				print horizontal_rule($meta_color);
+			}
+
+			$i += 3; # We've consumed three lines
+			next;
+		#####################################
+		# Just a regular line, print it out #
+		#####################################
+		} else {
+			# Mark empty line with a red/green box indicating addition/removal
+			if ($mark_empty_lines) {
+				$line = mark_empty_line($line);
+			}
+
+			# Remove the correct number of leading " " or "+" or "-"
+			if ($strip_leading_indicators) {
+				$line = strip_leading_indicators($line,$columns_to_remove);
+			}
+			print $line;
 		}
 
-		$i += 3; # We've consumed three lines
-		next;
-	#####################################
-	# Just a regular line, print it out #
-	#####################################
-	} else {
-		# Mark empty line with a red/green box indicating addition/removal
-		if ($mark_empty_lines) {
-			$line = mark_empty_line($line);
-		}
-
-		# Remove the correct number of leading " " or "+" or "-"
-		if ($strip_leading_indicators) {
-			$line = strip_leading_indicators($line,$columns_to_remove);
-		}
-		print $line;
+		$i++;
 	}
-
-	$i++;
 }
 
 ######################################################################################################
@@ -491,10 +556,12 @@ sub file_change_string {
 		return "modified: $file_1";
 	# If the first is /dev/null it's a new file
 	} elsif ($file_1 eq "/dev/null") {
-		return "added: $file_2";
+		my $add_color = $DiffHighlight::NEW_HIGHLIGHT[1];
+		return "added: $add_color$file_2$reset_color";
 	# If the second is /dev/null it's a deletion
 	} elsif ($file_2 eq "/dev/null") {
-		return "deleted: $file_1";
+		my $del_color = $DiffHighlight::OLD_HIGHLIGHT[1];
+		return "deleted: $del_color$file_1$reset_color";
 	# If the files aren't the same it's a rename
 	} elsif ($file_1 ne $file_2) {
 		my ($old, $new) = DiffHighlight::highlight_pair($file_1,$file_2,{only_diff => 1});
@@ -552,8 +619,8 @@ sub usage {
 	$out .= "Usage:
 
 git diff --color | diff-so-fancy # Use d-s-f on one diff
-git diff --colors                # View the commands to set the recommended colors
-git diff --set-defaults          # Configure git-diff to use diff-so-fancy and suggested colors
+diff-so-fancy --colors           # View the commands to set the recommended colors
+diff-so-fancy --set-defaults     # Configure git-diff to use diff-so-fancy and suggested colors
 
 # Configure git to use d-s-f for *all* diff operations
 git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"\n";
@@ -566,16 +633,16 @@ sub get_default_colors {
 	$out    .= "# --------------------------------------------\n";
 	$out    .= 'git config --global color.ui true
 
-git config --global color.diff-highlight.oldNormal "red bold"
+git config --global color.diff-highlight.oldNormal    "red bold"
 git config --global color.diff-highlight.oldHighlight "red bold 52"
-git config --global color.diff-highlight.newNormal "green bold"
+git config --global color.diff-highlight.newNormal    "green bold"
 git config --global color.diff-highlight.newHighlight "green bold 22"
 
-git config --global color.diff.meta "227"
-git config --global color.diff.frag "magenta bold"
-git config --global color.diff.commit "227 bold"
-git config --global color.diff.old "red bold"
-git config --global color.diff.new "green bold"
+git config --global color.diff.meta       "yellow"
+git config --global color.diff.frag       "magenta bold"
+git config --global color.diff.commit     "yellow bold"
+git config --global color.diff.old        "red bold"
+git config --global color.diff.new        "green bold"
 git config --global color.diff.whitespace "red reverse"
 ';
 
@@ -623,40 +690,22 @@ sub check_first_run {
 	# See if they're previously set SOME diff-highlight colors
 	my $has_dh_colors = git_config_boolean('color.diff-highlight.oldnormal') || git_config_boolean('color.diff-highlight.newnormal');
 
+	#$first_run = 1; $has_dh_colors = 0;
+
 	if (!$first_run || $has_dh_colors) {
 		return 0;
 	} else {
-		my $interactive_shell = !has_stdin();
+		print "This appears to be the first time you've run diff-so-fancy, please note\n";
+		print "that the default git colors are not ideal. Diff-so-fancy recommends the\n";
+		print "following colors.\n\n";
 
-		# d-s-f run inside of LESS (can't prompt user)
-		if (!$interactive_shell) {
-			my $warn  = color("yellow_on_red");
-			my $bold  = color("bold");
-			my $blink = color("blink");
-			my $reset = color("reset");
+		print get_default_colors();
 
-			printf("\n%s%s%sWarning:%s This appears to be the first time you've run diff-so-fancy. Please note that the\n",$blink,$bold,$warn,$reset);
-			printf("default colors may not be optimal. Please run 'diff-so-fancy --colors' to see our color recommendations.\n");
-			printf("To silence this error run: 'git config --global diff-so-fancy.first-run false'.\n\n");
+		# Set the first run flag to false
+		my $cmd = 'git config --global diff-so-fancy.first-run false';
+		system($cmd);
 
-			return 0;
-		}
-
-		print "This appears to be the first time you've run diff-so-fancy, would you like to\n";
-		print "configure git to use diff-so-fancy for all diff operations and use the\n";
-		print "recommended color scheme (y/N)?\n";
-
-		my $input = <STDIN>;
-		$input    = uc(trim($input));
-
-		# Set the default colors and git alias
-		if ($input eq "Y") {
-			set_defaults();
-		# Just set the first-run flag to false so we don't pop this up again
-		} else {
-			my $cmd = 'git config --global diff-so-fancy.first-run false';
-			system($cmd);
-		}
+		exit;
 	}
 
 	return 1;

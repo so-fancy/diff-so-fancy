@@ -7,7 +7,7 @@
 
 Vanilla `git diff` vs `git` and `diff-so-fancy`
 
-![diff-highlight vs diff-so-fancy](https://cloud.githubusercontent.com/assets/39191/13622719/7cc7c54c-e555-11e5-86c4-7045d91af041.png)
+![diff-highlight vs diff-so-fancy](https://user-images.githubusercontent.com/3429760/32387617-44c873da-c082-11e7-829c-6160b853adcb.png)
 
 ## Install
 
@@ -24,20 +24,20 @@ git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
 
 ### Improved colors for the highlighted bits
 
-The default colors are not the best so we recommend the following color settings as a base.
+The default Git colors are not optimal. We suggest the following colors instead.
 ```shell
 git config --global color.ui true
 
-git config --global color.diff-highlight.oldNormal "red bold"
+git config --global color.diff-highlight.oldNormal    "red bold"
 git config --global color.diff-highlight.oldHighlight "red bold 52"
-git config --global color.diff-highlight.newNormal "green bold"
+git config --global color.diff-highlight.newNormal    "green bold"
 git config --global color.diff-highlight.newHighlight "green bold 22"
 
-git config --global color.diff.meta "227"
-git config --global color.diff.frag "magenta bold"
-git config --global color.diff.commit "227 bold"
-git config --global color.diff.old "red bold"
-git config --global color.diff.new "green bold"
+git config --global color.diff.meta       "yellow"
+git config --global color.diff.frag       "magenta bold"
+git config --global color.diff.commit     "yellow bold"
+git config --global color.diff.old        "red bold"
+git config --global color.diff.new        "green bold"
 git config --global color.diff.whitespace "red reverse"
 ```
 
@@ -73,7 +73,7 @@ git config --bool --global diff-so-fancy.useUnicodeRuler false
 
 ## Contributing
 
-Pull requests quite welcome, along with any feedback or ideas.
+Pull requests are quite welcome, and should target the `next` branch. We are also looking for any feedback or ideas on how to make diff-so-fancy even better.
 
 ### Other documentation
 
