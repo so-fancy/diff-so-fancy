@@ -36,6 +36,7 @@ my $last_file_mode    = "";
 my $i                 = 0;
 my $in_hunk           = 0;
 my $columns_to_remove = 0;
+my $is_mercurial      = 0;
 
 # We only process ARGV if we don't have STDIN
 if (!$has_stdin) {
@@ -116,7 +117,7 @@ sub do_dsf_stuff {
 		####################################################################
 		if ($line =~ /^${ansi_color_regex}index /) {
 			# Print the line color and then the actual line
-			$meta_color = $1 || DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
+			$meta_color = $1 || get_config_color("meta");
 			print horizontal_rule($meta_color);
 
 			# Get the next line without incrementing counter while loop
@@ -144,8 +145,16 @@ sub do_dsf_stuff {
 		#########################
 		# Look for the filename #
 		#########################
-		} elsif ($line =~ /^${ansi_color_regex}diff --(git|cc) (.*?)(\s|\e|$)/) {
-			$last_file_seen = $5;
+		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--git|--cc) (.*?) (.+?)(\s|\e|$)/) {
+			if ($4 eq "-r") {
+				$is_mercurial = 1;
+				$meta_color ||= get_config_color("meta");
+				print horizontal_rule($meta_color);
+				$last_file_seen = $6;
+			} else {
+				$last_file_seen = $5;
+			}
+
 			$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
 			$in_hunk = 0;
 		########################################
@@ -174,6 +183,10 @@ sub do_dsf_stuff {
 
 			if ($file_2 ne "/dev/null") {
 				$last_file_seen = $file_2;
+			}
+
+			if ($is_mercurial) {
+				print $reset_color . $meta_color;
 			}
 
 			print file_change_string($file_1,$file_2) . "\n";
@@ -259,7 +272,7 @@ sub do_dsf_stuff {
 
 			if ($file1 && $file2) {
 				# We may not have extracted this yet, so we pull from the config if not
-				$meta_color ||= DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
+				$meta_color ||= get_config_color("meta");
 
 				my $change = file_change_string($file1,$file2);
 
@@ -765,6 +778,29 @@ sub color {
 	if (defined($bc)) { $ret .= "\e[48;5;${bc}m"; }
 
 	return $ret;
+}
+
+# Memoize getting the git config
+{
+	my $static_config;
+
+	sub get_config_color {
+		my $str = shift();
+
+		my $ret = "";
+		if ($static_config->{$str}) {
+			return $static_config->{$str};
+		}
+
+		if ($str eq "meta") {
+			$ret = DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
+		}
+
+		# Cache (memoize) the entry for later
+		$static_config->{$str} = $ret;
+
+		return $ret;
+	}
 }
 
 # vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
