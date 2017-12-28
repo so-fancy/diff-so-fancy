@@ -1,6 +1,7 @@
 os: linux
 language: perl
 perl:
+  - blead
   - dev
   - 5.26
   - 5.24
@@ -15,6 +16,8 @@ matrix:
       osx_image: xcode7.3
       language: generic
       perl: 5.24
+  allow_failures:
+    - perl: "blead"
 
 before_install:
   - git clone --depth 1 https://github.com/sstephenson/bats.git
@@ -24,6 +27,8 @@ before_install:
       mkdir -p ~/perl5;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      eval $(curl https://travis-perl.github.io/init) --perl;
+
       sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-backports restricted main universe";
       sudo apt-get -y update;
       sudo apt-get -y install shellcheck;
@@ -33,6 +38,6 @@ install:
   - eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
   - cpanm --quiet --notest Test::Perl::Critic Perl::Critic::Freenode
 script:
-  - ./bats/bin/bats test/*.bats
   - perlcritic -1 -q --theme freenode diff-so-fancy
+  - ./bats/bin/bats test/*.bats
   - shellcheck *.sh
