@@ -17,9 +17,24 @@ Installation is as simple as downloading the [diff-so-fancy](https://raw.githubu
 
 ## Usage
 
+### Git
+
 Configure git to use `diff-so-fancy` for all diff output:
 ```shell
 git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+```
+
+### Mercurial
+
+```shell
+hg config --edit
+```
+
+Add
+
+```
+[pager]
+pager = diff-so-fancy | less --tabs=4 -RFX
 ```
 
 ### Improved colors for the highlighted bits

@@ -148,6 +148,16 @@ sub do_dsf_stuff {
 			$last_file_seen = $5;
 			$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
 			$in_hunk = 0;
+		###################################################################
+		# Mercurial prints git's equivalent of diff and index in one line #
+		###################################################################
+		} elsif ($line =~ /^${ansi_color_regex}diff -r (.*?)(\s|\e|$)/) {
+			$meta_color = $1 || DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
+			print horizontal_rule($meta_color);
+
+			$last_file_seen = $5;
+			$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
+			$in_hunk = 0;
 		########################################
 		# Find the first file: --- a/README.md #
 		########################################
