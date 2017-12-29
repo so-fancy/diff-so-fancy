@@ -164,6 +164,8 @@ sub do_dsf_stuff {
 		# Find the first file: --- a/README.md #
 		########################################
 		} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
+			$meta_color ||= get_config_color("meta");
+
 			if ($git_strip_prefix) {
 				my $file_dir = $4 || "";
 				$file_1 = $file_dir . $5;
