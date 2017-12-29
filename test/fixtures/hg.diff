@@ -1,0 +1,22 @@
+diff -r 82e55d328c8c hello.c
+--- a/hello.c	Fri Aug 26 01:21:28 2005 -0700
++++ b/hello.c	Fri Dec 29 14:37:26 2017 -0800
+@@ -1,16 +1,15 @@
+ /*
+  * hello.c
+  *
+- * Placed in the public domain by Bryan O'Sullivan
+- *
+  * This program is not covered by patents in the United States or other
+  * countries.
+  */
+ 
+-#include <stdio.h>
++#include <fstdio.h>
+ 
+ int main(int argc, char **argv)
+ {
+ 	printf("hello, world!\n");
++	exit 99;
+ 	return 0;
+ }

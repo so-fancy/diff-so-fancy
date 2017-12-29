@@ -113,3 +113,9 @@ if begin[m"
   run printf "%s" "$output"
   assert_line --index 1 --regexp "renamed:"
 }
+
+@test "Mercurial support" {
+  output=$( load_fixture "hg" | $diff_so_fancy )
+  run printf "%s" "$output"
+  assert_line --index 1 --regexp "modified: hello.c"
+}
