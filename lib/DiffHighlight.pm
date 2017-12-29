@@ -8,13 +8,13 @@ use Encode;
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
 our @OLD_HIGHLIGHT = (
-	color_config('color.diff-highlight.oldnormal'),
-	color_config('color.diff-highlight.oldhighlight', "\x1b[7m"),
+	color_config('color.diff-highlight.oldnormal',    "\e[1;31m"),
+	color_config('color.diff-highlight.oldhighlight', "\e[1;31;48;5;52m"),
 	"\x1b[27m",
 );
-our@NEW_HIGHLIGHT = (
-	color_config('color.diff-highlight.newnormal', $OLD_HIGHLIGHT[0]),
-	color_config('color.diff-highlight.newhighlight', $OLD_HIGHLIGHT[1]),
+our @NEW_HIGHLIGHT = (
+	color_config('color.diff-highlight.newnormal',    "\e[1;32m"),
+	color_config('color.diff-highlight.newhighlight', "\e[1;32;48;5;22m"),
 	$OLD_HIGHLIGHT[2],
 );
 
