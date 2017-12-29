@@ -118,7 +118,6 @@ sub do_dsf_stuff {
 		if ($line =~ /^${ansi_color_regex}index /) {
 			# Print the line color and then the actual line
 			$meta_color = $1 || get_config_color("meta");
-			print horizontal_rule($meta_color);
 
 			# Get the next line without incrementing counter while loop
 			my $next = $input->[0] || "";
@@ -139,18 +138,22 @@ sub do_dsf_stuff {
 			}
 
 			if ($file_1 && $file_2) {
+				print horizontal_rule($meta_color);
 				print $meta_color . file_change_string($file_1,$file_2) . "\n";
 				print horizontal_rule($meta_color);
 			}
 		#########################
 		# Look for the filename #
 		#########################
+		#                                            $4              $5    $6
 		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--git|--cc) (.*?) (.+?)(\s|\e|$)/) {
+
+			# Mercurial looks like: diff -r 82e55d328c8c hello.c
 			if ($4 eq "-r") {
 				$is_mercurial = 1;
 				$meta_color ||= get_config_color("meta");
-				print horizontal_rule($meta_color);
 				$last_file_seen = $6;
+			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
 			} else {
 				$last_file_seen = $5;
 			}
@@ -185,10 +188,16 @@ sub do_dsf_stuff {
 				$last_file_seen = $file_2;
 			}
 
+			# Print out the top horizontal line of the header
+			print $reset_color;
+			print horizontal_rule($meta_color);
+
+			# Mercurial coloring is slightly different so we need to hard reset colors
 			if ($is_mercurial) {
-				print $reset_color . $meta_color;
+				print $reset_color;
 			}
 
+			print $meta_color;
 			print file_change_string($file_1,$file_2) . "\n";
 
 			# Print out the bottom horizontal line of the header
@@ -235,6 +244,7 @@ sub do_dsf_stuff {
 		################################
 		} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
 			my $change = file_change_string($2,$4);
+			print horizontal_rule($meta_color);
 			print "$meta_color$change (binary)\n";
 			print horizontal_rule($meta_color);
 		#####################################################
