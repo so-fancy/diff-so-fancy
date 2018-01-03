@@ -26,9 +26,8 @@ my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
 
 my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,3})[mK])?/;
-my $dim_magenta      = "\e[38;5;146m";
-my $reset_color      = "\e[0m";
-my $bold             = "\e[1m";
+my $reset_color      = color("reset");
+my $bold             = color("bold");
 my $meta_color       = "";
 
 my ($file_1,$file_2);
@@ -247,7 +246,10 @@ sub do_dsf_stuff {
 
 			# Figure out the start line
 			my $start_line = start_line_calc($new_offset,$new_count);
-			print "@ $last_file_seen:$start_line \@${bold}${dim_magenta}${remain}${reset_color}\n";
+
+			# Last function has it's own color
+			my $last_function_color = get_config_color("last_function");
+			print "@ $last_file_seen:$start_line \@${bold}${last_function_color}${remain}${reset_color}\n";
 		###################################
 		# Remove any new file permissions #
 		###################################
@@ -806,6 +808,8 @@ sub color {
 		} elsif ($str eq "remove_line") {
 			# Default ANSI red
 			$ret = DiffHighlight::color_config('color.diff.old', color('bold') . color(1));
+		} elsif ($str eq "last_function") {
+			$ret = color(146);
 		}
 
 		# Cache (memoize) the entry for later
