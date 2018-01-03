@@ -83,7 +83,7 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
   output=$( load_fixture "latin1" | $diff_so_fancy )
   # Make sure the output contains SOME of the english text (i.e. it doesn't barf on the whole line)
   run printf "%s" "$output"
-  assert_line --index 6 --regexp "saw he conqu"
+  assert_line --index 6 --partial "saw he conqu"
 }
 
 @test "Correctly handle hunk definition with no comma" {
