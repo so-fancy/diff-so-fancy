@@ -17,6 +17,7 @@ use warnings FATAL => 'all';
 my $remove_file_add_header     = 1;
 my $remove_file_delete_header  = 1;
 my $clean_permission_changes   = 1;
+my $manually_color_lines       = 0; # Usually git/hg colorizes the lines, but for raw patches we use this
 my $change_hunk_indicators     = git_config_boolean("diff-so-fancy.changeHunkIndicators","true");
 my $strip_leading_indicators   = git_config_boolean("diff-so-fancy.stripLeadingSymbols","true");
 my $mark_empty_lines           = git_config_boolean("diff-so-fancy.markEmptyLines","true");
@@ -79,8 +80,16 @@ if (!$has_stdin) {
 		}
 	};
 
+	my $line_count = 0;
 	while (my $line = <STDIN>) {
+		# If the very first line of the diff doesn't start with ANSI color we're assuming
+		# it's a raw patch file, and we have to color the added/removed lines ourself
+		if ($line_count == 0 && starts_with_ansi($line)) {
+			$manually_color_lines = 1;
+		}
+
 		my $ok = DiffHighlight::handle_line($line);
+		$line_count++;
 	}
 
 	DiffHighlight::flush();
@@ -510,7 +519,17 @@ sub strip_leading_indicators {
 		return $line; # Nothing to do
 	}
 
-	$line =~ s/^(${ansi_color_regex})[ +-]{${columns_to_remove}}/$1/;
+	$line =~ s/^(${ansi_color_regex})([ +-]){${columns_to_remove}}/$1/;
+
+	if ($manually_color_lines) {
+		if (defined($5) && $5 eq "+") {
+			my $add_line_color = get_config_color("add_line");
+			$line              = $add_line_color . $line . $reset_color;
+		} elsif (defined($5) && $5 eq "-") {
+			my $remove_line_color = get_config_color("remove_line");
+			$line                 = $remove_line_color . $line . $reset_color;
+		}
+	}
 
 	return $line;
 }
@@ -805,13 +824,32 @@ sub color {
 		}
 
 		if ($str eq "meta") {
-			$ret = DiffHighlight::color_config('color.diff.meta',"\e[38;5;11m");
+			# Default ANSI yellow
+			$ret = DiffHighlight::color_config('color.diff.meta', color(11));
+		} elsif ($str eq "reset") {
+			$ret = color("reset");
+		} elsif ($str eq "add_line") {
+			# Default ANSI green
+			$ret = DiffHighlight::color_config('color.diff.new', color('bold') . color(2));
+		} elsif ($str eq "remove_line") {
+			# Default ANSI red
+			$ret = DiffHighlight::color_config('color.diff.old', color('bold') . color(1));
 		}
 
 		# Cache (memoize) the entry for later
 		$static_config->{$str} = $ret;
 
 		return $ret;
+	}
+}
+
+sub starts_with_ansi {
+	my $str = shift();
+
+	if ($str =~ /^$ansi_color_regex/) {
+		return 1;
+	} else {
+		return 0;
 	}
 }
 
