@@ -469,29 +469,6 @@ sub should_print_unicode {
 	return 0;
 }
 
-# Return git config as a hash
-sub get_git_config_hash {
-	my $out = git_config_raw();
-
-	my %hash;
-	foreach my $line (@$out) {
-		my ($key,$value) = split("=",$line,2);
-
-		if ($key && $value) {
-			$value   =~ s/\s+$//;
-			my @path = split(/\./,$key);
-			my $last = pop @path;
-			my $p    = \%hash;
-
-			# Build the tree for each section
-			$p = $p->{$_} ||= {} for @path;
-			$p->{$last} = $value;
-		}
-	}
-
-	return \%hash;
-}
-
 # Try and be smart about what line the diff hunk starts on
 sub start_line_calc {
 	my ($line_num,$diff_context) = @_;
@@ -709,22 +686,6 @@ sub version {
 	$ret    .= "Version      : $VERSION\n";
 
 	return $ret;
-}
-
-# Feed the raw git input through diff-highlight to get line level highlights
-sub filter_stdin_through_diff_highlight {
-	my @dh_lines;
-
-	# Have DH put the lines it's modified in an array
-	local $DiffHighlight::line_cb = sub { push(@dh_lines,@_) };
-
-	while (my $line = <STDIN>) {
-		my $ok = DiffHighlight::handle_line($line);
-	}
-
-	DiffHighlight::flush();
-
-	return @dh_lines;
 }
 
 sub is_windows {
