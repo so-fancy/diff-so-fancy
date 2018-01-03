@@ -782,7 +782,7 @@ sub color {
 	return $ret;
 }
 
-# Memoize getting the git config
+# Get colors used for various output sections (memoized)
 {
 	my $static_config;
 
