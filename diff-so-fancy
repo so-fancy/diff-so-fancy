@@ -32,17 +32,27 @@ my $bold             = "\e[1m";
 my $meta_color       = "";
 
 my ($file_1,$file_2);
+my $args              = argv(); # Hashref of all the ARGV stuff
 my $last_file_seen    = "";
 my $last_file_mode    = "";
 my $i                 = 0;
 my $in_hunk           = 0;
 my $columns_to_remove = 0;
 my $is_mercurial      = 0;
+my $color_forced      = 0; # Has the color been forced on/off
+
+# We try and be smart about whether we need to do line coloring, but
+# this is an option to force it on/off
+if ($args->{color_on}) {
+	$manually_color_lines = 1;
+	$color_forced         = 1;
+} elsif ($args->{color_off}) {
+	$manually_color_lines = 0;
+	$color_forced         = 1;
+}
 
 # We only process ARGV if we don't have STDIN
 if (!$has_stdin) {
-	my $args = argv();
-
 	if ($args->{v} || $args->{version}) {
 		die(version());
 	} elsif ($args->{'set-defaults'}) {
@@ -84,7 +94,7 @@ if (!$has_stdin) {
 	while (my $line = <STDIN>) {
 		# If the very first line of the diff doesn't start with ANSI color we're assuming
 		# it's a raw patch file, and we have to color the added/removed lines ourself
-		if ($line_count == 0 && starts_with_ansi($line)) {
+		if (!$color_forced && $line_count == 0 && starts_with_ansi($line)) {
 			$manually_color_lines = 1;
 		}
 
