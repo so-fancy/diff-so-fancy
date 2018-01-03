@@ -10,31 +10,28 @@ set_env
 output=$( load_fixture "ls-function" | $diff_so_fancy )
 
 @test "diff-so-fancy runs exits without error" {
-  load_fixture "ls-function" | $diff_so_fancy
-  assert_success
-}
-
-@test "original source is indented by a single space" {
-  assert_output --partial "
-if begin[m"
+	load_fixture "ls-function" | $diff_so_fancy
+	assert_success
 }
 
 @test "index line is removed entirely" {
-  refute_output --partial "index 33c3d8b..fd54db2 100644"
+	refute_output --partial "index 33c3d8b..fd54db2 100644"
 }
 
 @test "+/- line symbols are stripped" {
-  refute_output --partial "
-[1;31m-"
-  refute_output --partial "
-[1;32m+"
+	run printf "%s" "$output"
+	refute_line --index 9 --regexp "\+    set -x CLICOLOR_FORCE 1"
+	refute_line --index 22 --regexp "-    eval \"env CLICOLOR"
 }
 
 @test "empty lines added/removed are marked" {
-  assert_output --partial "[7m[1;32m [m
-[1;32m[m[1;32m    set -x CLICOLOR_FORCE 1[m"
-  assert_output --partial "[7m[1;31m [m
-  if not set -q LS_COLORS[m"
+	run printf "%s" "$output"
+
+	assert_line --index 7 --partial  "[7m[1;32m [m"
+	assert_line --index 24 --partial "[7m[1;31m [m"
+
+	#assert_output --partial "[7m[1;32m [m"
+	#assert_output --partial "[7m[1;31m [m"
 }
 
 @test "diff --git line is removed entirely" {
@@ -85,7 +82,8 @@ if begin[m"
 @test "Handle latin1 encoding sanely" {
   output=$( load_fixture "latin1" | $diff_so_fancy )
   # Make sure the output contains SOME of the english text (i.e. it doesn't barf on the whole line)
-  assert_output --partial "saw he conqu"
+  run printf "%s" "$output"
+  assert_line --index 6 --regexp "saw he conqu"
 }
 
 @test "Correctly handle hunk definition with no comma" {
@@ -93,7 +91,7 @@ if begin[m"
   # On single line removes there is NO comma in the hunk,
   # make sure the first column is still correctly stripped.
   run printf "%s" "$output"
-  assert_line --index 5 "after"
+  assert_line --index 5 --regexp "after"
 }
 
 @test "Empty file add" {
@@ -118,4 +116,104 @@ if begin[m"
   output=$( load_fixture "hg" | $diff_so_fancy )
   run printf "%s" "$output"
   assert_line --index 1 --regexp "modified: hello.c"
+}
+
+@test "Handle file renames" {
+	output=$( load_fixture "file-rename" | $diff_so_fancy )
+	run printf "%s" "$output"
+	assert_line --index 1 --partial "renamed:"
+	assert_line --index 1 --partial "Changes.new"
+	assert_line --index 1 --partial "bin/"
+}
+
+@test "header_clean 'added:'" {
+	output=$( load_fixture "file-moves" | $diff_so_fancy )
+	assert_output --regexp 'added:.*hello.txt'
+}
+
+@test "header_clean 'modified:'" {
+	output=$( load_fixture "file-moves" | $diff_so_fancy )
+	assert_output --partial 'modified: appveyor.yml'
+}
+
+@test "header_clean 'deleted:'" {
+	output=$( load_fixture "file-moves" | $diff_so_fancy )
+	assert_output --regexp 'deleted:.*circle.yml'
+}
+
+@test "header_clean permission changes" {
+	output=$( load_fixture "file-perms" | $diff_so_fancy )
+	assert_output --partial 'circle.yml changed file mode from 100644 to 100755'
+}
+
+@test "header_clean 'new file mode' is removed" {
+	output=$( load_fixture "file-perms" | $diff_so_fancy )
+	refute_output --partial 'new file mode'
+}
+
+@test "header_clean 'deleted file mode' is removed" {
+	output=$( load_fixture "file-perms" | $diff_so_fancy )
+	refute_output --partial 'deleted file mode'
+}
+
+@test "header_clean remove 'git --diff' header" {
+	output=$( load_fixture "file-perms" | $diff_so_fancy )
+	refute_output --partial 'diff --git'
+}
+
+@test "Reworked hunks" {
+	output=$( load_fixture "file-moves" | $diff_so_fancy )
+	assert_output --partial '@ square.yml:4 @'
+	assert_output --partial '@ package.json:1 @'
+}
+
+@test "Reworked hunks (noprefix)" {
+	output=$( load_fixture "noprefix" | $diff_so_fancy )
+	assert_output --partial '@ setup-a-new-machine.sh:33 @'
+	assert_output --partial '@ setup-a-new-machine.sh:219 @'
+}
+
+@test "Reworked hunks (deleted files)" {
+	output=$( load_fixture "dotfiles" | $diff_so_fancy )
+	assert_output --partial '@ diff-so-fancy:1 @'
+}
+
+@test "Hunk formatting: @@@ -A,B -C,D +E,F @@@" {
+	# stderr forced into output
+	output=$( load_fixture "complex-hunks" | $diff_so_fancy 2>&1 )
+	assert_output --partial '@ header_clean.pl:107 @'
+    refute_output --partial 'Use of uninitialized value'
+}
+
+@test "Hunk formatting: @@ -1,6 +1,6 @@" {
+	# stderr forced into output
+	output=$( load_fixture "first-three-line" | $diff_so_fancy )
+	assert_output --partial '@ package.json:3 @'
+}
+
+@test "Hunk formatting: @@ -1 0,0 @@" {
+	# stderr forced into output
+	output=$( load_fixture "single-line-remove" | $diff_so_fancy )
+	run printf "%s" "$output"
+	assert_line --index 4 --regexp 'var delayedMessage = "It worked";'
+}
+
+@test "Three way merge" {
+	# stderr forced into output
+	output=$( load_fixture "complex-hunks" | $diff_so_fancy )
+	# Lines should not have + or - in at the start
+	refute_output --partial '-	my $foo = shift(); # Array passed in by reference'
+	refute_output --partial '+	my $array = shift(); # Array passed in by reference'
+	refute_output --partial ' sub parse_hunk_header {'
+}
+
+@test "mnemonicprefix handling" {
+	output=$( load_fixture "mnemonicprefix" | $diff_so_fancy )
+	assert_output --partial 'modified: test/header_clean.bats'
+}
+
+@test "non-git diff parsing" {
+	output=$( load_fixture "weird" | $diff_so_fancy )
+	assert_output --partial 'modified: doc/manual.xml.head'
+	assert_output --partial '@ manual.xml.head:8355 @'
 }
