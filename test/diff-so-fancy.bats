@@ -175,13 +175,17 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 
 @test "Reworked hunks (deleted files)" {
 	output=$( load_fixture "dotfiles" | $diff_so_fancy )
-	assert_output --partial '@ diff-so-fancy:1 @'
+	run printf "%s" "$output"
+
+	assert_line --index 188 --partial "@ diff-so-fancy:1 @"
 }
 
 @test "Hunk formatting: @@@ -A,B -C,D +E,F @@@" {
 	# stderr forced into output
 	output=$( load_fixture "complex-hunks" | $diff_so_fancy 2>&1 )
-	assert_output --partial '@ header_clean.pl:107 @'
+	run printf "%s" "$output"
+
+	assert_line --index 4 --partial "@ header_clean.pl:107 @"
     refute_output --partial 'Use of uninitialized value'
 }
 
@@ -214,6 +218,8 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 
 @test "non-git diff parsing" {
 	output=$( load_fixture "weird" | $diff_so_fancy )
-	assert_output --partial 'modified: doc/manual.xml.head'
-	assert_output --partial '@ manual.xml.head:8355 @'
+	run printf "%s" "$output"
+
+	assert_line --index 1 --partial "modified: doc/manual.xml.head"
+	assert_line --index 3 --partial "@ manual.xml.head:8355 @"
 }
