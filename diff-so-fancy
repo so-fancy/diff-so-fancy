@@ -241,7 +241,7 @@ sub do_dsf_stuff {
 			}
 
 			my ($orig_offset, $orig_count, $new_offset, $new_count) = parse_hunk_header($hunk_header);
-			$last_file_seen = basename($last_file_seen);
+			#$last_file_seen = basename($last_file_seen);
 
 			# Figure out the start line
 			my $start_line = start_line_calc($new_offset,$new_count);

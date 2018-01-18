@@ -177,7 +177,7 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 	output=$( load_fixture "dotfiles" | $diff_so_fancy )
 	run printf "%s" "$output"
 
-	assert_line --index 188 --partial "@ diff-so-fancy:1 @"
+	assert_line --index 188 --partial "@ bin/diff-so-fancy:1 @"
 }
 
 @test "Hunk formatting: @@@ -A,B -C,D +E,F @@@" {
@@ -185,7 +185,7 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 	output=$( load_fixture "complex-hunks" | $diff_so_fancy 2>&1 )
 	run printf "%s" "$output"
 
-	assert_line --index 4 --partial "@ header_clean.pl:107 @"
+	assert_line --index 4 --partial "@ libs/header_clean/header_clean.pl:107 @"
     refute_output --partial 'Use of uninitialized value'
 }
 
@@ -221,5 +221,5 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 	run printf "%s" "$output"
 
 	assert_line --index 1 --partial "modified: doc/manual.xml.head"
-	assert_line --index 3 --partial "@ manual.xml.head:8355 @"
+	assert_line --index 3 --partial "@ doc/manual.xml.head:8355 @"
 }
