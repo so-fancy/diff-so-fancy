@@ -11,7 +11,7 @@ Vanilla `git diff` vs `git` and `diff-so-fancy`
 
 ## Install
 
-Installation is as simple as downloading the [diff-so-fancy](https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy) script to a directory in your path
+Installation is as simple as downloading the [diff-so-fancy](https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy) script to a directory in your path. You can check which directories are in your path with `echo $PATH`.
 
 `diff-so-fancy` is also available from NPM, brew, and as a package on Arch Linux.
 
