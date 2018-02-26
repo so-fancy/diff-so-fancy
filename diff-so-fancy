@@ -43,7 +43,7 @@ if (!$has_stdin) {
 
 	if ($args->{v} || $args->{version}) {
 		die(version());
-	} elsif ($args->{'set-defaults'}) {
+	} elsif ($args->{setdefaults}) {
 		my $ok = set_defaults();
 	} elsif ($args->{colors}) {
 		# We print this to STDOUT so we can redirect to bash to auto-set the colors
@@ -620,7 +620,7 @@ sub usage {
 
 git diff --color | diff-so-fancy # Use d-s-f on one diff
 diff-so-fancy --colors           # View the commands to set the recommended colors
-diff-so-fancy --set-defaults     # Configure git-diff to use diff-so-fancy and suggested colors
+diff-so-fancy --setdefaults     # Configure git-diff to use diff-so-fancy and suggested colors
 
 # Configure git to use d-s-f for *all* diff operations
 git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"\n";
