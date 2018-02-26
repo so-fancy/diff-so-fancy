@@ -626,8 +626,9 @@ sub argv {
 	my $ret = {};
 
 	for (my $i = 0; $i < scalar(@ARGV); $i++) {
+
 		# If the item starts with "-" it's a key
-		if ((my ($key) = $ARGV[$i] =~ /^--?([a-zA-Z_]\w*)/) && ($ARGV[$i] !~ /^-\w\w/)) {
+		if ((my ($key) = $ARGV[$i] =~ /^--?([a-zA-Z_-]*\w)$/) && ($ARGV[$i] !~ /^-\w\w/)) {
 			# If the next item does not start with "--" it's the value for this item
 			if (defined($ARGV[$i + 1]) && ($ARGV[$i + 1] !~ /^--?\D/)) {
 				$ret->{$key} = $ARGV[$i + 1];
