@@ -12,8 +12,9 @@ Vanilla `git diff` vs `git` and `diff-so-fancy`
 ## Install
 
 Installation is as simple as downloading the [diff-so-fancy](https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy) script to a directory in your path. You can check which directories are in your path with `echo $PATH`.
+Windows users may need to install the [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
-`diff-so-fancy` is also available from NPM, brew, and as a package on Arch Linux.
+`diff-so-fancy` is also available from NPM, Nix, brew, and as a package on Arch Linux.
 
 ## Usage
 
@@ -73,7 +74,7 @@ git config --bool --global diff-so-fancy.useUnicodeRuler false
 
 ## Contributing
 
-Pull requests are quite welcome, and should target the `next` branch. We are also looking for any feedback or ideas on how to make diff-so-fancy even better.
+Pull requests are quite welcome, and should target the [`next` branch](https://github.com/so-fancy/diff-so-fancy/tree/next). We are also looking for any feedback or ideas on how to make diff-so-fancy even better.
 
 ### Other documentation
 
