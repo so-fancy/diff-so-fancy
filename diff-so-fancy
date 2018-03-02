@@ -525,7 +525,7 @@ sub trim {
 # Print a line of em-dash or line-drawing chars the full width of the screen
 sub horizontal_rule {
 	my $color = $_[0] || "";
-	my $width = `tput cols`;
+	my $width = `tput cols` - 9; # Add offset of 9 since pager may show line numbers/marks
 
 	if (is_windows()) {
 		$width--;
