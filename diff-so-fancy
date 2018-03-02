@@ -809,7 +809,7 @@ sub color {
 			# Default ANSI red
 			$ret = DiffHighlight::color_config('color.diff.old', color('bold') . color(1));
 		} elsif ($str eq "last_function") {
-			$ret = color(146);
+			$ret = DiffHighlight::color_config('color.diff.func', color(146));
 		}
 
 		# Cache (memoize) the entry for later
