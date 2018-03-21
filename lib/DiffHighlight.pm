@@ -47,10 +47,7 @@ sub handle_line {
 		push @added, $_;
 	}
 	else {
-		show_hunk(\@removed, \@added);
-		@removed = ();
-		@added = ();
-
+		flush();
 		$line_cb->($_);
 		$in_hunk = /^$GRAPH*$COLOR*[\@ ]/;
 	}
@@ -72,6 +69,8 @@ sub flush {
 	# Flush any queued hunk (this can happen when there is no trailing
 	# context in the final diff of the input).
 	show_hunk(\@removed, \@added);
+	@removed = ();
+	@added = ();
 }
 
 sub highlight_stdin {
