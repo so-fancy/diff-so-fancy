@@ -246,6 +246,8 @@ sub do_dsf_stuff {
 
 			if ($1) {
 				print $1; # Print out whatever color we're using
+			} elsif ($manually_color_lines) {
+				print get_config_color("frag");
 			}
 
 			my ($orig_offset, $orig_count, $new_offset, $new_count) = parse_hunk_header($hunk_header);
@@ -808,6 +810,8 @@ sub color {
 		if ($str eq "meta") {
 			# Default ANSI yellow
 			$ret = DiffHighlight::color_config('color.diff.meta', color(11));
+		} elsif ($str eq "frag") {
+			$ret = DiffHighlight::color_config('color.diff.frag', color('bold') . color(13));
 		} elsif ($str eq "reset") {
 			$ret = color("reset");
 		} elsif ($str eq "add_line") {
