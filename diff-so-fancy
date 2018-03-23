@@ -163,16 +163,24 @@ sub do_dsf_stuff {
 		#########################
 		# Look for the filename #
 		#########################
-		#                                            $4              $5
-		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--git|--cc) (.+?)(\s|\e|$)/) {
+		} elsif ($line =~ /^${ansi_color_regex}diff (.*)/) {
+			my $diff_args = $4;
 
 			# Mercurial looks like: diff -r 82e55d328c8c hello.c
-			if ($4 eq "-r") {
+			if ($diff_args =~ /^-r [0-9a-f]+ /) {
 				$is_mercurial = 1;
 				$meta_color ||= get_config_color("meta");
+
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
+			} elsif ($diff_args =~ /^(?:--git|--cc) (.+?)(\s|\e|$)/) {
+			    $last_file_seen = $1;
+
+			# Otherwise, last two args are file names.  Assume they have no
+			# spaces, as "a b c" is ambiguous anyway.
 			} else {
-				$last_file_seen = $5;
+				$diff_args =~ s/\e.*$//;
+				$diff_args =~ /([^ ]+) [^ ]+$/;
+				$last_file_seen = $1;
 			}
 
 			$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).

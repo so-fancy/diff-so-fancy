@@ -223,3 +223,8 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 	assert_line --index 1 --partial "modified: doc/manual.xml.head"
 	assert_line --index 3 --partial "@ doc/manual.xml.head:8355 @"
 }
+
+@test "arbitrary diff args" {
+  output=$( load_fixture "unified-recursive" | $diff_so_fancy )
+  refute_output --partial 'diff -ur'
+}

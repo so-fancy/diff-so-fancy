@@ -1,0 +1,25 @@
+Only in new: added.txt
+Only in old: deleted.txt
+diff -ur old/modified.txt new/modified.txt
+--- old/modified.txt	2018-03-22 11:45:03.000000000 -0700
++++ new/modified.txt	2018-03-22 11:45:11.000000000 -0700
+@@ -1 +1 @@
+-this is the old version
++this is the new version
+diff -ur old/modified2.txt new/modified2.txt
+--- old/modified2.txt	2018-03-22 13:23:01.000000000 -0700
++++ new/modified2.txt	2018-03-22 13:23:16.000000000 -0700
+@@ -1,6 +1,6 @@
+ context1
+ context2
+-old stuff 1
++new stuff 1
+ context3
+ context4
+ context5
+@@ -8,4 +8,4 @@
+ context7
+ context8
+ context9
+-old stuff 2
++new stuff 2
