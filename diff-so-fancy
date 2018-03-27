@@ -22,6 +22,7 @@ my $change_hunk_indicators     = git_config_boolean("diff-so-fancy.changeHunkInd
 my $strip_leading_indicators   = git_config_boolean("diff-so-fancy.stripLeadingSymbols","true");
 my $mark_empty_lines           = git_config_boolean("diff-so-fancy.markEmptyLines","true");
 my $use_unicode_dash_for_ruler = git_config_boolean("diff-so-fancy.useUnicodeRuler","true");
+my $ruler_width                = git_config("diff-so-fancy.rulerWidth", undef);
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
 
@@ -557,7 +558,7 @@ sub trim {
 # Print a line of em-dash or line-drawing chars the full width of the screen
 sub horizontal_rule {
 	my $color = $_[0] || "";
-	my $width = `tput cols`;
+	my $width = $ruler_width || `tput cols`;
 
 	if (is_windows()) {
 		$width--;
