@@ -74,7 +74,7 @@ git config --bool --global diff-so-fancy.useUnicodeRuler false
 
 ## Contributing
 
-Pull requests are quite welcome, and should target the [`next` branch](https://github.com/so-fancy/diff-so-fancy/tree/next). We are also looking for any feedback or ideas on how to make diff-so-fancy even better.
+Pull requests are quite welcome, and should target the [`next` branch](https://github.com/so-fancy/diff-so-fancy/tree/next). We are also looking for any feedback or ideas on how to make diff-so-fancy even *fancier*.
 
 ### Other documentation
 
