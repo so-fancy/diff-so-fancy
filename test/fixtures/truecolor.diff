@@ -1,0 +1,14 @@
+[33mdiff --git package.json package.json[m
+[33mindex 97965ab..f3ce90a 100644[m
+[33m--- package.json[m
+[33m+++ package.json[m
+[1;35m@@ -13,8 +13,8 @@[m
+     "url": "git+https://github.com/so-fancy/diff-so-fancy.git"[m
+   },[m
+   "keywords": [[m
+[1;38;2;220;50;47;48;2;0;43;54m-    "git",[m
+     "diff",[m
+[1;38;2;133;153;0;48;2;0;43;54m+[m[1;38;2;133;153;0;48;2;0;43;54m    "git",[m
+     "fancy",[m
+     "good-lookin'",[m
+     "diff-highlight",[m
