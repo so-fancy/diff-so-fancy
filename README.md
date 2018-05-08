@@ -72,6 +72,13 @@ By default the separator for the file header uses Unicode line drawing character
 git config --bool --global diff-so-fancy.useUnicodeRuler false
 ```
 
+### rulerWidth
+
+By default the separator for the file header spans the full width of the terminal. Use this setting to set the width of the file header manually.
+```
+git config --global diff-so-fancy.rulerWidth 47    # git log's commit header width
+```
+
 ## Contributing
 
 Pull requests are quite welcome, and should target the [`next` branch](https://github.com/so-fancy/diff-so-fancy/tree/next). We are also looking for any feedback or ideas on how to make diff-so-fancy even *fancier*.
