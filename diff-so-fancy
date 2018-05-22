@@ -172,13 +172,16 @@ sub do_dsf_stuff {
 				$meta_color ||= get_config_color("meta");
 
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
-			} elsif ($diff_args =~ /^(?:--git|--cc) (.+?)(\s|\e|$)/) {
-			    $last_file_seen = $1;
+			} elsif ($diff_args =~ /^(--git|--cc) (.+?)(\s|\e|$)/) {
+			    $last_file_seen = $2;
 
-			# Otherwise, last two args are file names.  Assume they have no
-			# spaces, as "a b c" is ambiguous anyway.
+			# Otherwise, there are arbitrary args, but the last two are the
+			# file names.  Assume the names have no spaces, as git output does not
+			# include quotes, so "a b c" is ambiguous anyway.
 			} else {
+				# Strip trailing "reset color" escape sequence
 				$diff_args =~ s/\e.*$//;
+				# Match last two words; capture the first of these
 				$diff_args =~ /([^ ]+) [^ ]+$/;
 				$last_file_seen = $1;
 			}
