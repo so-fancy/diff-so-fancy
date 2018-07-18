@@ -15,7 +15,6 @@ jobs:
       - run:
           name: tests
           command: |
-            printenv
             export TERM=dumb && bats/bin/bats test/*.bats 
             shellcheck *.sh
             
