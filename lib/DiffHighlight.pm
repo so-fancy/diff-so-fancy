@@ -4,6 +4,9 @@ use 5.008;
 use warnings FATAL => 'all';
 use strict;
 use Encode;
+use File::Spec;                                             # For devnull
+
+my $NULL = File::Spec->devnull();							# get correct value for unix/win
 
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
@@ -88,7 +91,7 @@ sub highlight_stdin {
 # fallback, which means we will work even if git can't be run.
 sub color_config {
 	my ($key, $default) = @_;
-	my $s = `git config --get-color $key 2>/dev/null`;
+	my $s = `git config --get-color $key 2>$NULL`;
 	return length($s) ? $s : $default;
 }
 
