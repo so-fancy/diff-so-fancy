@@ -55,3 +55,17 @@ zplug "zdharma/zsh-diff-so-fancy", as:command, use:bin/git-dsf
 zgen zdharma/zsh-diff-so-fancy
 ```
 
+#### Trackpad scrolling issues on macOS
+
+There are issues using the trackpad (or scrolling on a mouse) on macOS due to the version of `less` that is shipped with the operating system. To get around this, remove the `-X` flag on the pager configuration option and install `less` via Homebrew:
+
+```shell
+brew install less
+```
+
+You may need to refresh your `PATH` to use the new `less`:
+
+```shell
+hash -d less
+# or, hash -r
+```
