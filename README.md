@@ -11,8 +11,8 @@ Vanilla `git diff` vs `git` and `diff-so-fancy`
 
 ## Install
 
-Installation is as simple as downloading the [diff-so-fancy](https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy) script to a directory in your path. You can check which directories are in your path with `echo $PATH`.
-Windows users may need to install the [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+Installation is as simple as downloading the [diff-so-fancy](https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy) script to a directory in your path.
+Windows users may need to install [MinGW](https://sourceforge.net/projects/mingw/files/) or the [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 `diff-so-fancy` is also available from NPM, Nix, brew, and as a package on Arch Linux.
 
