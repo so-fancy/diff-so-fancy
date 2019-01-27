@@ -19,11 +19,16 @@ matrix:
   allow_failures:
     - perl: "blead"
 
+addons:
+  homebrew:
+    packages:
+      - perl
+      - shellcheck
+      - cpanminus
+
 before_install:
   - git clone --depth 1 https://github.com/sstephenson/bats.git
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew update;
-      brew install shellcheck perl cpanminus;
       mkdir -p ~/perl5;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
