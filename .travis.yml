@@ -13,7 +13,7 @@ perl:
 matrix:
   include:
     - os: osx
-      osx_image: xcode7.3
+      osx_image: xcode9.4
       language: generic
       perl: 5.24
   allow_failures:
