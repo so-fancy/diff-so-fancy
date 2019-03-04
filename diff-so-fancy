@@ -768,7 +768,10 @@ sub color {
 
 	# Some predefined colors
 	my %color_map = qw(red 160 blue 21 green 34 yellow 226 orange 214 purple 93 white 15 black 0);
-	$str =~ s|([A-Za-z]+)|$color_map{$1} // $1|eg;
+	# For old Perl which cannot use "//", we sometimes use "||" to replace it.
+	# But unfortunately the "black" here is mapped to 0.
+	# Thus, we can only expand the "//" syntax sugar to what it means exactly.
+	$str =~ s/([A-Za-z]+)/(defined $color_map{$1}) ? $color_map{$1} : $1/eg;
 
 	# Get foreground/background and any commands
 	my ($fc,$cmd) = $str =~ /(\d+)?_?(\w+)?/g;
@@ -776,7 +779,7 @@ sub color {
 
 	# Some predefined commands
 	my %cmd_map = qw(bold 1 italic 3 underline 4 blink 5 inverse 7);
-	my $cmd_num = $cmd_map{$cmd // 0};
+	my $cmd_num = $cmd_map{$cmd || 0};
 
 	my $ret = '';
 	if ($cmd_num)     { $ret .= "\e[${cmd_num}m"; }
