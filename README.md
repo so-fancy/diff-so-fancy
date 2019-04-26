@@ -20,7 +20,7 @@ Windows users may need to install [MinGW](https://sourceforge.net/projects/mingw
 
 Configure git to use `diff-so-fancy` for all diff output:
 ```shell
-git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+git config --global core.pager 'test -x "$(which diff-so-fancy)" && diff-so-fancy | less --tabs=4 -RFX || less'
 ```
 
 ### Improved colors for the highlighted bits
