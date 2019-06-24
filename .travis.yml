@@ -25,14 +25,15 @@ addons:
       - perl
       - shellcheck
       - cpanminus
+    update: true
 
 before_install:
   - git clone --depth 1 https://github.com/sstephenson/bats.git
-  - eval $(curl https://travis-perl.github.io/init) --perl;
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       mkdir -p ~/perl5;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      eval $(curl https://travis-perl.github.io/init) --perl;
       sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-backports restricted main universe";
       sudo apt-get -y update;
       sudo apt-get -y install shellcheck;
