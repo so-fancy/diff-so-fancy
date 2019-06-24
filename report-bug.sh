@@ -23,12 +23,12 @@ clipboard() {
       copy_cmd=clip
     fi
     # copy_cmd=clip
-  elif which pbcopy >/dev/null 2>&1; then
+  elif command -v pbcopy >/dev/null 2>&1; then
     copy_cmd="pbcopy"
-  elif which xclip >/dev/null 2>&1; then
+  elif command -v xclip >/dev/null 2>&1; then
     # copy_cmd="xclip -i -selection clipboard"
     copy_cmd="xclip"
-  elif which xsel  >/dev/null 2>&1 ; then
+  elif command -v xsel >/dev/null 2>&1 ; then
     local copy_cmd="xsel -b"
   fi
   if [ -n "$copy_cmd" ] ;then
