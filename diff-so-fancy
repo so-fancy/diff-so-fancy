@@ -249,7 +249,8 @@ sub do_dsf_stuff {
 
 			# Last function has it's own color
 			my $last_function_color = get_config_color("last_function");
-			print "@ $last_file_seen:$start_line \@${bold}${last_function_color}${remain}${reset_color}\n";
+                        my $frag_color = get_config_color("frag");
+                        print "${frag_color}@ $last_file_seen:$start_line \@${reset_color}${last_function_color}${remain}${reset_color}\n";
 		###################################
 		# Remove any new file permissions #
 		###################################
@@ -809,9 +810,12 @@ sub color {
 		} elsif ($str eq "remove_line") {
 			# Default ANSI red
 			$ret = DiffHighlight::color_config('color.diff.old', color('bold') . color(1));
+                } elsif ($str eq "frag") {
+                        $ret = DiffHighlight::color_config('color.diff.frag', color(146));
 		} elsif ($str eq "last_function") {
-			$ret = DiffHighlight::color_config('color.diff.func', color(146));
-		}
+			$ret = DiffHighlight::color_config('color.diff.func', color('bold') . color(146));
+                }
+
 
 		# Cache (memoize) the entry for later
 		$static_config->{$str} = $ret;
