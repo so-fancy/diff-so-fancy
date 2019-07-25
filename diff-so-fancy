@@ -248,8 +248,22 @@ sub do_dsf_stuff {
 			my $start_line = start_line_calc($new_offset,$new_count);
 
 			# Last function has it's own color
-			my $last_function_color = get_config_color("last_function");
-			print "@ $last_file_seen:$start_line \@${reset_color}${last_function_color}${remain}${reset_color}\n";
+			my $last_function_color = "";
+			if ($remain) {
+				$last_function_color = get_config_color("last_function");
+			}
+
+			# Check to see if we have the color for the fragment from git
+			if ($5 =~ /\e\[\d/) {
+				#print "Has ANSI color for fragment\n";
+			} else {
+				# We don't have the ANSI sequence so we shell out to get it
+				#print "No ANSI color for fragment\n";
+				my $frag_color = get_config_color("fragment");
+				print $frag_color;
+			}
+
+			print "@ $last_file_seen:$start_line \@${bold}${last_function_color}${remain}${reset_color}\n";
 		###################################
 		# Remove any new file permissions #
 		###################################
@@ -798,6 +812,8 @@ sub color {
 			return $static_config->{$str};
 		}
 
+		#print color(15) . "Shelling out for color: '$str'\n" . color('reset');
+
 		if ($str eq "meta") {
 			# Default ANSI yellow
 			$ret = DiffHighlight::color_config('color.diff.meta', color(11));
@@ -809,6 +825,8 @@ sub color {
 		} elsif ($str eq "remove_line") {
 			# Default ANSI red
 			$ret = DiffHighlight::color_config('color.diff.old', color('bold') . color(1));
+		} elsif ($str eq "fragment") {
+			$ret = DiffHighlight::color_config('color.diff.frag', color('13_bold'));
 		} elsif ($str eq "last_function") {
 			$ret = DiffHighlight::color_config('color.diff.func', color('bold') . color(146));
 		}
