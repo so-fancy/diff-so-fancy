@@ -7,7 +7,7 @@ You can do also do a one-off or a specific `diff-so-fancy` alias:
 git diff --color | diff-so-fancy
 
 git config --global alias.dsf '!f() { [ -z "$GIT_PREFIX" ] || cd "$GIT_PREFIX" '\
-'&& git diff --color "$@" | diff-so-fancy  | less --tabs=4 -RFX; }; f'
+'&& git diff --color "$@" | diff-so-fancy  | less --tabs=4 -RFXS; }; f'
 ```
 
 #### Opting-out
@@ -34,7 +34,7 @@ You can pre-seed your `less` pager with a search pattern, so you can move
 between files with `n`/`N` keys:
 ```ini
 [pager]
-    diff = diff-so-fancy | less --tabs=4 -RFX --pattern '^(Date|added|deleted|modified): '
+    diff = diff-so-fancy | less --tabs=4 -RFXS --pattern '^(Date|added|deleted|modified): '
 ```
 
 #### Zsh plugin providing diff-so-fancy
