@@ -225,8 +225,13 @@ sub do_dsf_stuff {
 		########################################
 		# Check for "@@ -3,41 +3,63 @@" syntax #
 		########################################
-		} elsif ($line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
-			$in_hunk        = 1;
+		} elsif (!$change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
+			$in_hunk = 1;
+
+			print $line;
+		} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
+			$in_hunk = 1;
+
 			my $hunk_header = $4;
 			my $remain      = bleach_text($5);
 
