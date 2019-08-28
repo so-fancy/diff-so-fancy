@@ -33,4 +33,4 @@ You can lint your scripts via shellcheck, our CI bots will also check.
 
 ```sh
 brew install shellcheck
-shellcheck diff-so-fancy update-deps.sh
+shellcheck *.sh
