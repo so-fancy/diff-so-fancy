@@ -18,6 +18,26 @@ Windows users may need to install [MinGW](https://sourceforge.net/projects/mingw
 
 ## Usage
 
+diff-so-fancy can be used with the standard `diff` tool, and can even be configured as the default for diffs with git.
+
+### With diff
+
+Use `-u` with diff to for unified output, and pipe the output to `diff-so-fancy`:
+
+```shell
+diff -u file_a file_b | diff-so-fancy
+```
+
+You could, of course, create a function for it too. In your `~/.bashrc` or `~/.zshrcz` for example:
+
+```shell
+function dsf() { diff -u $1 $2 | diff-so-fancy; }
+```
+
+And than you can just type `dsf file_a file_b` to get nice looking diff output.
+
+### With git
+
 Configure git to use `diff-so-fancy` for all diff output:
 
 ```shell
