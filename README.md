@@ -31,7 +31,7 @@ diff -u file_a file_b | diff-so-fancy
 You could, of course, create a function for it too. In your `~/.bashrc` or `~/.zshrcz` for example:
 
 ```shell
-function dsf() { diff -u $1 $2 | diff-so-fancy; }
+function dsf() { diff -u "$1" "$2" | diff-so-fancy; }
 ```
 
 And than you can just type `dsf file_a file_b` to get nice looking diff output.
