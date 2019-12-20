@@ -16,3 +16,10 @@ empty_remove_highlight="[m[1;31;48;5;52m[m[1;31m"
   assert_output --partial "show: function($empty_remove_highlight)"
   assert_output --partial "{!Document} */ (WebInspector.Dialog._modalHostView.element.ownerDocument$empty_remove_highlight)"
 }
+
+@test "File with space in the name (#360)" {
+	output=$( load_fixture "file_with_space" | $diff_so_fancy )
+	run printf "%s" "$output"
+
+	assert_line --index 1 --regexp "added:.*a b"
+}
