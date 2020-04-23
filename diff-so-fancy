@@ -594,7 +594,7 @@ sub horizontal_rule {
 	}
 
 	# Draw the line
-	my $ret = $color . ($dash x $width) . "\n";
+	my $ret = $color . ($dash x $width) . "$reset_color\n";
 
 	return $ret;
 }
