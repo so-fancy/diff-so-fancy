@@ -23,3 +23,11 @@ empty_remove_highlight="[m[1;31;48;5;52m[m[1;31m"
 
 	assert_line --index 1 --regexp "added:.*a b"
 }
+
+@test "Vanilla diff with add/remove empty lines (#366)" {
+	output=$( load_fixture "add_remove_empty_lines" | $diff_so_fancy )
+	run printf "%s" "$output"
+
+	assert_line --index 5 --partial  "[7m[1;32"
+	assert_line --index 8 --partial  "[7m[1;31"
+}
