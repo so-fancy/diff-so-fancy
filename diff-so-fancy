@@ -375,8 +375,19 @@ sub mark_empty_line {
 	my $reset_color  = "\e\\[0?m";
 	my $reset_escape = "\e\[m";
 	my $invert_color = "\e\[7m";
+	my $add_color    = $DiffHighlight::NEW_HIGHLIGHT[1];
+	my $del_color    = $DiffHighlight::OLD_HIGHLIGHT[1];
 
-	$line =~ s/^($ansi_color_regex)[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
+	# This captures lines that do not have any ANSI in them (raw vanilla diff)
+	if ($line eq "+\n") {
+		$line = $invert_color . $add_color . " " . color('reset') . "\n";
+	# This captures lines that do not have any ANSI in them (raw vanilla diff)
+	} elsif ($line eq "-\n") {
+		$line = $invert_color . $del_color . " " . color('reset') . "\n";
+	# This handles everything else
+	} else {
+		$line =~ s/^($ansi_color_regex)[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
+	}
 
 	return $line;
 }
