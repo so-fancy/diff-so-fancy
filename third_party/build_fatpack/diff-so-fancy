@@ -332,10 +332,11 @@ unshift @INC, bless \%fatpacked, $class;
   } # END OF FATPACK CODE
 
 
-my $VERSION = "1.2.6";
+my $VERSION = "1.3.0";
 
 #################################################################################
 
+use 5.010;                                                  # Require Perl 5.10 for 'state' variables
 use File::Spec;                                             # For catdir
 use File::Basename;                                         # For dirname
 use Encode;                                                 # For handling UTF8 stuff
@@ -497,7 +498,7 @@ sub do_dsf_stuff {
 		# Look for the filename #
 		#########################
 		#                                            $4              $5
-		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--git|--cc) (.+?)(\s|\e|$)/) {
+		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--git|--cc) (.*?)(\e| b\/|$)/) {
 
 			# Mercurial looks like: diff -r 82e55d328c8c hello.c
 			if ($4 eq "-r") {
@@ -557,8 +558,13 @@ sub do_dsf_stuff {
 		########################################
 		# Check for "@@ -3,41 +3,63 @@" syntax #
 		########################################
+		} elsif (!$change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
+			$in_hunk = 1;
+
+			print $line;
 		} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
-			$in_hunk        = 1;
+			$in_hunk = 1;
+
 			my $hunk_header = $4;
 			my $remain      = bleach_text($5);
 
@@ -580,7 +586,21 @@ sub do_dsf_stuff {
 			my $start_line = start_line_calc($new_offset,$new_count);
 
 			# Last function has it's own color
-			my $last_function_color = get_config_color("last_function");
+			my $last_function_color = "";
+			if ($remain) {
+				$last_function_color = get_config_color("last_function");
+			}
+
+			# Check to see if we have the color for the fragment from git
+			if ($5 =~ /\e\[\d/) {
+				#print "Has ANSI color for fragment\n";
+			} else {
+				# We don't have the ANSI sequence so we shell out to get it
+				#print "No ANSI color for fragment\n";
+				my $frag_color = get_config_color("fragment");
+				print $frag_color;
+			}
+
 			print "@ $last_file_seen:$start_line \@${bold}${last_function_color}${remain}${reset_color}\n";
 		###################################
 		# Remove any new file permissions #
@@ -688,8 +708,19 @@ sub mark_empty_line {
 	my $reset_color  = "\e\\[0?m";
 	my $reset_escape = "\e\[m";
 	my $invert_color = "\e\[7m";
+	my $add_color    = $DiffHighlight::NEW_HIGHLIGHT[1];
+	my $del_color    = $DiffHighlight::OLD_HIGHLIGHT[1];
 
-	$line =~ s/^($ansi_color_regex)[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
+	# This captures lines that do not have any ANSI in them (raw vanilla diff)
+	if ($line eq "+\n") {
+		$line = $invert_color . $add_color . " " . color('reset') . "\n";
+	# This captures lines that do not have any ANSI in them (raw vanilla diff)
+	} elsif ($line eq "-\n") {
+		$line = $invert_color . $del_color . " " . color('reset') . "\n";
+	# This handles everything else
+	} else {
+		$line =~ s/^($ansi_color_regex)[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
+	}
 
 	return $line;
 }
@@ -890,11 +921,7 @@ sub trim {
 # Print a line of em-dash or line-drawing chars the full width of the screen
 sub horizontal_rule {
 	my $color = $_[0] || "";
-	my $width = $ruler_width || `tput cols`;
-
-	if (is_windows()) {
-		$width--;
-	}
+	my $width = get_terminal_width();
 
 	# em-dash http://www.fileformat.info/info/unicode/char/2014/index.htm
 	#my $dash = "\x{2014}";
@@ -907,7 +934,7 @@ sub horizontal_rule {
 	}
 
 	# Draw the line
-	my $ret = $color . ($dash x $width) . "\n";
+	my $ret = $color . ($dash x $width) . "$reset_color\n";
 
 	return $ret;
 }
@@ -984,9 +1011,12 @@ sub usage {
 
 	$out .= "Usage:
 
-git diff --color | diff-so-fancy # Use d-s-f on one diff
-diff-so-fancy --colors           # View the commands to set the recommended colors
-diff-so-fancy --set-defaults     # Configure git-diff to use diff-so-fancy and suggested colors
+git diff --color | diff-so-fancy         # Use d-s-f on one diff
+cat diff.txt | diff-so-fancy             # Use d-s-f on a diff/patch file
+diff -u one.txt two.txt | diff-so-fancy  # Use d-s-f on unified diff output
+
+diff-so-fancy --colors                   # View the commands to set the recommended colors
+diff-so-fancy --set-defaults             # Configure git-diff to use diff-so-fancy and suggested colors
 
 # Configure git to use d-s-f for *all* diff operations
 git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"\n";
@@ -1130,6 +1160,8 @@ sub color {
 			return $static_config->{$str};
 		}
 
+		#print color(15) . "Shelling out for color: '$str'\n" . color('reset');
+
 		if ($str eq "meta") {
 			# Default ANSI yellow
 			$ret = DiffHighlight::color_config('color.diff.meta', color(11));
@@ -1141,8 +1173,10 @@ sub color {
 		} elsif ($str eq "remove_line") {
 			# Default ANSI red
 			$ret = DiffHighlight::color_config('color.diff.old', color('bold') . color(1));
+		} elsif ($str eq "fragment") {
+			$ret = DiffHighlight::color_config('color.diff.frag', color('13_bold'));
 		} elsif ($str eq "last_function") {
-			$ret = DiffHighlight::color_config('color.diff.func', color(146));
+			$ret = DiffHighlight::color_config('color.diff.func', color('bold') . color(146));
 		}
 
 		# Cache (memoize) the entry for later
@@ -1160,6 +1194,36 @@ sub starts_with_ansi {
 	} else {
 		return 0;
 	}
+}
+
+sub get_terminal_width {
+	# Make width static so we only calculate it once
+	state $width;
+
+	if ($width) {
+		return $width;
+	}
+
+	# If there is a ruler width in the config we use that
+	if ($ruler_width) {
+		$width = $ruler_width;
+	# Otherwise we check the terminal width using tput
+	} else {
+		my $tput = `tput cols`;
+
+		if ($tput) {
+			$width = int($tput);
+
+			if (is_windows()) {
+				$width--;
+			}
+		} else {
+			print color('orange') . "Warning: `tput cols` did not return numeric input" . color('reset') . "\n";
+			$width = 80;
+		}
+	}
+
+	return $width;
 }
 
 # vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
