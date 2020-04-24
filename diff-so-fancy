@@ -589,7 +589,22 @@ sub trim {
 # Print a line of em-dash or line-drawing chars the full width of the screen
 sub horizontal_rule {
 	my $color = $_[0] || "";
-	my $width = get_terminal_width();
+
+	# Make width static so we only calculate it once
+	state $width;
+	if (!$width) {
+		my $tput = `tput cols 2>1`;
+		if (!$tput) {
+			print color('orange') . "Warning: `tput cols` did not return numeric input" . color('reset') . "\n";
+			$tput = 80;
+		}
+
+		$width = $ruler_width || $tput;
+	}
+
+	if (is_windows()) {
+		$width--;
+	}
 
 	# em-dash http://www.fileformat.info/info/unicode/char/2014/index.htm
 	#my $dash = "\x{2014}";
