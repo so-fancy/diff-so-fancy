@@ -2,7 +2,6 @@
 
 `diff-so-fancy` strives to make your diffs **human** readable instead of machine readable. This helps improve code quality and helps you spot defects faster.
 
-
 ## Screenshot
 
 Vanilla `git diff` vs `git` and `diff-so-fancy`
@@ -11,10 +10,11 @@ Vanilla `git diff` vs `git` and `diff-so-fancy`
 
 ## Install
 
-Installation is as simple as downloading the [`diff-so-fancy`](https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy) script to a directory in your path.
-Windows users may need to install [MinGW](https://sourceforge.net/projects/mingw/files/) or the [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+Installation is as simple as cloning this repo and then putting the `diff-so-fancy` script in to your `$PATH`. The `lib/` directory will need to be kept relative to the core script.
 
-`diff-so-fancy` is also available from NPM, Nix, brew, and as a package on Arch Linux.
+`diff-so-fancy` is also available from NPM, Nix, brew, and as a package on Arch and Debian Linux.
+
+**Note:** Windows users may need to install [MinGW](https://sourceforge.net/projects/mingw/files/) or the [Windows subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 ## Usage
 
@@ -86,6 +86,16 @@ By default, the separator for the file header spans the full width of the termin
 ```
 git config --global diff-so-fancy.rulerWidth 47    # git log's commit header width
 ```
+
+## The diff-so-fancy team
+
+| Person                | Role             |
+| --------------------- | ---------------- |
+| @scottchiefbaker      | Project lead     |
+| @OJFord               | Bug triage       |
+| @GenieTim             | Travis OSX fixes |
+| @AOS                  | Debian packager  |
+| @Stevemao/@Paul Irish | NPM release team |
 
 ## Contributing
 
