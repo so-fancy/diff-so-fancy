@@ -4,6 +4,7 @@ my $VERSION = "1.2.7";
 
 #################################################################################
 
+use 5.010;                                                  # Require Perl 5.10 for 'state' variables
 use File::Spec;                                             # For catdir
 use File::Basename;                                         # For dirname
 use Encode;                                                 # For handling UTF8 stuff
@@ -588,7 +589,18 @@ sub trim {
 # Print a line of em-dash or line-drawing chars the full width of the screen
 sub horizontal_rule {
 	my $color = $_[0] || "";
-	my $width = $ruler_width || `tput cols`;
+
+	# Make width static so we only calculate it once
+	state $width;
+	if (!$width) {
+		my $tput = `tput cols 2>1`;
+		if (!$tput) {
+			print color('orange') . "Warning: `tput cols` did not return numeric input" . color('reset') . "\n";
+			$tput = 80;
+		}
+
+		$width = $ruler_width || $tput;
+	}
 
 	if (is_windows()) {
 		$width--;
