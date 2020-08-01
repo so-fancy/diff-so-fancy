@@ -55,3 +55,12 @@ zplug "zdharma/zsh-diff-so-fancy", as:command, use:bin/git-dsf
 zgen zdharma/zsh-diff-so-fancy
 ```
 
+#### `hg` configuration
+
+You can configure `hg diff` output to use `diff-so-fancy` by adding this alias
+to your `hgrc` file:
+
+```
+[alias]
+diff = !HGPLAIN=1 $HG diff --pager=on --config pager.pager=diff-so-fancy
+```
