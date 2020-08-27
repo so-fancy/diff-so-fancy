@@ -62,5 +62,5 @@ to your `hgrc` file:
 
 ```
 [alias]
-diff = !HGPLAIN=1 $HG diff --pager=on --config pager.pager=diff-so-fancy
+diff = !HGPLAIN=1 $HG diff --pager=on --config pager.pager=diff-so-fancy $@
 ```
