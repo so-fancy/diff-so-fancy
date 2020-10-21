@@ -107,6 +107,10 @@ Pull requests are quite welcome, and should target the [`next` branch](https://g
 * [Hacking and Testing](hacking-and-testing.md)
 * [History](history.md)
 
+## Alternatives
+
+* https://github.com/dandavison/delta
+
 ## License
 
 MIT
