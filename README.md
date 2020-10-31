@@ -50,7 +50,7 @@ git config --global color.diff.whitespace "red reverse"
 
 Should the first block of an empty line be colored. (Default: true)
 
-```
+```shell
 git config --bool --global diff-so-fancy.markEmptyLines false
 ```
 
@@ -58,7 +58,7 @@ git config --bool --global diff-so-fancy.markEmptyLines false
 
 Simplify git header chunks to a more human readable format. (Default: true)
 
-```
+```shell
 git config --bool --global diff-so-fancy.changeHunkIndicators false
 ```
 
@@ -66,7 +66,7 @@ git config --bool --global diff-so-fancy.changeHunkIndicators false
 
 Should the pesky `+` or `-` at line-start be removed. (Default: true)
 
-```
+```shell
 git config --bool --global diff-so-fancy.stripLeadingSymbols false
 ```
 
@@ -74,7 +74,7 @@ git config --bool --global diff-so-fancy.stripLeadingSymbols false
 
 By default, the separator for the file header uses Unicode line-drawing characters. If this is causing output errors on your terminal, set this to `false` to use ASCII characters instead. (Default: true)
 
-```
+```shell
 git config --bool --global diff-so-fancy.useUnicodeRuler false
 ```
 
@@ -82,7 +82,7 @@ git config --bool --global diff-so-fancy.useUnicodeRuler false
 
 By default, the separator for the file header spans the full width of the terminal. Use this setting to set the width of the file header manually.
 
-```
+```shell
 git config --global diff-so-fancy.rulerWidth 47    # git log's commit header width
 ```
 
