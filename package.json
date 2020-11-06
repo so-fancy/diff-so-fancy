@@ -2,16 +2,6 @@
   "name": "diff-so-fancy",
   "version": "1.3.0",
   "description": "Good-lookin' diffs with diff-highlight and more",
-  "bin": {
-    "diff-so-fancy": "diff-so-fancy"
-  },
-  "scripts": {
-    "test": "bats test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/so-fancy/diff-so-fancy.git"
-  },
   "keywords": [
     "git",
     "diff",
@@ -22,10 +12,20 @@
     "readable",
     "highlight"
   ],
-  "author": "Paul Irish",
-  "license": "MIT",
+  "homepage": "https://github.com/so-fancy/diff-so-fancy#readme",
   "bugs": {
     "url": "https://github.com/so-fancy/diff-so-fancy/issues"
   },
-  "homepage": "https://github.com/so-fancy/diff-so-fancy#readme"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/so-fancy/diff-so-fancy.git"
+  },
+  "license": "MIT",
+  "author": "Paul Irish",
+  "bin": {
+    "diff-so-fancy": "diff-so-fancy"
+  },
+  "scripts": {
+    "test": "bats test"
+  }
 }
