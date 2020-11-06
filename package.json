@@ -25,6 +25,11 @@
   "bin": {
     "diff-so-fancy": "diff-so-fancy"
   },
+  "files": [
+    "diff-so-fancy",
+    "lib",
+    "third_party"
+  ],
   "scripts": {
     "test": "bats test"
   }
