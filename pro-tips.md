@@ -6,10 +6,10 @@ You can do also do a one-off:
 ```shell
 git diff --color | diff-so-fancy
 ```
-or configure an alias to use `diff-so-fancy`:
+or configure an alias and a corresponding pager to use `diff-so-fancy`:
 ```shell
-git config --global alias.dsf '!f() { [ -z "$GIT_PREFIX" ] || cd "$GIT_PREFIX" '\
-'&& git diff --color "$@" | diff-so-fancy  | less --tabs=4 -RFXS; }; f'
+git config --global alias.dsf "diff --color"
+git config --global pager.dsf "diff-so-fancy | less --tabs=4 -RFXS"
 ```
 
 #### Opting-out
