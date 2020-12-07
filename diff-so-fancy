@@ -543,13 +543,20 @@ sub strip_leading_indicators {
 	if ($manually_color_lines) {
 		if (defined($5) && $5 eq "+") {
 			my $add_line_color = get_config_color("add_line");
-			$line              = $add_line_color . $line . $reset_color;
+			$line              = $add_line_color . insert_reset_at_line_end($line);
 		} elsif (defined($5) && $5 eq "-") {
 			my $remove_line_color = get_config_color("remove_line");
-			$line                 = $remove_line_color . $line . $reset_color;
+			$line                 = $remove_line_color . insert_reset_at_line_end($line);
 		}
 	}
 
+	return $line;
+}
+
+# Insert the color reset code at end of line, but before any newlines
+sub insert_reset_at_line_end {
+	my $line = shift();
+	$line =~ s/^(.*)([\n\r]+)?$/${1}${reset_color}${2}/;
 	return $line;
 }
 
