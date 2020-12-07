@@ -41,6 +41,7 @@ my $in_hunk           = 0;
 my $columns_to_remove = 0;
 my $is_mercurial      = 0;
 my $color_forced      = 0; # Has the color been forced on/off
+my $pager             = 0; # Is diff.interactiveFilter mode
 
 # We try and be smart about whether we need to do line coloring, but
 # this is an option to force it on/off
@@ -50,6 +51,8 @@ if ($args->{color_on}) {
 } elsif ($args->{color_off}) {
 	$manually_color_lines = 0;
 	$color_forced         = 1;
+} elsif ($args->{pager}) {
+	$pager                = 1;
 }
 
 # We only process ARGV if we don't have STDIN
@@ -136,6 +139,11 @@ sub do_dsf_stuff {
 		# Look for git index and replace it horizontal line (header later) #
 		####################################################################
 		if ($line =~ /^${ansi_color_regex}index /) {
+			if ($pager) {
+				print $line;
+				next;
+			}
+
 			# Print the line color and then the actual line
 			$meta_color = $1 || get_config_color("meta");
 
@@ -167,6 +175,10 @@ sub do_dsf_stuff {
 		#########################
 		#                                            $4              $5
 		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--git|--cc) (.*?)(\e| b\/|$)/) {
+			if ($pager) {
+				print $line;
+				next;
+			}
 
 			# Mercurial looks like: diff -r 82e55d328c8c hello.c
 			if ($4 eq "-r") {
@@ -183,6 +195,11 @@ sub do_dsf_stuff {
 		# Find the first file: --- a/README.md #
 		########################################
 		} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
+			if ($pager) {
+				print $line;
+				next;
+			}
+
 			$meta_color ||= get_config_color("meta");
 
 			if ($git_strip_prefix) {
