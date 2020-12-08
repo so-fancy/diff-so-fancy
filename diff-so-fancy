@@ -52,7 +52,7 @@ if ($args->{color_on}) {
 	$color_forced         = 1;
 }
 
-# `git add --patch` requries our output to match the number of lines from the
+# `git add --patch` requires our output to match the number of lines from the
 # input. So, when patch mode is active, we print out empty lines to pad our
 # output to match any lines we've consumed.
 if ($args->{patch}) {
