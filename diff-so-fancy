@@ -714,9 +714,13 @@ diff -u one.txt two.txt | diff-so-fancy  # Use d-s-f on unified diff output
 
 diff-so-fancy --colors                   # View the commands to set the recommended colors
 diff-so-fancy --set-defaults             # Configure git-diff to use diff-so-fancy and suggested colors
+diff-so-fancy --patch                    # Use diff-so-fancy in patch mode (interoperable with `git add --patch`)
 
 # Configure git to use d-s-f for *all* diff operations
-git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"\n";
+git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"
+
+# Configure git to use d-s-f for `git add --patch`
+git config --global interactive.diffFilter \"diff-so-fancy --patch\"\n";
 
 	return $out;
 }
