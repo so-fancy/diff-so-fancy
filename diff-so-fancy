@@ -288,6 +288,9 @@ sub do_dsf_stuff {
 		} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}.*new file mode/) {
 			# Don't print the line (i.e. remove it from the output);
 			$last_file_mode = "add";
+			if ($patch_mode) {
+				print "\n";
+			}
 		######################################
 		# Remove any delete file permissions #
 		######################################
