@@ -53,6 +53,11 @@ if ($args->{color_on}) {
 	$color_forced         = 1;
 }
 
+if ($args->{debug}) {
+	show_debug_info();
+	exit();
+}
+
 # `git add --patch` requires our output to match the number of lines from the
 # input. So, when patch mode is active, we print out empty lines to pad our
 # output to match any lines we've consumed.
@@ -922,6 +927,33 @@ sub get_terminal_width {
 	}
 
 	return $width;
+}
+
+sub show_debug_info {
+	my $git_ver = trim(`git --version`);
+	$git_ver =~ s/[^\d.]//g;
+
+	print "Diff-so-fancy   : v$VERSION\n";
+	print "Git             : v$git_ver\n";
+	print "Perl            : $^V\n";
+	print "\n";
+
+	print "Supports Unicode: " . yes_no(should_print_unicode()) . "\n";
+	print "Unicode Ruler   : " . yes_no($use_unicode_dash_for_ruler) . "\n";
+	print "Terminal width  : " . get_terminal_width() . "\n";
+	print "Terminal \$LANG  : " . $ENV{LANG} . "\n";
+	print "Is Windows      : " . yes_no(is_windows()) . "\n";
+	print "Operating System: $^O\n";
+}
+
+sub yes_no {
+	my $val = shift();
+
+	if ($val) {
+		return "Yes";
+	} else {
+		return "No";
+	}
 }
 
 # vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
