@@ -945,6 +945,7 @@ sub show_debug_info {
 	print "Unicode Ruler   : " . yes_no($use_unicode_dash_for_ruler) . "\n";
 	print "Terminal width  : " . get_terminal_width() . "\n";
 	print "Terminal \$LANG  : " . $ENV{LANG} . "\n";
+	print "Less Charset    : " . get_less_charset() . "\n";
 	print "Is Windows      : " . yes_no(is_windows()) . "\n";
 	print "Operating System: $^O\n";
 }
