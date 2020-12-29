@@ -507,11 +507,15 @@ sub in_unit_test {
 
 sub get_less_charset {
 	my @less_char_vars = ("LESSCHARSET", "LESSCHARDEF", "LC_ALL", "LC_CTYPE", "LANG");
-	foreach (@less_char_vars) {
-		return $ENV{$_} if defined $ENV{$_};
+	foreach my $key (@less_char_vars) {
+		my $val = $ENV{$key};
+
+		if (defined $val) {
+			return ($key, $val);
+		}
 	}
 
-	return "";
+	return ();
 }
 
 sub should_print_unicode {
@@ -521,7 +525,7 @@ sub should_print_unicode {
 	}
 
 	# Otherwise, assume we're piping to less(1)
-	my $less_charset = get_less_charset();
+	my ($less_env_var, $less_charset) = get_less_charset();
 	if ($less_charset =~ /utf-?8/i) {
 		return 1;
 	}
@@ -933,19 +937,24 @@ sub get_terminal_width {
 }
 
 sub show_debug_info {
+	my @less    = get_less_charset();
 	my $git_ver = trim(`git --version`);
-	$git_ver =~ s/[^\d.]//g;
+	$git_ver    =~ s/[^\d.]//g;
 
 	print "Diff-so-fancy   : v$VERSION\n";
 	print "Git             : v$git_ver\n";
 	print "Perl            : $^V\n";
 	print "\n";
 
-	print "Supports Unicode: " . yes_no(should_print_unicode()) . "\n";
-	print "Unicode Ruler   : " . yes_no($use_unicode_dash_for_ruler) . "\n";
 	print "Terminal width  : " . get_terminal_width() . "\n";
 	print "Terminal \$LANG  : " . $ENV{LANG} . "\n";
-	print "Less Charset    : " . get_less_charset() . "\n";
+	print "\n";
+	print "Supports Unicode: " . yes_no(should_print_unicode()) . "\n";
+	print "Unicode Ruler   : " . yes_no($use_unicode_dash_for_ruler) . "\n";
+	print "\n";
+	print "Less Charset Var: " . ($less[0] // "") . "\n";
+	print "Less Charset    : " . ($less[1] // "") . "\n";
+	print "\n";
 	print "Is Windows      : " . yes_no(is_windows()) . "\n";
 	print "Operating System: $^O\n";
 }
