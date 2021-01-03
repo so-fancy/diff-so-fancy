@@ -41,12 +41,12 @@ between files with `n`/`N` keys:
 
 Zsh plugin [zdharma/zsh-diff-so-fancy](https://github.com/zdharma/zsh-diff-so-fancy) has this
 project as a submodule so installing the plugin installs `diff-so-fancy`. The plugin provides
-subcommand `git dsf` out of the box. Installation with Zplugin, Zplug and Zgen:
+subcommand `git dsf` out of the box. Installation with Zinit, Zplug and Zgen:
 
 ```zsh
-# Zplugin
-zplugin ice as"program" pick"bin/git-dsf"
-zplugin light zdharma/zsh-diff-so-fancy
+# zinit
+zinit ice lucid as"program" pick"bin/git-dsf"
+zinit load zdharma/zsh-diff-so-fancy
 
 # Or zplug
 zplug "zdharma/zsh-diff-so-fancy", as:command, use:bin/git-dsf
