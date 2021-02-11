@@ -345,10 +345,10 @@ sub do_dsf_stuff {
 			}
 
 			my $next    = shift(@$input);
-			my ($file1) = $next =~ /rename from (.+)/;
+			my ($file1) = $next =~ /rename from (.+?)(\e|\t|$)/;
 
 			$next       = shift(@$input);
-			my ($file2) = $next =~ /rename to (.+)/;
+			my ($file2) = $next =~ /rename to (.+?)(\e|\t|$)/;
 
 			if ($file1 && $file2) {
 				# We may not have extracted this yet, so we pull from the config if not
@@ -663,14 +663,10 @@ sub file_change_string {
 	# If the files aren't the same it's a rename
 	} elsif ($file_1 ne $file_2) {
 		my ($old, $new) = DiffHighlight::highlight_pair($file_1,$file_2,{only_diff => 1});
+		# highlight_pair already includes reset_color, but adds newline characters that need to be trimmed off
 		$old = trim($old);
 		$new = trim($new);
-
-		# highlight_pair resets the colors, but we want it to be the meta color
-		$old =~ s/(\e0?\[m)/$1$meta_color/g;
-		$new =~ s/(\e0?\[m)/$1$meta_color/g;
-
-		return "renamed: $old to $new";
+		return "renamed: $old$meta_color to $new"
 	# Something we haven't thought of yet
 	} else {
 		return "$file_1 -> $file_2";
