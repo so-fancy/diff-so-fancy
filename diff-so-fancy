@@ -27,11 +27,37 @@ my $ruler_width                = git_config("diff-so-fancy.rulerWidth", undef);
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
 
+my $box_horizontal;
+my $box_vertical;
+my $box_down;
+my $box_up;
+# BOX DRAWINGS LIGHT HORIZONTAL http://www.fileformat.info/info/unicode/char/2500/index.htm
+# BOX DRAWINGS LIGHT VERTICAL https://www.fileformat.info/info/unicode/char/2502/index.htm
+# BOX DRAWINGS LIGHT DOWN AND LEFT https://www.fileformat.info/info/unicode/char/2510/index.htm
+# BOX DRAWINGS LIGHT UP AND LEFT https://www.fileformat.info/info/unicode/char/2518/index.htm
+if ($use_unicode_dash_for_ruler && should_print_unicode()) {
+	# $box_horizontal = Encode::encode('UTF-8', "\x{2500}");
+	$box_horizontal = "\xE2\x94\x80";
+	# $box_vertical = Encode::encode('UTF-8', "\x{2502}");
+	$box_vertical = "\xE2\x94\x82";
+	# $box_down = Encode::encode('UTF-8', "\x{2510}");
+	$box_down = "\xE2\x94\x90";
+	# $box_up = Encode::encode('UTF-8', "\x{2518}");
+	$box_up = "\xE2\x94\x98";
+} else {
+	$box_horizontal = "-";
+	$box_vertical = "|";
+	$box_down = ".";
+	$box_up = "'";
+}
+
 my $ansi_regex = qr/\e\[([0-9]{1,3}(;[0-9]{1,3}){0,10})[mK]/;
 my $ansi_color_regex = qr/(${ansi_regex})?/;
 my $reset_color      = color("reset");
 my $bold             = color("bold");
 my $meta_color       = "";
+my $commit_color     = "";
+my $min_header_level = 2;
 
 # Set the diff highlight colors from the config
 init_diff_highlight_colors();
@@ -159,13 +185,17 @@ sub do_dsf_stuff {
 
 		#######################################################################
 
-		####################################################################
-		# Look for git index and replace it horizontal line (header later) #
-		####################################################################
-		if ($line =~ /^${ansi_color_regex}index /) {
-			# Print the line color and then the actual line
+		########################
+		# Look for commit line #
+		########################
+		if ($line =~ /^${ansi_color_regex}(commit [0-9a-f]{40}.*)$/) {
+			$commit_color = $1 || get_config_color("commit");
+			print_header(1,$commit_color,$4);
+		######################
+		# Look for git index #
+		######################
+		} elsif ($line =~ /^${ansi_color_regex}index /) {
 			$meta_color = $1 || get_config_color("meta");
-
 			# Get the next line without incrementing counter while loop
 			my $next = $input->[0] || "";
 			my ($file_1,$file_2);
@@ -185,9 +215,7 @@ sub do_dsf_stuff {
 			}
 
 			if ($file_1 && $file_2) {
-				print horizontal_rule($meta_color);
-				print $meta_color . file_change_string($file_1,$file_2) . "\n";
-				print horizontal_rule($meta_color);
+				print_header(2,$meta_color,file_change_string($file_1,$file_2));
 			}
 		#########################
 		# Look for the filename #
@@ -198,7 +226,6 @@ sub do_dsf_stuff {
 			# Mercurial looks like: diff -r 82e55d328c8c hello.c
 			if ($4 eq "-r") {
 				$is_mercurial = 1;
-				$meta_color = get_config_color("meta");
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
 			} else {
 				$last_file_seen = $5;
@@ -214,8 +241,6 @@ sub do_dsf_stuff {
 		# Find the first file: --- a/README.md #
 		########################################
 		} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
-			$meta_color = get_config_color("meta");
-
 			if ($git_strip_prefix) {
 				my $file_dir = $4 || "";
 				$file_1 = $file_dir . $5;
@@ -240,20 +265,8 @@ sub do_dsf_stuff {
 				$last_file_seen = $file_2;
 			}
 
-			# Print out the top horizontal line of the header
-			print $reset_color;
-			print horizontal_rule($meta_color);
-
-			# Mercurial coloring is slightly different so we need to hard reset colors
-			if ($is_mercurial) {
-				print $reset_color;
-			}
-
-			print $meta_color;
-			print file_change_string($file_1,$file_2) . "\n";
-
-			# Print out the bottom horizontal line of the header
-			print horizontal_rule($meta_color);
+			$meta_color ||= get_config_color("meta");
+			print_header(2,$meta_color,file_change_string($file_1,$file_2));
 		########################################
 		# Check for "@@ -3,41 +3,63 @@" syntax #
 		########################################
@@ -323,10 +336,9 @@ sub do_dsf_stuff {
 		# Look for binary file changes #
 		################################
 		} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
-			my $change = file_change_string($2,$4);
-			print horizontal_rule($meta_color);
-			print "$meta_color$change (binary)\n";
-			print horizontal_rule($meta_color);
+			my ($change,$change_length) = file_change_string($2,$4);
+			$meta_color ||= get_config_color("meta");
+			print_header(2,$meta_color,$change . " (binary)", $change_length + 9);
 		#####################################################
 		# Check if we're changing the permissions of a file #
 		#####################################################
@@ -365,14 +377,9 @@ sub do_dsf_stuff {
 			my ($file2) = $next =~ /rename to (.+?)(\e|\t|$)/;
 
 			if ($file1 && $file2) {
-				# We may not have extracted this yet, so we pull from the config if not
-				$meta_color = get_config_color("meta");
+				$meta_color ||= get_config_color("meta");
+				print_header(2,$meta_color,file_change_string($file1,$file2));
 
-				my $change = file_change_string($file1,$file2);
-
-				print horizontal_rule($meta_color);
-				print $meta_color . $change . "\n";
-				print horizontal_rule($meta_color);
 			}
 
 			$i += 3; # We've consumed three lines
@@ -613,26 +620,25 @@ sub trim {
 	return $s;
 }
 
-# Print a line of em-dash or line-drawing chars the full width of the screen
-sub horizontal_rule {
-	my $color = $_[0] || "";
-	my $width = get_terminal_width();
-
-	# em-dash http://www.fileformat.info/info/unicode/char/2014/index.htm
-	#my $dash = "\x{2014}";
-	# BOX DRAWINGS LIGHT HORIZONTAL http://www.fileformat.info/info/unicode/char/2500/index.htm
-	my $dash;
-	if ($use_unicode_dash_for_ruler && should_print_unicode()) {
-		#$dash = Encode::encode('UTF-8', "\x{2500}");
-		$dash = "\xE2\x94\x80";
-	} else {
-		$dash = "-";
+sub print_header {
+	my $level = shift();
+	my $color = shift();
+	my $line = shift();
+	if ($level < $min_header_level) {
+		$min_header_level = $level
 	}
-
-	# Draw the line
-	my $ret = $color . ($dash x $width) . "$reset_color\n";
-
-	return $ret;
+	if ($level > $min_header_level) {
+		my $line_length = shift();
+		my $ruler = $box_horizontal x ($line_length + 1);
+		print $color.$ruler.$box_down."\n";
+		print $color.$line." ".$color.$box_vertical."\n";
+		print $color.$ruler.$box_up."\n";
+	} else {
+		my $ruler = $box_horizontal x get_terminal_width();
+		print $color.$ruler."\n";
+		print $color.$line."\n";
+		print $color.$ruler."\n";
+	}
 }
 
 sub file_change_string {
@@ -641,25 +647,26 @@ sub file_change_string {
 
 	# If they're the same it's a modify
 	if ($file_1 eq $file_2) {
-		return "modified: $file_1";
+		return ("modified: $file_1", 10 + length($file_1));
 	# If the first is /dev/null it's a new file
 	} elsif ($file_1 eq "/dev/null") {
 		my $add_color = $DiffHighlight::NEW_HIGHLIGHT[1];
-		return "added: $add_color$file_2$reset_color";
+		return ("added: $add_color$file_2$reset_color", 7 + length($file_2));
 	# If the second is /dev/null it's a deletion
 	} elsif ($file_2 eq "/dev/null") {
 		my $del_color = $DiffHighlight::OLD_HIGHLIGHT[1];
-		return "deleted: $del_color$file_1$reset_color";
+		return ("deleted: $del_color$file_1$reset_color", 9 + length($file_1));
 	# If the files aren't the same it's a rename
 	} elsif ($file_1 ne $file_2) {
 		my ($old, $new) = DiffHighlight::highlight_pair($file_1,$file_2,{only_diff => 1});
 		# highlight_pair already includes reset_color, but adds newline characters that need to be trimmed off
 		$old = trim($old);
 		$new = trim($new);
-		return "renamed: $old$meta_color to $new"
+		$meta_color ||= get_config_color("meta");
+		return ("renamed: $old$meta_color to $new", 13 + length($file_1) + length($file_2));
 	# Something we haven't thought of yet
 	} else {
-		return "$file_1 -> $file_2";
+		return ("$file_1 -> $file_2", 4 + length($file_1) + length($file_2));
 	}
 }
 
@@ -861,6 +868,9 @@ sub color {
 		if ($str eq "meta") {
 			# Default ANSI yellow
 			$ret = git_ansi_color(git_config('color.diff.meta')) || color(11);
+		} elsif ($str eq "commit") {
+			# Default ANSI yellow bold
+			$ret = git_ansi_color(git_config('color.diff.commit')) || color('11_bold');
 		} elsif ($str eq "reset") {
 			$ret = color("reset");
 		} elsif ($str eq "add_line") {
