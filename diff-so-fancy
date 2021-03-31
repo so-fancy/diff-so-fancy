@@ -526,8 +526,7 @@ sub should_print_unicode {
 
 	# Otherwise, assume we're piping to less(1)
 	my ($less_env_var, $less_charset) = get_less_charset();
-	$less_charset //= "";
-	if ($less_charset =~ /utf-?8/i) {
+	if ($less_charset && $less_charset =~ /utf-?8/i) {
 		return 1;
 	}
 
