@@ -2,12 +2,14 @@
 
 #### One-off fanciness or a specific diff-so-fancy alias
 
-You can do also do a one-off or a specific `diff-so-fancy` alias:
+You can do also do a one-off:
 ```shell
 git diff --color | diff-so-fancy
-
-git config --global alias.dsf '!f() { [ -z "$GIT_PREFIX" ] || cd "$GIT_PREFIX" '\
-'&& git diff --color "$@" | diff-so-fancy  | less --tabs=4 -RFX; }; f'
+```
+or configure an alias and a corresponding pager to use `diff-so-fancy`:
+```shell
+git config --global alias.dsf "diff --color"
+git config --global pager.dsf "diff-so-fancy | less --tabs=4 -RFXS"
 ```
 
 #### Opting-out
@@ -34,19 +36,19 @@ You can pre-seed your `less` pager with a search pattern, so you can move
 between files with `n`/`N` keys:
 ```ini
 [pager]
-    diff = diff-so-fancy | less --tabs=4 -RFX --pattern '^(Date|added|deleted|modified): '
+    diff = diff-so-fancy | less --tabs=4 -RFXS --pattern '^(Date|added|deleted|modified): '
 ```
 
 #### Zsh plugin providing diff-so-fancy
 
 Zsh plugin [zdharma/zsh-diff-so-fancy](https://github.com/zdharma/zsh-diff-so-fancy) has this
 project as a submodule so installing the plugin installs `diff-so-fancy`. The plugin provides
-subcommand `git dsf` out of the box. Installation with Zplugin, Zplug and Zgen:
+subcommand `git dsf` out of the box. Installation with Zinit, Zplug and Zgen:
 
 ```zsh
-# Zplugin
-zplugin ice as"program" pick"bin/git-dsf"
-zplugin light zdharma/zsh-diff-so-fancy
+# zinit
+zinit ice lucid as"program" pick"bin/git-dsf"
+zinit load zdharma/zsh-diff-so-fancy
 
 # Or zplug
 zplug "zdharma/zsh-diff-so-fancy", as:command, use:bin/git-dsf
