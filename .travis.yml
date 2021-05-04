@@ -39,9 +39,9 @@ before_install:
       sudo apt-get -y update;
     fi
 install:
-  - cpanm --notest --local-lib=~/perl5 local::lib
+  - cpanm --quiet --notest --local-lib=~/perl5 local::lib
   - eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
-  - cpanm --notest Test::Perl::Critic Perl::Critic::Freenode
+  - cpanm --quiet --notest Test::Perl::Critic Perl::Critic::Freenode
 script:
   - perlcritic -1 -q --theme freenode diff-so-fancy
   - ./bats/bin/bats test/*.bats
