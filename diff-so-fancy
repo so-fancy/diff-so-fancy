@@ -949,7 +949,7 @@ sub show_debug_info {
 	print "\n";
 
 	print "Terminal width  : " . get_terminal_width() . "\n";
-	print "Terminal \$LANG  : " . $ENV{LANG} . "\n";
+	print "Terminal \$LANG  : " . ($ENV{LANG} || "") . "\n";
 	print "\n";
 	print "Supports Unicode: " . yes_no(should_print_unicode()) . "\n";
 	print "Unicode Ruler   : " . yes_no($use_unicode_dash_for_ruler) . "\n";
