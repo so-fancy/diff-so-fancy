@@ -461,7 +461,15 @@ sub git_config {
 		return $default_value;
 	}
 
-	my $raw = {};
+	state $raw = {};
+	if (%$raw && $search_key) {
+		return $raw->{$search_key} || $default_value;
+	}
+
+	if ($args->{debug}) {
+		print "Parsing git config\n";
+	}
+
 	foreach my $line (@$out) {
 		if ($line =~ /=/) {
 			my ($key,$value) = split("=",$line,2);
