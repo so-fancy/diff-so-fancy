@@ -433,22 +433,20 @@ sub boolean {
 }
 
 # Memoize getting the git config
-{
-	my $static_config;
+sub git_config_raw {
+	state $static_config;
 
-	sub git_config_raw {
-		if ($static_config) {
-			# If we already have the config return that
-			return $static_config;
-		}
-
-		my $cmd = "git config --list";
-		my @out = `$cmd`;
-
-		$static_config = \@out;
-
-		return \@out;
+	if ($static_config) {
+		# If we already have the config return that
+		return $static_config;
 	}
+
+	my $cmd = "git config --list";
+	my @out = `$cmd`;
+
+	$static_config = \@out;
+
+	return \@out;
 }
 
 # Fetch a textual item from the git config
