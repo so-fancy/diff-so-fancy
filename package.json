@@ -6,7 +6,7 @@
     "diff-so-fancy": "diff-so-fancy"
   },
   "scripts": {
-    "test": "bats test"
+    "test": "./test/bats/bin/bats test"
   },
   "repository": {
     "type": "git",
