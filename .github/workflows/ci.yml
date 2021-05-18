@@ -37,8 +37,10 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
+          install-modules-with: cpanm
+          install-modules: |
+            Test::Perl::Critic
+            Perl::Critic::Freenode
       - run: perl -V
-      - run: perl -I ~/perl5/lib/perl5/ -Mlocal::lib
-      - run: cpanm --notest Test::Perl::Critic Perl::Critic::Freenode
       - run: perlcritic -1 -q --theme freenode diff-so-fancy
       - run: ./test/bats/bin/bats test
