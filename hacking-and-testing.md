@@ -29,10 +29,3 @@ find  ./* test/* test/fixtures/* -maxdepth 0 | entr ./test/bats/bin/bats test
 ```
 
 When writing assertions, you'll likely want to compare to expected output. To grab that reliably, you can use something like `git --no-pager diff | ./diff-so-fancy > output.txt`
-
-You can lint your scripts via shellcheck, our CI bots will also check.
-
-```sh
-brew install shellcheck
-shellcheck *.sh
-```
