@@ -11,6 +11,9 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash # We don't want powershell for windows.
 
     steps:
     - uses: actions/checkout@v2
