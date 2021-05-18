@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  push:
+   branches: [master]
+  pull_request: # run on all PRs, not just PRs to a particular branch
+
+jobs:
+  unit:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash # We don't want powershell for windows.
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up perl & perlcritic
+      uses: shogo82148/actions-setup-perl@v1
+      with:
+        # defaulting to latest Perl version. https://github.com/shogo82148/actions-setup-perl#action-inputs
+        install-modules-with: cpanm
+        install-modules: |
+          Test::Perl::Critic
+          Perl::Critic::Freenode
+    - run: perl -V
+
+    - run: perlcritic -1 -q --theme freenode diff-so-fancy
+
+    - run: git submodule sync && git submodule update --init
+    - run: ./test/bats/bin/bats test
+      env:
+        TERM: dumb
+
+    - run: shellcheck *.sh
+      if: matrix.os == 'ubuntu-latest'
+
+
+  perls:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # blead and dev not supported by https://github.com/shogo82148/actions-setup-perl
+        perl: [ '5.30', '5.28', '5.26', '5.24', '5.22', '5.20', '5.18', '5.14' ]
+    name: Perl ${{ matrix.perl }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up perl & perlcritic
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+          install-modules-with: cpanm
+          install-modules: |
+            Test::Perl::Critic
+            Perl::Critic::Freenode
+      - run: perl -V
+
+      - run: perlcritic -1 -q --theme freenode diff-so-fancy
+
+      - run: git submodule sync && git submodule update --init
+      - run: TERM=dumb ./test/bats/bin/bats test
