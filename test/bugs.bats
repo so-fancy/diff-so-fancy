@@ -26,6 +26,6 @@ load 'test_helper/util'
 	output=$( load_fixture "add_remove_empty_lines" | $diff_so_fancy )
 	run printf "%s" "$output"
 
-	assert_line --index 5 --partial  "[7m[1;32" # green added line
-	assert_line --index 8 --partial  "[7m[1;31" # red removed line
+	assert_line --index 5 --partial  "5;22m" # green added line
+	assert_line --index 8 --partial  "5;52m" # red removed line
 }
