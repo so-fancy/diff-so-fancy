@@ -1043,11 +1043,11 @@ sub yes_no {
 }
 
 sub init_diff_highlight_colors {
-	$DiffHighlight::NEW_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.newnormal'))    || color("2_bold");
-	$DiffHighlight::NEW_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || color("2_bold") . color("on_22");
+	$DiffHighlight::NEW_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.newnormal'))    || "\e[1;32m";
+	$DiffHighlight::NEW_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || "\e[1;32;48;5;22m";
 
-	$DiffHighlight::OLD_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.oldnormal'))    || color("1_bold");
-	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || color("1_bold") . color("on_52");
+	$DiffHighlight::OLD_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.oldnormal'))    || "\e[1;31m";
+	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || "\e[1;31;48;5;52m";
 }
 
 # vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
