@@ -31,10 +31,8 @@ jobs:
     name: Perl ${{ matrix.perl }}
     steps:
       - uses: actions/checkout@v2
-      - run: git submodule sync
-      - run: git submodule update --init
 
-      - name: Set up perl
+      - name: Set up perl & perlcritic
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
@@ -43,5 +41,7 @@ jobs:
             Test::Perl::Critic
             Perl::Critic::Freenode
       - run: perl -V
+
+      - run: git submodule sync && git submodule update --init
       - run: perlcritic -1 -q --theme freenode diff-so-fancy
-      - run: ./test/bats/bin/bats test
+      - run: TERM=dumb ./test/bats/bin/bats test
