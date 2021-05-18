@@ -10,7 +10,6 @@ use strict;
 
 use File::Spec;                                             # For catdir
 use File::Basename;                                         # For dirname
-use Encode;                                                 # For handling UTF8 stuff
 use Cwd qw(abs_path);                                       # For realpath()
 use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
 use DiffHighlight;
@@ -640,7 +639,8 @@ sub horizontal_rule {
 	# BOX DRAWINGS LIGHT HORIZONTAL http://www.fileformat.info/info/unicode/char/2500/index.htm
 	my $dash;
 	if ($use_unicode_dash_for_ruler && should_print_unicode()) {
-		$dash = Encode::encode('UTF-8', "\x{2500}");
+		#$dash = Encode::encode('UTF-8', "\x{2500}");
+		$dash = "\xE2\x94\x80";
 	} else {
 		$dash = "-";
 	}
