@@ -17,8 +17,8 @@ cd ~/projects/catfabulator && git diff
 The tests use [bats-core](https://bats-core.readthedocs.io/en/latest/index.html), the Bash automated testing system.
 
 ```sh
-git submodule sync
-git submodule update --init
+# initalize the bats components
+git submodule sync && git submodule update --init
 
 # run the test suite once:
 ./test/bats/bin/bats test
@@ -28,7 +28,7 @@ brew install entr
 find  ./* test/* test/fixtures/* -maxdepth 0 | entr ./test/bats/bin/bats test
 ```
 
-When writing assertions, you'll likely want to compare to expected output. To grab that reliably, you can use something like `git --no-pager diff | diff-so-fancy > output.txt`
+When writing assertions, you'll likely want to compare to expected output. To grab that reliably, you can use something like `git --no-pager diff | ./diff-so-fancy > output.txt`
 
 You can lint your scripts via shellcheck, our CI bots will also check.
 
