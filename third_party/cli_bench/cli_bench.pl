@@ -24,7 +24,12 @@ my $ok = GetOptions(
 	'ignore=i' => \$ignore,
 );
 
-my $cmd = join(" ", @ARGV);
+
+my $cmd = trim(join(" ", @ARGV));
+
+if (!$cmd) {
+	die(usage());
+}
 
 $| = 0; # Disable output buffering
 
@@ -49,6 +54,7 @@ print "\n";
 
 # Remove the top and bottom 10%
 my $outlier = $num / 10;
+@res = sort(@res);
 @res = splice(@res, $outlier, $num - $outlier * 2);
 
 my $avg = int(average(@res));
@@ -173,5 +179,8 @@ BEGIN {
 	}
 }
 
-# vim: tabstop=4 shiftwidth=4 autoindent softtabstop=4
+sub usage {
+	return "Usage: $0 [--num 50] 'cat /tmp/simple.diff | diff-so-fancy'\n";
+}
 
+# vim: tabstop=4 shiftwidth=4 autoindent softtabstop=4
