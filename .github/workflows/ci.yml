@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - run: git submodule sync && git submodule update --init
-    - run: TERM=dumb ./test/bats/bin/bats test
+    - run: ./test/bats/bin/bats test
       env:
         TERM: dumb
 
