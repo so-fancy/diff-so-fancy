@@ -16,12 +16,14 @@ use Getopt::Long;
 ###############################################################################
 ###############################################################################
 
-my $num    = 50;
-my $ignore = 1;
+my $num     = 50;
+my $ignore  = 1;
+my $details = 1;
 
 my $ok = GetOptions(
 	'num=i'    => \$num,
 	'ignore=i' => \$ignore,
+	'details!' => \$details,
 );
 
 
@@ -59,6 +61,11 @@ my $outlier = $num / 10;
 
 my $avg = int(average(@res));
 
+if ($details) {
+	show_details(@res);
+	print "\n";
+}
+
 print "Ran '$cmd' $num times with average completion time of $avg ms\n";
 
 if ($exit != 0) {
@@ -67,6 +74,37 @@ if ($exit != 0) {
 
 ###############################################################################
 ###############################################################################
+
+sub show_details {
+	my @res = @_;
+
+	my $x   = {};
+	my $max = 0;
+
+	# Build a hash of all the times:count
+	foreach my $time (@res) {
+		$x->{$time}++;
+
+		if ($x->{$time} > $max) {
+			$max = $x->{$time};
+		}
+	}
+
+	my $target_width = 100; # How wide we want the bar + text
+	my $total        = scalar(@res);
+	my $scale        = ($target_width - 15) / $max;
+
+	print "\n";
+
+	# Print out a basic histogram of the times
+	foreach my $time (sort(keys %$x)) {
+		my $count   = $x->{$time};
+		my $percent = sprintf("%0.1f", ($count / $total) * 100);
+
+		my $bar = "%" x ($count * $scale);
+		print "$time ms: $bar ($percent%)\n";
+	}
+}
 
 sub average {
 	my $ret = 0;
