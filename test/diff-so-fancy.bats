@@ -11,7 +11,7 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 
 @test "diff-so-fancy runs exits without error" {
 	load_fixture "ls-function" | $diff_so_fancy
-	assert_success
+	run assert_success
 }
 
 @test "index line is removed entirely" {

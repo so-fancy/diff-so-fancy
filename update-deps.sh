@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# initalize the bats components
+git submodule sync && git submodule update --init
+
+
 DIFFHIGHLIGHT_RAW_URL_BASE="https://raw.githubusercontent.com/git/git/master/contrib/diff-highlight"
 DIFFHIGHLIGHT_FILES=( "DiffHighlight.pm" "README" )
 
