@@ -141,7 +141,11 @@ sub highlight_stdin {
 # fallback, which means we will work even if git can't be run.
 sub color_config {
 	my ($key, $default) = @_;
-	my $s = `git config --get-color $key 2>$NULL`;
+
+	# Removing the redirect speeds up execution by about 12ms
+	#my $s = `git config --get-color $key 2>$NULL`;
+	my $s = `git config --get-color $key`;
+
 	return length($s) ? $s : $default;
 }
 
