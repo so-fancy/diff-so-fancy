@@ -5,16 +5,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name:  
+          name:
           command: |
             sudo apt-get -y update
             sudo apt-get -y install shellcheck git
-            
-      - run: git clone --depth 1 https://github.com/sstephenson/bats.git 
+
+      - run: git submodule sync
       - run: git submodule update --init
       - run:
           name: tests
           command: |
-            export TERM=dumb && bats/bin/bats test/*.bats 
+            export TERM=dumb && ./test/bats/bin/bats test
             shellcheck *.sh
-            

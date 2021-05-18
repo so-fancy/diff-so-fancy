@@ -29,7 +29,8 @@ addons:
     update: true
 
 before_install:
-  - git clone --depth 1 https://github.com/sstephenson/bats.git
+  - git submodule sync
+  - git submodule update --init
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       mkdir -p ~/perl5;
     fi
@@ -44,4 +45,4 @@ install:
   - cpanm --quiet --notest Test::Perl::Critic Perl::Critic::Freenode
 script:
   - perlcritic -1 -q --theme freenode diff-so-fancy
-  - ./bats/bin/bats test/*.bats
+  - ./test/bats/bin/bats test
