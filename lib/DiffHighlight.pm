@@ -12,13 +12,13 @@ my $NULL = File::Spec->devnull();
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
 our @OLD_HIGHLIGHT = (
-	color_config('color.diff-highlight.oldnormal',    "\e[1;31m"),
-	color_config('color.diff-highlight.oldhighlight', "\e[1;31;48;5;52m"),
+	"\e[1;31m",
+	"\e[1;31;48;5;52m",
 	"\x1b[27m",
 );
 our @NEW_HIGHLIGHT = (
-	color_config('color.diff-highlight.newnormal',    "\e[1;32m"),
-	color_config('color.diff-highlight.newhighlight', "\e[1;32;48;5;22m"),
+	"\e[1;32m",
+	"\e[1;32;48;5;22m",
 	$OLD_HIGHLIGHT[2],
 );
 

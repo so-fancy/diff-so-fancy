@@ -32,6 +32,9 @@ my $reset_color      = color("reset");
 my $bold             = color("bold");
 my $meta_color       = "";
 
+# Set the diff highlight colors from the config
+init_diff_highlight_colors();
+
 my ($file_1,$file_2);
 my $args              = argv(); # Hashref of all the ARGV stuff
 my $last_file_seen    = "";
@@ -1037,6 +1040,14 @@ sub yes_no {
 	} else {
 		return "No";
 	}
+}
+
+sub init_diff_highlight_colors {
+	$DiffHighlight::NEW_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.newnormal'))    || color("2_bold");
+	$DiffHighlight::NEW_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || color("2_bold") . color("on_22");
+
+	$DiffHighlight::OLD_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.oldnormal'))    || color("1_bold");
+	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || color("1_bold") . color("on_52");
 }
 
 # vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
