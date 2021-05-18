@@ -898,6 +898,74 @@ sub color {
 	}
 }
 
+sub git_ansi_color {
+	my $str   = shift();
+	my @parts = split(' ', $str);
+
+	if (!@parts) {
+		return '';
+	}
+
+	my $colors = {
+		'black'   => 0,
+		'red'     => 1,
+		'green'   => 2,
+		'yellow'  => 3,
+		'blue'    => 4,
+		'magenta' => 5,
+		'cyan'    => 6,
+		'white'   => 7,
+	};
+
+	my $fg  = $parts[0] || "";
+	my $mod = $parts[1] || "";
+	my $bg  = $parts[2] || "";
+
+	my @ansi_part = ();
+	#############################################
+
+	if ($mod eq 'bold') {
+		push(@ansi_part, "1");
+	}
+
+	#############################################
+
+	# It's an RGB value
+	if (is_numeric($fg)) {
+		push(@ansi_part, "38;5;$fg");
+	# It's a simple 16 color OG ansi
+	} elsif ($fg) {
+		push(@ansi_part, $colors->{$fg} + 30);
+	}
+
+	#############################################
+
+	# It's an RGB value
+	if (is_numeric($bg)) {
+		push(@ansi_part, "48;5;$bg");
+	# It's a simple 16 color OG ansi
+	} elsif ($bg) {
+		push(@ansi_part, $colors->{$fg} + 40);
+	}
+
+	#############################################
+
+	my $ansi_str = join(";", @ansi_part);
+	my $ret      = "\e[" . $ansi_str . "m";
+
+	return $ret;
+}
+
+sub is_numeric {
+	my $s = shift();
+
+	if ($s =~ /^\d+$/) {
+		return 1;
+	}
+
+	return 0;
+}
+
 sub starts_with_ansi {
 	my $str = shift();
 
