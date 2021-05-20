@@ -434,29 +434,18 @@ sub boolean {
 	}
 }
 
-# Memoize getting the git config
+# Get the git config
 sub git_config_raw {
-	state $static_config;
-
-	if ($static_config) {
-		# If we already have the config return that
-		return $static_config;
-	}
-
 	my $cmd = "git config --list";
 	my @out = `$cmd`;
-
-	$static_config = \@out;
 
 	return \@out;
 }
 
-# Fetch a textual item from the git config
+# Memoize fetching a textual item from the git config
 sub git_config {
 	my $search_key    = lc($_[0] || "");
 	my $default_value = lc($_[1] || "");
-
-	my $out = git_config_raw();
 
 	# If we're in a unit test, use the default (don't read the users config)
 	if (in_unit_test()) {
@@ -471,6 +460,8 @@ sub git_config {
 	if ($args->{debug}) {
 		print "Parsing git config\n";
 	}
+
+	my $out = git_config_raw();
 
 	foreach my $line (@$out) {
 		if ($line =~ /=/) {
