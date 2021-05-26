@@ -9,7 +9,7 @@ set_env
 # bats fails to handle our multiline result, so we save to $output ourselves
 output=$( load_fixture "ls-function" | $diff_so_fancy )
 
-@test "diff-so-fancy runs exits without error" {
+@test "diff-so-fancy runs and exits without error" {
 	load_fixture "ls-function" | $diff_so_fancy
 	run assert_success
 }
