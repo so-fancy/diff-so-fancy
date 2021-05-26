@@ -86,42 +86,52 @@ if (!$has_stdin) {
 	} else {
 		die("Missing input on STDIN\n");
 	}
-} else {
-	# Check to see if were using default settings
-	check_first_run();
-
-	my @lines;
-	local $DiffHighlight::line_cb = sub {
-		push(@lines,@_);
-
-		my $last_line = $lines[-1];
-
-		# Buffer X lines before we try and output anything
-		# Also make sure we're sending enough data to d-s-f to do it's magic.
-		# Certain things require a look-ahead line or two to function so
-		# we make sure we don't break on those sections prematurely
-		if (@lines > 24 && ($last_line !~ /^${ansi_color_regex}(---|index|old mode|similarity index|rename (from|to))/)) {
-			do_dsf_stuff(\@lines);
-			@lines = ();
-		}
-	};
-
-	my $line_count = 0;
-	while (my $line = <STDIN>) {
-		# If the very first line of the diff doesn't start with ANSI color we're assuming
-		# it's a raw patch file, and we have to color the added/removed lines ourself
-		if (!$color_forced && $line_count == 0 && starts_with_ansi($line)) {
-			$manually_color_lines = 1;
-		}
-
-		my $ok = DiffHighlight::handle_line($line);
-		$line_count++;
-	}
-
-	DiffHighlight::flush();
-	do_dsf_stuff(\@lines);
 }
 
+#################################################################################
+#################################################################################
+
+# Check to see if were using default settings
+check_first_run();
+
+# The logic here is that we run all the lines through DiffHighlight first. This
+# highlights all the intra-word changes. Then we take those lines and send them
+# to do_dsf_stuff() to convert the diff to human readable d-s-f output and add
+# appropriate fanciness
+
+my @lines;
+local $DiffHighlight::line_cb = sub {
+	push(@lines,@_);
+
+	my $last_line = $lines[-1];
+
+	# Buffer X lines before we try and output anything
+	# Also make sure we're sending enough data to d-s-f to do it's magic.
+	# Certain things require a look-ahead line or two to function so
+	# we make sure we don't break on those sections prematurely
+	if (@lines > 24 && ($last_line !~ /^${ansi_color_regex}(---|index|old mode|similarity index|rename (from|to))/)) {
+		do_dsf_stuff(\@lines);
+		@lines = ();
+	}
+};
+
+my $line_count = 0;
+while (my $line = <STDIN>) {
+	# If the very first line of the diff doesn't start with ANSI color we're assuming
+	# it's a raw patch file, and we have to color the added/removed lines ourself
+	if (!$color_forced && $line_count == 0 && starts_with_ansi($line)) {
+		$manually_color_lines = 1;
+	}
+
+	my $ok = DiffHighlight::handle_line($line);
+	$line_count++;
+}
+
+# If we're mid hunk above process anything still pending
+DiffHighlight::flush();
+do_dsf_stuff(\@lines);
+
+#################################################################################
 #################################################################################
 
 sub do_dsf_stuff {
