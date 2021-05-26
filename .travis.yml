@@ -15,9 +15,9 @@ perl:
 matrix:
   include:
     - os: osx
-      osx_image: xcode9.4
+      osx_image: xcode12.2
       language: generic
-      perl: 5.24
+      perl: 5.30
   allow_failures:
     - perl: "blead"
 
