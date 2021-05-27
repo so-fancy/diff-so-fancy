@@ -936,7 +936,12 @@ sub git_ansi_color {
 		push(@ansi_part, "38;5;$fg");
 	# It's a simple 16 color OG ansi
 	} elsif ($fg) {
-		push(@ansi_part, $colors->{$fg} + 30);
+		my $bright    = $fg =~ s/bright//;
+		my $color_num = $colors->{$fg} + 30;
+
+		if ($bright) { $color_num += 8; }
+
+		push(@ansi_part, $color_num);
 	}
 
 	#############################################
@@ -949,7 +954,12 @@ sub git_ansi_color {
 		push(@ansi_part, 7);
 	# It's a simple 16 color OG ansi
 	} elsif ($bg) {
-		push(@ansi_part, $colors->{$fg} + 40);
+		my $bright    = $bg =~ s/bright//;
+		my $color_num = $colors->{$bg} + 30;
+
+		if ($bright) { $color_num += 8; }
+
+		push(@ansi_part, $color_num);
 	}
 
 	#############################################
