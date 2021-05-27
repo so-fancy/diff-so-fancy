@@ -602,18 +602,13 @@ sub insert_reset_at_line_end {
 }
 
 # Count the number of a given char in a string
+# https://www.perturb.org/display/1010_Perl_Count_occurrences_of_substring.html
 sub char_count {
-	my ($needle,$str) = @_;
-	my $len = length($str);
-	my $ret = 0;
+	my ($needle, $haystack) = @_;
 
-	for (my $i = 0; $i < $len; $i++) {
-		my $found = substr($str,$i,1);
+	my $count = () = ($haystack =~ /$needle/g);
 
-		if ($needle eq $found) { $ret++; }
-	}
-
-	return $ret;
+	return $count;
 }
 
 # Remove all ANSI codes from a string
