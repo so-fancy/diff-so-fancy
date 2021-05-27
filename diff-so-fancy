@@ -947,6 +947,9 @@ sub git_ansi_color {
 	# It's an RGB value
 	if (is_numeric($bg)) {
 		push(@ansi_part, "48;5;$bg");
+	# Inverse/Reverse
+	} elsif ($bg =~ /reverse/i) {
+		push(@ansi_part, 7);
 	# It's a simple 16 color OG ansi
 	} elsif ($bg) {
 		push(@ansi_part, $colors->{$fg} + 40);
