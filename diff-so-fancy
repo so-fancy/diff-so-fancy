@@ -628,7 +628,9 @@ sub bleach_text {
 sub trim {
 	my $s = shift();
 	if (!$s) { return ""; }
-	$s =~ s/^\s*|\s*$//g;
+
+	$s =~ s/^\s*//u;
+	$s =~ s/\s*$//u;
 
 	return $s;
 }
