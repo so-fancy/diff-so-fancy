@@ -7,19 +7,22 @@ use v5.16;
 ###############################################################################
 ###############################################################################
 
-compare_color("\e[1;91m"              , git_ansi_color("brightred bold")    , "brightred bold");
-compare_color("\e[1;31m"              , git_ansi_color("red bold")          , "red bold");
-compare_color("\e[1;32m"              , git_ansi_color("green bold")        , "green bold");
-compare_color("\e[33m"                , git_ansi_color("yellow")            , "yellow");
-compare_color("\e[1;7;32m"            , git_ansi_color("green bold reverse"), "green bold reverse");
-compare_color("\e[1;35m"              , git_ansi_color("magenta bold")      , "magenta bold");
-compare_color("\e[1;38;5;146m"        , git_ansi_color("146 bold")          , "146 bold");
-compare_color("\e[1;38;5;146;48;5;22m", git_ansi_color("146 bold 22")       , "146 bold 22");
-compare_color("\e[1;34;40m"           , git_ansi_color("blue black bold")   , "blue black gold");
-compare_color("\e[38;5;11m"           , git_ansi_color("11")                , "11");
-compare_color("\e[7;31m"              , git_ansi_color("red reverse")       , "red reverse");
-compare_color("\e[1;31;48;5;52m"      , git_ansi_color("red bold 52")       , "red bold 52");
-compare_color("\e[38;5;10;48;5;20m"   , git_ansi_color("10 20")             , "10 20");
+compare_color("\e[1;91m"               , git_ansi_color("brightred bold")    , "brightred bold");
+compare_color("\e[1;31m"               , git_ansi_color("red bold")          , "red bold");
+compare_color("\e[1;32m"               , git_ansi_color("green bold")        , "green bold");
+compare_color("\e[33m"                 , git_ansi_color("yellow")            , "yellow");
+compare_color("\e[1;7;32m"             , git_ansi_color("green bold reverse"), "green bold reverse");
+compare_color("\e[1;35m"               , git_ansi_color("magenta bold")      , "magenta bold");
+compare_color("\e[1;38;5;146m"         , git_ansi_color("146 bold")          , "146 bold");
+compare_color("\e[1;38;5;146;48;5;22m" , git_ansi_color("146 bold 22")       , "146 bold 22");
+compare_color("\e[1;34;40m"            , git_ansi_color("blue black bold")   , "blue black gold");
+compare_color("\e[93m"                 , git_ansi_color("11")                , "11");
+compare_color("\e[7;31m"               , git_ansi_color("red reverse")       , "red reverse");
+compare_color("\e[1;31;48;5;52m"       , git_ansi_color("red bold 52")       , "red bold 52");
+compare_color("\e[92;48;5;20m"         , git_ansi_color("10 20")             , "10 20");
+compare_color("\e[30;47m"              , git_ansi_color("0 7")               , "0 7");
+compare_color("\e[94;105m"             , git_ansi_color("12 13")             , "12 13");
+compare_color("\e[1;38;5;254;48;5;255m", git_ansi_color("254 bold 255")      , "254 bold 255");
 
 ###############################################################################
 ###############################################################################
@@ -124,14 +127,20 @@ sub git_ansi_color {
 		@parts = grep { !/reverse/ } @parts; # Remove from array
 	}
 
-	my $fg  = $parts[0] || "";
-	my $bg  = $parts[1] || "";
+	my $fg  = $parts[0] // "";
+	my $bg  = $parts[1] // "";
 
 	#############################################
 
 	# It's an numeric value, so it's an 8 bit color
 	if (is_numeric($fg)) {
-		push(@ansi_part, "38;5;$fg");
+		if ($fg < 8) {
+			push(@ansi_part, $fg + 30);
+		} elsif ($fg < 16) {
+			push(@ansi_part, $fg + 82);
+		} else {
+			push(@ansi_part, "38;5;$fg");
+		}
 	# It's a simple 16 color OG ansi
 	} elsif ($fg) {
 		my $bright    = $fg =~ s/bright//;
@@ -146,7 +155,13 @@ sub git_ansi_color {
 
 	# It's an numeric value, so it's an 8 bit color
 	if (is_numeric($bg)) {
-		push(@ansi_part, "48;5;$bg");
+		if ($bg < 8) {
+			push(@ansi_part, $bg + 40);
+		} elsif ($bg < 16) {
+			push(@ansi_part, $bg + 92);
+		} else {
+			push(@ansi_part, "48;5;$bg");
+		}
 	# It's a simple 16 color OG ansi
 	} elsif ($bg) {
 		my $bright    = $bg =~ s/bright//;

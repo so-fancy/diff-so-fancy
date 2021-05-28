@@ -930,14 +930,20 @@ sub git_ansi_color {
 		@parts = grep { !/reverse/ } @parts; # Remove from array
 	}
 
-	my $fg  = $parts[0] || "";
-	my $bg  = $parts[1] || "";
+	my $fg  = $parts[0] // "";
+	my $bg  = $parts[1] // "";
 
 	#############################################
 
 	# It's an numeric value, so it's an 8 bit color
 	if (is_numeric($fg)) {
-		push(@ansi_part, "38;5;$fg");
+		if ($fg < 8) {
+			push(@ansi_part, $fg + 30);
+		} elsif ($fg < 16) {
+			push(@ansi_part, $fg + 82);
+		} else {
+			push(@ansi_part, "38;5;$fg");
+		}
 	# It's a simple 16 color OG ansi
 	} elsif ($fg) {
 		my $bright    = $fg =~ s/bright//;
@@ -952,7 +958,13 @@ sub git_ansi_color {
 
 	# It's an numeric value, so it's an 8 bit color
 	if (is_numeric($bg)) {
-		push(@ansi_part, "48;5;$bg");
+		if ($bg < 8) {
+			push(@ansi_part, $bg + 40);
+		} elsif ($bg < 16) {
+			push(@ansi_part, $bg + 92);
+		} else {
+			push(@ansi_part, "48;5;$bg");
+		}
 	# It's a simple 16 color OG ansi
 	} elsif ($bg) {
 		my $bright    = $bg =~ s/bright//;
