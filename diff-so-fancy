@@ -899,6 +899,7 @@ sub color {
 	}
 }
 
+# https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_colors_in_git
 sub git_ansi_color {
 	my $str   = shift();
 	my @parts = split(' ', $str);
@@ -906,7 +907,6 @@ sub git_ansi_color {
 	if (!@parts) {
 		return '';
 	}
-
 	my $colors = {
 		'black'   => 0,
 		'red'     => 1,
@@ -918,20 +918,24 @@ sub git_ansi_color {
 		'white'   => 7,
 	};
 
-	my $fg  = $parts[0] || "";
-	my $mod = $parts[1] || "";
-	my $bg  = $parts[2] || "";
-
 	my @ansi_part = ();
-	#############################################
 
-	if ($mod eq 'bold') {
+	if (grep { /bold/ } @parts) {
 		push(@ansi_part, "1");
+		@parts = grep { !/bold/ } @parts; # Remove from array
 	}
 
+	if (grep { /reverse/ } @parts) {
+		push(@ansi_part, "7");
+		@parts = grep { !/reverse/ } @parts; # Remove from array
+	}
+
+	my $fg  = $parts[0] || "";
+	my $bg  = $parts[1] || "";
+
 	#############################################
 
-	# It's an RGB value
+	# It's an numeric value, so it's an 8 bit color
 	if (is_numeric($fg)) {
 		push(@ansi_part, "38;5;$fg");
 	# It's a simple 16 color OG ansi
@@ -939,25 +943,22 @@ sub git_ansi_color {
 		my $bright    = $fg =~ s/bright//;
 		my $color_num = $colors->{$fg} + 30;
 
-		if ($bright) { $color_num += 8; }
+		if ($bright) { $color_num += 60; } # Set bold
 
 		push(@ansi_part, $color_num);
 	}
 
 	#############################################
 
-	# It's an RGB value
+	# It's an numeric value, so it's an 8 bit color
 	if (is_numeric($bg)) {
 		push(@ansi_part, "48;5;$bg");
-	# Inverse/Reverse
-	} elsif ($bg =~ /reverse/i) {
-		push(@ansi_part, 7);
 	# It's a simple 16 color OG ansi
 	} elsif ($bg) {
 		my $bright    = $bg =~ s/bright//;
-		my $color_num = $colors->{$bg} + 30;
+		my $color_num = $colors->{$bg} + 40;
 
-		if ($bright) { $color_num += 8; }
+		if ($bright) { $color_num += 60; } # Set bold
 
 		push(@ansi_part, $color_num);
 	}
