@@ -23,6 +23,8 @@ compare_color("\e[92;48;5;20m"         , git_ansi_color("10 20")             , "
 compare_color("\e[30;47m"              , git_ansi_color("0 7")               , "0 7");
 compare_color("\e[94;105m"             , git_ansi_color("12 13")             , "12 13");
 compare_color("\e[1;38;5;254;48;5;255m", git_ansi_color("254 bold 255")      , "254 bold 255");
+compare_color("\e[1;38;5;238;42m"      , git_ansi_color("238 bold green")    , "238 bold green");
+compare_color("\e[1;38;5;238;42m"      , git_ansi_color("238 green bold")    , "238 green bold");
 
 ###############################################################################
 ###############################################################################
