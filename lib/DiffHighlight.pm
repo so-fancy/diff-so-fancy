@@ -12,13 +12,13 @@ my $NULL = File::Spec->devnull();
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
 our @OLD_HIGHLIGHT = (
-	"\e[1;31m",
-	"\e[1;31;48;5;52m",
-	"\x1b[27m",
+	"",
+	"\e[7m",
+	"\e[27m",
 );
 our @NEW_HIGHLIGHT = (
-	"\e[1;32m",
-	"\e[1;32;48;5;22m",
+	$OLD_HIGHLIGHT[0],
+	$OLD_HIGHLIGHT[1],
 	$OLD_HIGHLIGHT[2],
 );
 
