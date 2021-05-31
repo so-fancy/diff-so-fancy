@@ -12,7 +12,7 @@ my $NULL = File::Spec->devnull();
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
 our @OLD_HIGHLIGHT = (
-	"",
+	undef,
 	"\e[7m",
 	"\e[27m",
 );
