@@ -53,9 +53,9 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
 @test "header format uses a native line-drawing character" {
   header=$( printf "%s" "$output" | head -n3 )
   run printf "%s" "$header"
-  assert_line --index 0 --partial "[1;33m─────"
+  assert_line --index 0 --partial "─────"
   assert_line --index 1 --partial "modified: fish/functions/ls.fish"
-  assert_line --index 2 --partial "[1;33m─────"
+  assert_line --index 2 --partial "─────"
 }
 
 # see https://git.io/vrOF4
@@ -64,9 +64,9 @@ output=$( load_fixture "ls-function" | $diff_so_fancy )
   # pipe to cat(1) so we don't open stdout
   header=$( printf "%s" "$(load_fixture "ls-function" | $diff_so_fancy | cat)" | head -n3 )
   run printf "%s" "$header"
-  assert_line --index 0 --partial "[1;33m-----"
+  assert_line --index 0 --partial "-----"
   assert_line --index 1 --partial "modified: fish/functions/ls.fish"
-  assert_line --index 2 --partial "[1;33m-----"
+  assert_line --index 2 --partial "-----"
   set_env # reset env
 }
 

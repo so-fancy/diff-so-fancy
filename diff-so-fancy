@@ -196,7 +196,7 @@ sub do_dsf_stuff {
 			# Mercurial looks like: diff -r 82e55d328c8c hello.c
 			if ($4 eq "-r") {
 				$is_mercurial = 1;
-				$meta_color ||= get_config_color("meta");
+				$meta_color = get_config_color("meta");
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
 			} else {
 				$last_file_seen = $5;
@@ -212,7 +212,7 @@ sub do_dsf_stuff {
 		# Find the first file: --- a/README.md #
 		########################################
 		} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
-			$meta_color ||= get_config_color("meta");
+			$meta_color = get_config_color("meta");
 
 			if ($git_strip_prefix) {
 				my $file_dir = $4 || "";
@@ -364,7 +364,7 @@ sub do_dsf_stuff {
 
 			if ($file1 && $file2) {
 				# We may not have extracted this yet, so we pull from the config if not
-				$meta_color ||= get_config_color("meta");
+				$meta_color = get_config_color("meta");
 
 				my $change = file_change_string($file1,$file2);
 
