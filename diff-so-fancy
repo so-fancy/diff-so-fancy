@@ -73,6 +73,7 @@ if (!$has_stdin) {
 		die(version());
 	} elsif ($args->{'set-defaults'}) {
 		my $ok = set_defaults();
+		exit;
 	} elsif ($args->{colors}) {
 		# We print this to STDOUT so we can redirect to bash to auto-set the colors
 		print get_default_colors();
