@@ -1071,4 +1071,19 @@ sub init_diff_highlight_colors {
 	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || $DiffHighlight::OLD_HIGHLIGHT[1];
 }
 
+sub debug_log {
+	my $log_line = shift();
+	my $file     = "/tmp/diff-so-fancy.debug.log";
+
+	state $fh;
+	if (!$fh) {
+		printf("%sDebug log enabled:%s $file\n", color('orange'), color());
+		open ($fh, ">", $file) or die("Cannot write to $file");
+	}
+
+	print $fh trim($log_line) . "\n";
+
+	return 1;
+}
+
 # vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
