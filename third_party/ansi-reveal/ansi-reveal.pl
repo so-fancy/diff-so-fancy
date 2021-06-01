@@ -98,6 +98,10 @@ sub dump_ansi {
 			$ret .= "[BOLD]";
 		} elsif ($p eq "0" || $p eq "") {
 			$ret .= "[RESET]";
+		} elsif ($p eq "7") {
+			$ret .= "[REVERSE]";
+		} elsif ($p eq "27") {
+			$ret .= "[NOTREV]";
 		} elsif ($p eq "38") {
 			my $next  = $parts[$count + 1];
 			my $color = $parts[$count + 2];
