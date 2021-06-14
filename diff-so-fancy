@@ -1086,4 +1086,21 @@ sub debug_log {
 	return 1;
 }
 
+# Enable k() and kd() if there is a DSF_DEBUG environment variable
+BEGIN {
+	if ($ENV{"DSF_DEBUG"}) {
+		require Data::Dump::Color;
+		*k  = sub { Data::Dump::Color::dd(@_) };
+		*kd = sub {
+			k(@_);
+
+			printf("Died at %2\$s line #%3\$s\n",caller());
+			exit(15);
+		}
+	} else {
+		*k  = sub {};
+		*kd = sub {};
+	}
+}
+
 # vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
