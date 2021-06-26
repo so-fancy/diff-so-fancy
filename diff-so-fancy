@@ -918,13 +918,14 @@ sub git_ansi_color {
 
 	if (grep { /bold/ } @parts) {
 		push(@ansi_part, "1");
-		@parts = grep { !/bold/ } @parts; # Remove from array
 	}
 
 	if (grep { /reverse/ } @parts) {
 		push(@ansi_part, "7");
-		@parts = grep { !/reverse/ } @parts; # Remove from array
 	}
+
+	# Remove parts that aren't colors
+	@parts = grep { exists $colors->{$_} || is_numeric($_) } @parts;
 
 	my $fg  = $parts[0] // "";
 	my $bg  = $parts[1] // "";
