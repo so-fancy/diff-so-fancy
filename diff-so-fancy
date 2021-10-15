@@ -712,7 +712,7 @@ sub argv {
 
 # Output the command line usage for d-s-f
 sub usage {
-	my $out = color("white_bold") . version() . color("reset") . "\n";
+	my $out = color("white bold") . version() . color("reset") . "\n";
 
 	$out .= "Usage:
 
@@ -829,32 +829,19 @@ sub set_defaults {
 	return 1;
 }
 
-# Borrowed from: https://www.perturb.org/display/1167_Perl_ANSI_colors.html
-# String format: '115', '165_bold', '10_on_140', 'reset', 'on_173', 'red', 'white_on_blue'
 sub color {
 	my $str = shift();
 
-	if ($str eq 'reset') { return "\e[0m"; }
-
-	# Some predefined colors
-	my %color_map = qw(red 160 blue 21 green 34 yellow 226 orange 214 purple 93 white 15 black 0);
+	# Replace the two non-standard colors that were here before…
+	# git recognizes the standard ANSI names:
+	#   black/red/green/yellow/blue/magenta/cyan/white
+	#   and the 'bright…' variations of those.
+	#   It also recognizes integer ANSI colors (e.g. orange=214),
+	#   and hex like #ff00ff.
+	my %color_map = qw(orange 214 purple 93);
 	$str =~ s|([A-Za-z]+)|$color_map{$1} // $1|eg;
 
-	# Get foreground/background and any commands
-	my ($fc,$cmd) = $str =~ /(\d+)?_?(\w+)?/g;
-	my ($bc)      = $str =~ /on_?(\d+)/g;
-
-	# Some predefined commands
-	my %cmd_map = qw(bold 1 dim 2 italic 3 ul 4 blink 5 reverse 7 strike 9
-					 nobold 22 nodim 22 noitalic 23 noul 24 noblink 25 noreverse 27 nostrike 29);
-	my $cmd_num = $cmd_map{$cmd // 0};
-
-	my $ret = '';
-	if ($cmd_num)     { $ret .= "\e[${cmd_num}m"; }
-	if (defined($fc)) { $ret .= "\e[38;5;${fc}m"; }
-	if (defined($bc)) { $ret .= "\e[48;5;${bc}m"; }
-
-	return $ret;
+	return git_ansi_color($str);
 }
 
 # Get colors used for various output sections (memoized)
@@ -873,29 +860,29 @@ sub color {
 
 		if ($str eq "meta") {
 			# Default ANSI yellow
-			$ret = git_ansi_color(git_config('color.diff.meta')) || color(11);
+			$ret = git_ansi_color(git_config('color.diff.meta')) || color('11');
 		} elsif ($str eq "add_line") {
 			# Default ANSI green
-			$ret = git_ansi_color(git_config('color.diff.new')) || color("2_bold");
+			$ret = git_ansi_color(git_config('color.diff.new')) || color("2 bold");
 		} elsif ($str eq "remove_line") {
 			# Default ANSI red
-			$ret = git_ansi_color(git_config('color.diff.old')) || color("1_bold");
+			$ret = git_ansi_color(git_config('color.diff.old')) || color("1 bold");
 		} elsif ($str eq "fragment") {
-			$ret = git_ansi_color(git_config('color.diff.frag')) || color("13_bold");
+			$ret = git_ansi_color(git_config('color.diff.frag')) || color("13 bold");
 		} elsif ($str eq "last_function") {
-			$ret = git_ansi_color(git_config('color.diff.func')) || color("146_bold");
+			$ret = git_ansi_color(git_config('color.diff.func')) || color("146 bold");
 		} elsif ($str eq "new_normal") {
 			$ret = git_ansi_color(git_config('color.diff-highlight.newnormal'));
 		} elsif ($str eq "new_highlight") {
 			$ret = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || color('reverse');
 		} elsif ($str eq "new_reset") {
-			$ret = git_ansi_color(git_config('color.diff-highlight.newreset')) || color('noreverse');
+			$ret = git_ansi_color(git_config('color.diff-highlight.newreset')) || color('no-reverse');
 		} elsif ($str eq "old_normal") {
 			$ret = git_ansi_color(git_config('color.diff-highlight.oldnormal'));
 		} elsif ($str eq "old_highlight") {
 			$ret = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || color('reverse');
 		} elsif ($str eq "old_reset") {
-			$ret = git_ansi_color(git_config('color.diff-highlight.oldreset')) || color('noreverse');
+			$ret = git_ansi_color(git_config('color.diff-highlight.oldreset')) || color('no-reverse');
 		}
 
 		# Cache (memoize) the entry for later
