@@ -35,9 +35,9 @@ sub compare_color {
 	if ($one ne $two) {
 		#k($one, $two);
 		#printf("No match for %-20s %s / %s\n", $desc, ansi_to_human($one), ansi_to_human($two));
-		printf("%-20s %sFAIL%s  %s ne %s\n", $desc, color('red'), color(), ansi_to_human($one), ansi_to_human($two));
+		printf("%-20s %sFAIL%s  %s ne %s\n", $desc, color('red'), color('reset'), ansi_to_human($one), ansi_to_human($two));
 	} else {
-		printf("%-20s %sOK%s\n", $desc, color('green'), color());
+		printf("%-20s %sOK%s\n", $desc, color('green'), color('reset'));
 	}
 }
 
@@ -258,7 +258,7 @@ sub color {
 	#if (-t STDOUT == 0) { return ''; }
 
 	# No string sent in, so we just reset
-	if (!length($str) || $str eq 'reset') { return "\e[0m"; }
+	if ($str eq 'reset') { return "\e[0m"; }
 
 	# Some predefined colors
 	my %color_map = qw(red 160 blue 27 green 34 yellow 226 orange 214 purple 93 white 15 black 0);

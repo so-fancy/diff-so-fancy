@@ -834,8 +834,7 @@ sub set_defaults {
 sub color {
 	my $str = shift();
 
-	# No string sent in, so we just reset
-	if (!length($str) || $str eq 'reset') { return "\e[0m"; }
+	if ($str eq 'reset') { return "\e[0m"; }
 
 	# Some predefined colors
 	my %color_map = qw(red 160 blue 21 green 34 yellow 226 orange 214 purple 93 white 15 black 0);
@@ -1141,7 +1140,7 @@ sub debug_log {
 
 	state $fh;
 	if (!$fh) {
-		printf("%sDebug log enabled:%s $file\n", color('orange'), color());
+		printf("%sDebug log enabled:%s $file\n", color('orange'), color('reset'));
 		open ($fh, ">", $file) or die("Cannot write to $file");
 	}
 
