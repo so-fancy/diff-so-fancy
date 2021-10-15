@@ -30,14 +30,14 @@ my %section_color_config_names = (
 
 # Default/fallback color specs for each config name.
 my %git_ansi_color_default_specs = (
-	'color.diff.meta' => '11',
-	'color.diff.frag' => '13 bold',
+	'color.diff.meta' => 'brightyellow',
+	'color.diff.frag' => 'brightmagenta bold',
 	'color.diff.func' => '146 bold',
-	'color.diff.new' => '2 bold',
+	'color.diff.new' => 'green bold',
 	'color.diff-highlight.newnormal' => '',
 	'color.diff-highlight.newhighlight' => 'reverse',
 	'color.diff-highlight.newreset' => 'no-reverse',
-	'color.diff.old' => '1 bold',
+	'color.diff.old' => 'red bold',
 	'color.diff-highlight.oldnormal' => '',
 	'color.diff-highlight.oldhighlight' => 'reverse',
 	'color.diff-highlight.oldreset' => 'no-reverse',
