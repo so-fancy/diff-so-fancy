@@ -846,7 +846,7 @@ sub color {
 	my ($bc)      = $str =~ /on_?(\d+)/g;
 
 	# Some predefined commands
-	my %cmd_map = qw(bold 1 italic 3 ul 4 blink 5 reverse 7);
+	my %cmd_map = qw(bold 1 dim 2 italic 3 ul 4 blink 5 reverse 7 strike 9);
 	my $cmd_num = $cmd_map{$cmd // 0};
 
 	my $ret = '';
