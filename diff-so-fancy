@@ -921,8 +921,28 @@ sub git_ansi_color {
 		push(@ansi_part, "1");
 	}
 
+	if (grep { /^dim$/ } @parts) {
+		push(@ansi_part, "2");
+	}
+
+	if (grep { /^italic$/ } @parts) {
+		push(@ansi_part, "3");
+	}
+
+	if (grep { /^ul$/ } @parts) {
+		push(@ansi_part, "4");
+	}
+
+	if (grep { /^blink$/ } @parts) {
+		push(@ansi_part, "5");
+	}
+
 	if (grep { /^reverse$/ } @parts) {
 		push(@ansi_part, "7");
+	}
+
+	if (grep { /^strike$/ } @parts) {
+		push(@ansi_part, "9");
 	}
 
 	# Remove parts that aren't colors
