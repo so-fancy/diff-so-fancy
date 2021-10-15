@@ -907,145 +907,26 @@ sub color {
 
 # https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_colors_in_git
 sub git_ansi_color {
-	my $str   = shift();
-	my @parts = split(' ', $str);
-
-	if (!@parts) {
+	my $str = lc(shift() // '');
+	if (!$str) {
 		return '';
 	}
-	my $colors = {
-		'black'   => 0,
-		'red'     => 1,
-		'green'   => 2,
-		'yellow'  => 3,
-		'blue'    => 4,
-		'magenta' => 5,
-		'cyan'    => 6,
-		'white'   => 7,
-	};
 
-	my @ansi_part = ();
-
-	if (grep { /^bold$/ } @parts) {
-		push(@ansi_part, "1");
+	state $git_color_cache = {};
+	if (exists $git_color_cache->{$str}) {
+		return $git_color_cache->{$str};
 	}
 
-	if (grep { /^no-?bold$/ } @parts) {
-		push(@ansi_part, "22");  # not a typo: no-bold and no-dim are the same.
+	my @cmd = ('git', 'config', '--get-color', '', $str);
+	my $pid = open(my $fh, '-|', @cmd) or die "Cannot open: $!";
+	read($fh, my $ret, 256);
+	waitpid $pid, 0 or die "Failed to wait to get color $str: $!";
+	my $status = $? >> 8;
+	if ($status != 0) {
+		die "Failed to get color $str: $status";
 	}
 
-	if (grep { /^dim$/ } @parts) {
-		push(@ansi_part, "2");
-	}
-
-	if (grep { /^no-?dim$/ } @parts) {
-		push(@ansi_part, "22");
-	}
-
-	if (grep { /^italic$/ } @parts) {
-		push(@ansi_part, "3");
-	}
-
-	if (grep { /^no-?italic$/ } @parts) {
-		push(@ansi_part, "23");
-	}
-
-	if (grep { /^ul$/ } @parts) {
-		push(@ansi_part, "4");
-	}
-
-	if (grep { /^no-?ul$/ } @parts) {
-		push(@ansi_part, "24");
-	}
-
-	if (grep { /^blink$/ } @parts) {
-		push(@ansi_part, "5");
-	}
-
-	if (grep { /^no-?blink$/ } @parts) {
-		push(@ansi_part, "25");
-	}
-
-	if (grep { /^reverse$/ } @parts) {
-		push(@ansi_part, "7");
-	}
-
-	if (grep { /^no-?reverse$/ } @parts) {
-		push(@ansi_part, "27");
-	}
-
-	if (grep { /^strike$/ } @parts) {
-		push(@ansi_part, "9");
-	}
-
-	if (grep { /^no-?strike$/ } @parts) {
-		push(@ansi_part, "29");
-	}
-
-	# Remove parts that aren't colors
-	@parts = grep { exists $colors->{$_} || is_numeric($_) } @parts;
-
-	my $fg  = $parts[0] // "";
-	my $bg  = $parts[1] // "";
-
-	#############################################
-
-	# It's an numeric value, so it's an 8 bit color
-	if (is_numeric($fg)) {
-		if ($fg < 8) {
-			push(@ansi_part, $fg + 30);
-		} elsif ($fg < 16) {
-			push(@ansi_part, $fg + 82);
-		} else {
-			push(@ansi_part, "38;5;$fg");
-		}
-	# It's a simple 16 color OG ansi
-	} elsif ($fg) {
-		my $bright    = $fg =~ s/bright//;
-		my $color_num = $colors->{$fg} + 30;
-
-		if ($bright) { $color_num += 60; } # Set bold
-
-		push(@ansi_part, $color_num);
-	}
-
-	#############################################
-
-	# It's an numeric value, so it's an 8 bit color
-	if (is_numeric($bg)) {
-		if ($bg < 8) {
-			push(@ansi_part, $bg + 40);
-		} elsif ($bg < 16) {
-			push(@ansi_part, $bg + 92);
-		} else {
-			push(@ansi_part, "48;5;$bg");
-		}
-	# It's a simple 16 color OG ansi
-	} elsif ($bg) {
-		my $bright    = $bg =~ s/bright//;
-		my $color_num = $colors->{$bg} + 40;
-
-		if ($bright) { $color_num += 60; } # Set bold
-
-		push(@ansi_part, $color_num);
-	}
-
-	#############################################
-
-	my $ansi_str = join(";", @ansi_part);
-	my $ret      = "\e[" . $ansi_str . "m";
-
-	return $ret;
-}
-
-sub is_numeric {
-	my $s = shift();
-
-	if ($s =~ /^\d+$/) {
-		return 1;
-	}
-
-	return 0;
+	return $git_color_cache->{$str} = $ret;
 }
 
 sub starts_with_ansi {
