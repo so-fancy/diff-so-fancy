@@ -841,7 +841,7 @@ sub color {
 	my %color_map = qw(orange 214 purple 93);
 	$str =~ s|([A-Za-z]+)|$color_map{$1} // $1|eg;
 
-	return git_ansi_color($str);
+	return git_ansi_color('', $str);
 }
 
 # Get colors used for various output sections (memoized)
@@ -860,29 +860,29 @@ sub color {
 
 		if ($str eq "meta") {
 			# Default ANSI yellow
-			$ret = git_ansi_color(git_config('color.diff.meta')) || color('11');
+			$ret = git_ansi_color('color.diff.meta', '11');
 		} elsif ($str eq "add_line") {
 			# Default ANSI green
-			$ret = git_ansi_color(git_config('color.diff.new')) || color("2 bold");
+			$ret = git_ansi_color('color.diff.new', '2 bold');
 		} elsif ($str eq "remove_line") {
 			# Default ANSI red
-			$ret = git_ansi_color(git_config('color.diff.old')) || color("1 bold");
+			$ret = git_ansi_color('color.diff.old', '1 bold');
 		} elsif ($str eq "fragment") {
-			$ret = git_ansi_color(git_config('color.diff.frag')) || color("13 bold");
+			$ret = git_ansi_color('color.diff.frag', '13 bold');
 		} elsif ($str eq "last_function") {
-			$ret = git_ansi_color(git_config('color.diff.func')) || color("146 bold");
+			$ret = git_ansi_color('color.diff.func', '146 bold');
 		} elsif ($str eq "new_normal") {
-			$ret = git_ansi_color(git_config('color.diff-highlight.newnormal'));
+			$ret = git_ansi_color('color.diff-highlight.newnormal');
 		} elsif ($str eq "new_highlight") {
-			$ret = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || color('reverse');
+			$ret = git_ansi_color('color.diff-highlight.newhighlight', 'reverse');
 		} elsif ($str eq "new_reset") {
-			$ret = git_ansi_color(git_config('color.diff-highlight.newreset')) || color('no-reverse');
+			$ret = git_ansi_color('color.diff-highlight.newreset', 'no-reverse');
 		} elsif ($str eq "old_normal") {
-			$ret = git_ansi_color(git_config('color.diff-highlight.oldnormal'));
+			$ret = git_ansi_color('color.diff-highlight.oldnormal');
 		} elsif ($str eq "old_highlight") {
-			$ret = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || color('reverse');
+			$ret = git_ansi_color('color.diff-highlight.oldhighlight', 'reverse');
 		} elsif ($str eq "old_reset") {
-			$ret = git_ansi_color(git_config('color.diff-highlight.oldreset')) || color('no-reverse');
+			$ret = git_ansi_color('color.diff-highlight.oldreset', 'no-reverse');
 		}
 
 		# Cache (memoize) the entry for later
@@ -894,26 +894,27 @@ sub color {
 
 # https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_colors_in_git
 sub git_ansi_color {
-	my $str = lc(shift() // '');
-	if (!$str) {
-		return '';
-	}
+	my $config_name = lc(shift() // '');
+	my $color_spec = shift() // '';
 
 	state $git_color_cache = {};
-	if (exists $git_color_cache->{$str}) {
-		return $git_color_cache->{$str};
+	my $cache_key = $config_name || $color_spec;
+	if (!$cache_key) {
+		return '';
+	} elsif (exists $git_color_cache->{$cache_key}) {
+		return $git_color_cache->{$cache_key};
 	}
 
-	my @cmd = ('git', 'config', '--get-color', '', $str);
+	my @cmd = ('git', 'config', '--get-color', $config_name, $color_spec);
 	my $pid = open(my $fh, '-|', @cmd) or die "Cannot open: $!";
 	read($fh, my $ret, 256);
-	waitpid $pid, 0 or die "Failed to wait to get color $str: $!";
+	waitpid $pid, 0 or die "Failed to wait to get color $cache_key: $!";
 	my $status = $? >> 8;
 	if ($status != 0) {
-		die "Failed to get color $str: $status";
+		die "Failed to get color $cache_key: $status";
 	}
 
-	return $git_color_cache->{$str} = $ret;
+	return $git_color_cache->{$cache_key} = $ret;
 }
 
 sub starts_with_ansi {
