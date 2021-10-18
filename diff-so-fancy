@@ -121,7 +121,7 @@ my $line_count = 0;
 while (my $line = <STDIN>) {
 	# If the very first line of the diff doesn't start with ANSI color we're assuming
 	# it's a raw patch file, and we have to color the added/removed lines ourself
-	if (!$color_forced && $line_count == 0 && starts_with_ansi($line)) {
+	if (!$color_forced && $line_count == 0 && !starts_with_ansi($line)) {
 		$manually_color_lines = 1;
 	}
 
