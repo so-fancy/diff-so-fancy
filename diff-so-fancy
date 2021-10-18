@@ -303,7 +303,7 @@ sub do_dsf_stuff {
 		###################################
 		# Remove any new file permissions #
 		###################################
-		} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}.*new file mode/) {
+		} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}new file mode [0-7]{6}/) {
 			# Don't print the line (i.e. remove it from the output);
 			$last_file_mode = "add";
 			if ($patch_mode) {
@@ -312,7 +312,7 @@ sub do_dsf_stuff {
 		######################################
 		# Remove any delete file permissions #
 		######################################
-		} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
+		} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode [0-7]{6}/) {
 			# Don't print the line (i.e. remove it from the output);
 			$last_file_mode = "delete";
 			if ($patch_mode) {
