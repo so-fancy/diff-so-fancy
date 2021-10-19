@@ -35,12 +35,12 @@ my %git_ansi_color_default_specs = (
 	'color.diff.func' => '146 bold',
 	'color.diff.new' => 'green',
 	'color.diff-highlight.newnormal' => '',
-	'color.diff-highlight.newhighlight' => 'reverse',
-	'color.diff-highlight.newreset' => 'no-reverse',
+	'color.diff-highlight.newhighlight' => 'reverse bold',
+	'color.diff-highlight.newreset' => 'no-reverse no-bold',
 	'color.diff.old' => 'red',
 	'color.diff-highlight.oldnormal' => '',
-	'color.diff-highlight.oldhighlight' => 'reverse',
-	'color.diff-highlight.oldreset' => 'no-reverse',
+	'color.diff-highlight.oldhighlight' => 'dim italic strike',
+	'color.diff-highlight.oldreset' => 'no-dim no-italic no-strike',
 );
 
 my $remove_file_add_header     = 1;
