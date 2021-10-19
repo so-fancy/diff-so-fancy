@@ -416,8 +416,8 @@ sub mark_empty_line {
 	my $reset_color  = "\e\\[0?m";
 	my $reset_escape = "\e\[m";
 	my $invert_color = "\e\[7m";
-	my $add_color    = $DiffHighlight::NEW_HIGHLIGHT[1];
-	my $del_color    = $DiffHighlight::OLD_HIGHLIGHT[1];
+	my $add_color = get_config_color('new_highlight');
+	my $del_color = get_config_color('old_highlight');
 
 	# This captures lines that do not have any ANSI in them (raw vanilla diff)
 	if ($line eq "+\n") {
@@ -657,11 +657,11 @@ sub file_change_string {
 		return "modified: $file_1";
 	# If the first is /dev/null it's a new file
 	} elsif ($file_1 eq "/dev/null") {
-		my $add_color = $DiffHighlight::NEW_HIGHLIGHT[1];
+		my $add_color = get_config_color('new_highlight');
 		return "added: $add_color$file_2$reset_color";
 	# If the second is /dev/null it's a deletion
 	} elsif ($file_2 eq "/dev/null") {
-		my $del_color = $DiffHighlight::OLD_HIGHLIGHT[1];
+		my $del_color = get_config_color('old_highlight');
 		return "deleted: $del_color$file_1$reset_color";
 	# If the files aren't the same it's a rename
 	} elsif ($file_1 ne $file_2) {
