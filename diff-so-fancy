@@ -14,6 +14,21 @@ use Cwd qw(abs_path);                                       # For realpath()
 use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
 use DiffHighlight;
 
+# Default/fallback color specs for each config name.
+my %git_ansi_color_default_specs = (
+	'color.diff.meta' => '11',
+	'color.diff.frag' => '13 bold',
+	'color.diff.func' => '146 bold',
+	'color.diff.new' => '2 bold',
+	'color.diff-highlight.newnormal' => '',
+	'color.diff-highlight.newhighlight' => 'reverse',
+	'color.diff-highlight.newreset' => 'no-reverse',
+	'color.diff.old' => '1 bold',
+	'color.diff-highlight.oldnormal' => '',
+	'color.diff-highlight.oldhighlight' => 'reverse',
+	'color.diff-highlight.oldreset' => 'no-reverse',
+);
+
 my $remove_file_add_header     = 1;
 my $remove_file_delete_header  = 1;
 my $clean_permission_changes   = 1;
@@ -860,29 +875,29 @@ sub color {
 
 		if ($str eq "meta") {
 			# Default ANSI yellow
-			$ret = git_ansi_color('color.diff.meta', '11');
+			$ret = git_ansi_color('color.diff.meta');
 		} elsif ($str eq "add_line") {
 			# Default ANSI green
-			$ret = git_ansi_color('color.diff.new', '2 bold');
+			$ret = git_ansi_color('color.diff.new');
 		} elsif ($str eq "remove_line") {
 			# Default ANSI red
-			$ret = git_ansi_color('color.diff.old', '1 bold');
+			$ret = git_ansi_color('color.diff.old');
 		} elsif ($str eq "fragment") {
-			$ret = git_ansi_color('color.diff.frag', '13 bold');
+			$ret = git_ansi_color('color.diff.frag');
 		} elsif ($str eq "last_function") {
-			$ret = git_ansi_color('color.diff.func', '146 bold');
+			$ret = git_ansi_color('color.diff.func');
 		} elsif ($str eq "new_normal") {
 			$ret = git_ansi_color('color.diff-highlight.newnormal');
 		} elsif ($str eq "new_highlight") {
-			$ret = git_ansi_color('color.diff-highlight.newhighlight', 'reverse');
+			$ret = git_ansi_color('color.diff-highlight.newhighlight');
 		} elsif ($str eq "new_reset") {
-			$ret = git_ansi_color('color.diff-highlight.newreset', 'no-reverse');
+			$ret = git_ansi_color('color.diff-highlight.newreset');
 		} elsif ($str eq "old_normal") {
 			$ret = git_ansi_color('color.diff-highlight.oldnormal');
 		} elsif ($str eq "old_highlight") {
-			$ret = git_ansi_color('color.diff-highlight.oldhighlight', 'reverse');
+			$ret = git_ansi_color('color.diff-highlight.oldhighlight');
 		} elsif ($str eq "old_reset") {
-			$ret = git_ansi_color('color.diff-highlight.oldreset', 'no-reverse');
+			$ret = git_ansi_color('color.diff-highlight.oldreset');
 		}
 
 		# Cache (memoize) the entry for later
@@ -895,7 +910,7 @@ sub color {
 # https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_colors_in_git
 sub git_ansi_color {
 	my $config_name = lc(shift() // '');
-	my $color_spec = shift() // '';
+	my $color_spec = shift() // $git_ansi_color_default_specs{$config_name} // '';
 
 	state $git_color_cache = {};
 	my $cache_key = $config_name || $color_spec;
