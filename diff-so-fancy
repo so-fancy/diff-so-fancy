@@ -887,6 +887,18 @@ sub color {
 			$ret = git_ansi_color(git_config('color.diff.frag')) || color("13_bold");
 		} elsif ($str eq "last_function") {
 			$ret = git_ansi_color(git_config('color.diff.func')) || color("146_bold");
+		} elsif ($str eq "new_normal") {
+			$ret = git_ansi_color(git_config('color.diff-highlight.newnormal'));
+		} elsif ($str eq "new_highlight") {
+			$ret = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || color('reverse');
+		} elsif ($str eq "new_reset") {
+			$ret = git_ansi_color(git_config('color.diff-highlight.newreset')) || color('noreverse');
+		} elsif ($str eq "old_normal") {
+			$ret = git_ansi_color(git_config('color.diff-highlight.oldnormal'));
+		} elsif ($str eq "old_highlight") {
+			$ret = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || color('reverse');
+		} elsif ($str eq "old_reset") {
+			$ret = git_ansi_color(git_config('color.diff-highlight.oldreset')) || color('noreverse');
 		}
 
 		# Cache (memoize) the entry for later
@@ -1114,13 +1126,13 @@ sub yes_no {
 
 # If there are colors set in the gitconfig use those, otherwise leave the defaults
 sub init_diff_highlight_colors {
-	$DiffHighlight::NEW_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.newnormal'))    || undef;
-	$DiffHighlight::NEW_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || color('reverse');
-	$DiffHighlight::NEW_HIGHLIGHT[2] = git_ansi_color(git_config('color.diff-highlight.newreset'))     || color('noreverse');
+	$DiffHighlight::NEW_HIGHLIGHT[0] = get_config_color('new_normal') || undef;
+	$DiffHighlight::NEW_HIGHLIGHT[1] = get_config_color('new_highlight');
+	$DiffHighlight::NEW_HIGHLIGHT[2] = get_config_color('new_reset');
 
-	$DiffHighlight::OLD_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.oldnormal'))    || undef;
-	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || color('reverse');
-	$DiffHighlight::OLD_HIGHLIGHT[2] = git_ansi_color(git_config('color.diff-highlight.oldreset'))     || color('noreverse');
+	$DiffHighlight::OLD_HIGHLIGHT[0] = get_config_color('old_normal') || undef;
+	$DiffHighlight::OLD_HIGHLIGHT[1] = get_config_color('old_highlight');
+	$DiffHighlight::OLD_HIGHLIGHT[2] = get_config_color('old_reset');
 }
 
 sub debug_log {
