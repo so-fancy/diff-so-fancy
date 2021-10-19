@@ -1114,13 +1114,13 @@ sub yes_no {
 
 # If there are colors set in the gitconfig use those, otherwise leave the defaults
 sub init_diff_highlight_colors {
-	$DiffHighlight::NEW_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.newnormal'))    || $DiffHighlight::NEW_HIGHLIGHT[0];
-	$DiffHighlight::NEW_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || $DiffHighlight::NEW_HIGHLIGHT[1];
-	$DiffHighlight::NEW_HIGHLIGHT[2] = git_ansi_color(git_config('color.diff-highlight.newreset'))     || $DiffHighlight::NEW_HIGHLIGHT[2];
+	$DiffHighlight::NEW_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.newnormal'))    || undef;
+	$DiffHighlight::NEW_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || color('reverse');
+	$DiffHighlight::NEW_HIGHLIGHT[2] = git_ansi_color(git_config('color.diff-highlight.newreset'))     || color('noreverse');
 
-	$DiffHighlight::OLD_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.oldnormal'))    || $DiffHighlight::OLD_HIGHLIGHT[0];
-	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || $DiffHighlight::OLD_HIGHLIGHT[1];
-	$DiffHighlight::OLD_HIGHLIGHT[2] = git_ansi_color(git_config('color.diff-highlight.oldreset'))     || $DiffHighlight::OLD_HIGHLIGHT[2];
+	$DiffHighlight::OLD_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.oldnormal'))    || undef;
+	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || color('reverse');
+	$DiffHighlight::OLD_HIGHLIGHT[2] = git_ansi_color(git_config('color.diff-highlight.oldreset'))     || color('noreverse');
 }
 
 sub debug_log {
