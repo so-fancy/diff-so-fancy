@@ -1,13 +1,24 @@
 #!/usr/bin/env bats
 
-load 'test_helper/bats-support/load'
-load 'test_helper/bats-assert/load'
-load 'test_helper/util'
+# Helper invoked by `setup_file` and `setup`, which are special bats callbacks.
+__load_imports__() {
+	load 'test_helper/bats-support/load'
+	load 'test_helper/bats-assert/load'
+	load 'test_helper/util'
+}
 
-set_env
+setup_file() {
+	__load_imports__
+}
 
-# bats fails to handle our multiline result, so we save to $output ourselves
-output=$( load_fixture "ls-function" | $diff_so_fancy )
+setup() {
+	__load_imports__
+
+	set_env
+
+	# bats fails to handle our multiline result, so we save to $output ourselves
+	output=$( load_fixture "ls-function" | $diff_so_fancy )
+}
 
 @test "diff-so-fancy runs and exits without error" {
 	load_fixture "ls-function" | $diff_so_fancy

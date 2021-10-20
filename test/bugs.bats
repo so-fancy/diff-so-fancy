@@ -1,8 +1,19 @@
 #!/usr/bin/env bats
 
-load 'test_helper/bats-support/load'
-load 'test_helper/bats-assert/load'
-load 'test_helper/util'
+# Used by both `setup_file` and `setup`, which are special bats callbacks.
+__load_imports__() {
+	load 'test_helper/bats-support/load'
+	load 'test_helper/bats-assert/load'
+	load 'test_helper/util'
+}
+
+setup_file() {
+	__load_imports__
+}
+
+setup() {
+	__load_imports__
+}
 
 # https://github.com/paulirish/dotfiles/commit/6743b907ff586c28cd36e08d1e1c634e2968893e#commitcomment-13459061
 @test "All removed lines are present in diff" {
