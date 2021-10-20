@@ -14,6 +14,20 @@ use Cwd qw(abs_path);                                       # For realpath()
 use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
 use DiffHighlight;
 
+my %section_color_config_names = (
+	'meta' => 'color.diff.meta',
+	'add_line' => 'color.diff.new',
+	'remove_line' => 'color.diff.old',
+	'fragment' => 'color.diff.frag',
+	'last_function' => 'color.diff.func',
+	'new_normal' => 'color.diff-highlight.newnormal',
+	'new_highlight' => 'color.diff-highlight.newhighlight',
+	'new_reset' => 'color.diff-highlight.newreset',
+	'old_normal' => 'color.diff-highlight.oldnormal',
+	'old_highlight' => 'color.diff-highlight.oldhighlight',
+	'old_reset' => 'color.diff-highlight.oldreset',
+);
+
 # Default/fallback color specs for each config name.
 my %git_ansi_color_default_specs = (
 	'color.diff.meta' => '11',
@@ -860,51 +874,10 @@ sub color {
 }
 
 # Get colors used for various output sections (memoized)
-{
-	my $static_config;
-
-	sub get_config_color {
-		my $str = shift();
-
-		my $ret = "";
-		if ($static_config->{$str}) {
-			return $static_config->{$str};
-		}
-
-		#print color(15) . "Shelling out for color: '$str'\n" . color('reset');
-
-		if ($str eq "meta") {
-			# Default ANSI yellow
-			$ret = git_ansi_color('color.diff.meta');
-		} elsif ($str eq "add_line") {
-			# Default ANSI green
-			$ret = git_ansi_color('color.diff.new');
-		} elsif ($str eq "remove_line") {
-			# Default ANSI red
-			$ret = git_ansi_color('color.diff.old');
-		} elsif ($str eq "fragment") {
-			$ret = git_ansi_color('color.diff.frag');
-		} elsif ($str eq "last_function") {
-			$ret = git_ansi_color('color.diff.func');
-		} elsif ($str eq "new_normal") {
-			$ret = git_ansi_color('color.diff-highlight.newnormal');
-		} elsif ($str eq "new_highlight") {
-			$ret = git_ansi_color('color.diff-highlight.newhighlight');
-		} elsif ($str eq "new_reset") {
-			$ret = git_ansi_color('color.diff-highlight.newreset');
-		} elsif ($str eq "old_normal") {
-			$ret = git_ansi_color('color.diff-highlight.oldnormal');
-		} elsif ($str eq "old_highlight") {
-			$ret = git_ansi_color('color.diff-highlight.oldhighlight');
-		} elsif ($str eq "old_reset") {
-			$ret = git_ansi_color('color.diff-highlight.oldreset');
-		}
-
-		# Cache (memoize) the entry for later
-		$static_config->{$str} = $ret;
-
-		return $ret;
-	}
+sub get_config_color {
+	my $section = shift();
+	my $config_name = $section_color_config_names{$section};
+	return git_ansi_color($config_name);
 }
 
 # https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_colors_in_git
