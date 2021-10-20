@@ -9,15 +9,15 @@ __load_imports__() {
 
 setup_file() {
 	__load_imports__
+	set_env
+	# bats fails to handle our multiline result, so we save to $output ourselves
+	__dfs_cached_output="$( load_fixture "ls-function" | $diff_so_fancy )"
+	export __dfs_cached_output
 }
 
 setup() {
 	__load_imports__
-
-	set_env
-
-	# bats fails to handle our multiline result, so we save to $output ourselves
-	output=$( load_fixture "ls-function" | $diff_so_fancy )
+	output="${__dfs_cached_output}"
 }
 
 @test "diff-so-fancy runs and exits without error" {
