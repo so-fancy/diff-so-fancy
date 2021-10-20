@@ -9,10 +9,15 @@ __load_imports__() {
 
 setup_file() {
 	__load_imports__
+	setup_default_dsf_git_config
 }
 
 setup() {
 	__load_imports__
+}
+
+teardown_file() {
+	teardown_default_dsf_git_config
 }
 
 # https://github.com/paulirish/dotfiles/commit/6743b907ff586c28cd36e08d1e1c634e2968893e#commitcomment-13459061

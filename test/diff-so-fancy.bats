@@ -10,14 +10,19 @@ __load_imports__() {
 setup_file() {
 	__load_imports__
 	set_env
+	setup_default_dsf_git_config
 	# bats fails to handle our multiline result, so we save to $output ourselves
-	__dfs_cached_output="$( load_fixture "ls-function" | $diff_so_fancy )"
-	export __dfs_cached_output
+	__dsf_cached_output="$( load_fixture "ls-function" | $diff_so_fancy )"
+	export __dsf_cached_output
 }
 
 setup() {
 	__load_imports__
-	output="${__dfs_cached_output}"
+	output="${__dsf_cached_output}"
+}
+
+teardown_file() {
+	teardown_default_dsf_git_config
 }
 
 @test "diff-so-fancy runs and exits without error" {
