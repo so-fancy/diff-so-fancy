@@ -874,8 +874,6 @@ sub color {
 		if ($str eq "meta") {
 			# Default ANSI yellow
 			$ret = git_ansi_color(git_config('color.diff.meta')) || color(11);
-		} elsif ($str eq "reset") {
-			$ret = color("reset");
 		} elsif ($str eq "add_line") {
 			# Default ANSI green
 			$ret = git_ansi_color(git_config('color.diff.new')) || color("2_bold");
