@@ -859,18 +859,8 @@ sub set_defaults {
 }
 
 sub color {
-	my $str = shift();
-
-	# Replace the two non-standard colors that were here before…
-	# git recognizes the standard ANSI names:
-	#   black/red/green/yellow/blue/magenta/cyan/white
-	#   and the 'bright…' variations of those.
-	#   It also recognizes integer ANSI colors (e.g. orange=214),
-	#   and hex like #ff00ff.
-	my %color_map = qw(orange 214 purple 93);
-	$str =~ s|([A-Za-z]+)|$color_map{$1} // $1|eg;
-
-	return git_ansi_color('', $str);
+	my $spec = shift();
+	return git_ansi_color('', $spec);
 }
 
 # Get colors used for various output sections (memoized)
@@ -937,7 +927,8 @@ sub get_terminal_width {
 				$width--;
 			}
 		} else {
-			print color('orange') . "Warning: `tput cols` did not return numeric input" . color('reset') . "\n";
+			my $orange_color = color('214');
+			print $orange_color . "Warning: `tput cols` did not return numeric input" . $reset_color . "\n";
 			$width = 80;
 		}
 	}
@@ -995,7 +986,8 @@ sub debug_log {
 
 	state $fh;
 	if (!$fh) {
-		printf("%sDebug log enabled:%s $file\n", color('orange'), color('reset'));
+		my $orange_color = color('214');
+		printf("%sDebug log enabled:%s $file\n", $orange_color, $reset_color);
 		open ($fh, ">", $file) or die("Cannot write to $file");
 	}
 
