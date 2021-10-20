@@ -993,7 +993,8 @@ sub is_numeric {
 sub starts_with_ansi {
 	my $str = shift();
 
-	if ($str =~ /^$ansi_color_regex/) {
+	# NOTE: This is not `ansi_color_regex`, which includes "no ANSI sequences".
+	if ($str =~ /^$ansi_regex/) {
 		return 1;
 	} else {
 		return 0;
