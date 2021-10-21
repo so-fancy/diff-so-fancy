@@ -27,7 +27,8 @@ my $ruler_width                = git_config("diff-so-fancy.rulerWidth", undef);
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
 
-my $ansi_color_regex = qr/(\e\[([0-9]{1,3}(;[0-9]{1,3}){0,10})[mK])?/;
+my $ansi_regex = qr/\e\[([0-9]{1,3}(;[0-9]{1,3}){0,10})[mK]/;
+my $ansi_color_regex = qr/(${ansi_regex})?/;
 my $reset_color      = color("reset");
 my $bold             = color("bold");
 my $meta_color       = "";
@@ -120,7 +121,7 @@ my $line_count = 0;
 while (my $line = <STDIN>) {
 	# If the very first line of the diff doesn't start with ANSI color we're assuming
 	# it's a raw patch file, and we have to color the added/removed lines ourself
-	if (!$color_forced && $line_count == 0 && starts_with_ansi($line)) {
+	if (!$color_forced && $line_count == 0 && !starts_with_ansi($line)) {
 		$manually_color_lines = 1;
 	}
 
@@ -992,7 +993,8 @@ sub is_numeric {
 sub starts_with_ansi {
 	my $str = shift();
 
-	if ($str =~ /^$ansi_color_regex/) {
+	# NOTE: This is not `ansi_color_regex`, which includes "no ANSI sequences".
+	if ($str =~ /^$ansi_regex/) {
 		return 1;
 	} else {
 		return 0;
