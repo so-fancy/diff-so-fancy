@@ -921,28 +921,56 @@ sub git_ansi_color {
 		push(@ansi_part, "1");
 	}
 
+	if (grep { /^no-?bold$/ } @parts) {
+		push(@ansi_part, "22");  # not a typo: no-bold and no-dim are the same.
+	}
+
 	if (grep { /^dim$/ } @parts) {
 		push(@ansi_part, "2");
+	}
+
+	if (grep { /^no-?dim$/ } @parts) {
+		push(@ansi_part, "22");
 	}
 
 	if (grep { /^italic$/ } @parts) {
 		push(@ansi_part, "3");
 	}
 
+	if (grep { /^no-?italic$/ } @parts) {
+		push(@ansi_part, "23");
+	}
+
 	if (grep { /^ul$/ } @parts) {
 		push(@ansi_part, "4");
+	}
+
+	if (grep { /^no-?ul$/ } @parts) {
+		push(@ansi_part, "24");
 	}
 
 	if (grep { /^blink$/ } @parts) {
 		push(@ansi_part, "5");
 	}
 
+	if (grep { /^no-?blink$/ } @parts) {
+		push(@ansi_part, "25");
+	}
+
 	if (grep { /^reverse$/ } @parts) {
 		push(@ansi_part, "7");
 	}
 
+	if (grep { /^no-?reverse$/ } @parts) {
+		push(@ansi_part, "27");
+	}
+
 	if (grep { /^strike$/ } @parts) {
 		push(@ansi_part, "9");
+	}
+
+	if (grep { /^no-?strike$/ } @parts) {
+		push(@ansi_part, "29");
 	}
 
 	# Remove parts that aren't colors
