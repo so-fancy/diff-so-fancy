@@ -490,24 +490,10 @@ sub git_config_boolean {
 	my $search_key    = lc($_[0] || "");
 	my $default_value = lc($_[1] || 0); # Default to false
 
-	# If we're in a unit test, use the default (don't read the users config)
-	if (in_unit_test()) {
-		return boolean($default_value);
-	}
-
 	my $result = git_config($search_key,$default_value);
 	my $ret    = boolean($result);
 
 	return $ret;
-}
-
-# Check if we're inside of BATS
-sub in_unit_test {
-	if ($ENV{BATS_CWD}) {
-		return 1;
-	} else {
-		return 0;
-	}
 }
 
 sub get_less_charset {
