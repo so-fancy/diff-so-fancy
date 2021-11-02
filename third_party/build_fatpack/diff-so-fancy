@@ -1061,7 +1061,7 @@ diff-so-fancy --set-defaults             # Configure git-diff to use diff-so-fan
 diff-so-fancy --patch                    # Use diff-so-fancy in patch mode (interoperable with `git add --patch`)
 
 # Configure git to use d-s-f for *all* diff operations
-git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"
+git config --global core.pager \"diff-so-fancy | less --tabs=4 -RF\"
 
 # Configure git to use d-s-f for `git add --patch`
 git config --global interactive.diffFilter \"diff-so-fancy --patch\"\n";
@@ -1138,7 +1138,7 @@ sub check_first_run {
 
 sub set_defaults {
 	my $color_config = get_default_colors();
-	my $git_config   = 'git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"';
+	my $git_config   = 'git config --global core.pager "diff-so-fancy | less --tabs=4 -RF"';
 	my $first_cmd    = 'git config --global diff-so-fancy.first-run false';
 
 	my @cmds = split(/\n/,$color_config);
