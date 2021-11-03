@@ -1,9 +1,9 @@
 {
   "name": "diff-so-fancy",
-  "version": "1.3.0",
+  "version": "1.4.3",
   "description": "Good-lookin' diffs with diff-highlight and more",
   "bin": {
-    "diff-so-fancy": "diff-so-fancy"
+    "diff-so-fancy": "third_party/build_fatpack/diff-so-fancy"
   },
   "scripts": {
     "test": "./test/bats/bin/bats test"
