@@ -12,7 +12,7 @@ Vanilla `git diff` vs `git` and `diff-so-fancy`
 
 Installation is as simple as cloning this repo and then putting the `diff-so-fancy` script in to your `$PATH`. The `lib/` directory will need to be kept relative to the core script.
 
-`diff-so-fancy` is also available from the [NPM registry](https://www.npmjs.com/package/diff-so-fancy), [brew](https://formulae.brew.sh/formula/diff-so-fancy), as a package on [Nix](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/diff-so-fancy/default.nix), in the [Arch community repo](https://archlinux.org/packages/community/any/diff-so-fancy/), as [ppa:aos for Debian/Ubuntu Linux](https://github.com/aos/dsf-debian), and as [Fedora COPR repository](https://copr.fedorainfracloud.org/coprs/kopfkrieg/diff-so-fancy/).
+`diff-so-fancy` is also available from the [NPM registry](https://www.npmjs.com/package/diff-so-fancy), [brew](https://formulae.brew.sh/formula/diff-so-fancy), as a package on [Nix](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/diff-so-fancy/default.nix), in the [Arch community repo](https://archlinux.org/packages/community/any/diff-so-fancy/), as [ppa:aos for Debian/Ubuntu Linux](https://github.com/aos/dsf-debian), and in the [Fedora COPR repository](https://copr.fedorainfracloud.org/coprs/kopfkrieg/diff-so-fancy/).
 
 Issues relating to packaging ('installation does not work', 'version is out of date', etc.) should be directed to those packages' own repositories/issue trackers where applicable.
 
