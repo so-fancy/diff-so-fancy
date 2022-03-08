@@ -59,7 +59,7 @@ my $outlier = $num / 10;
 @res = sort(@res);
 @res = splice(@res, $outlier, $num - $outlier * 2);
 
-my $avg = int(average(@res));
+my $avg = sprintf("%.1f", average(@res));
 
 if ($details) {
 	show_details(@res);
