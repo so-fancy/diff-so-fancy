@@ -192,24 +192,11 @@ sub do_dsf_stuff {
 		#########################
 		# Look for the filename #
 		#########################
-		#                                            >>>>>>>>>>>>>>>>>>>>>>>$4<<<<<<<<<<<<<<<<<<<<<<<< >$5<
-		} elsif ($line =~ /^${ansi_color_regex}diff.*(?|(?<!-)-\w*(r)\w*|(--recursive)|(--git)|(--cc)) (.*?)(\e| b\/|$)/) {
-            ################################
-            # $4 capture group explanation #
-            ################################
-            # (?|   Keeps the same index for all the nested groups so they will all result as $4
-            #   (?<!-)-         Only matches '-' if not preceded by '-' excluding capturing 'r' in longhands like '--color'
-            #       \w*(r)\w*   Captures 'r' as group $4 whichever position it holds in shorthands like '-r' '-bru' '-rbu' '-ur'
-            #   |               or
-            #   (--recursive)   Captures longhand '--recursive' as group (not incrementing so still $4)
-            #   |               or
-            #   (--cc)          Captures longhand '--cc' as group (not incrementing so still $4)
-            #   |               or
-            #   (--git)         Captures longhand '--git' as group (not incrementing so still $4)
-            # )
+		#                                            $4                          $5
+		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--recursive|--git|--cc) (.*?)(\e| b\/|$)/) {
 
 			# Mercurial looks like: diff -r 82e55d328c8c hello.c
-			if ($4 eq "r" || $4 eq "--recursive") {
+			if ($4 eq "-r" || $4 eq "--recursive") {
 				$is_mercurial = 1;
 				$meta_color = get_config_color("meta");
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy

@@ -58,6 +58,15 @@ Use `-u` with `diff` for unified output, and pipe the output to `diff-so-fancy`:
 diff -u file_a file_b | diff-so-fancy
 ```
 
+It also supports the recursive mode of diff with `-r` or `--recursive` as **first argument**
+
+```shell
+diff -r -u folder_a folder_b | diff-so-fancy
+```
+
+```shell
+diff --recursive -u folder_a folder_b | diff-so-fancy
+```
 ## Options
 
 ### markEmptyLines
