@@ -192,11 +192,11 @@ sub do_dsf_stuff {
 		#########################
 		# Look for the filename #
 		#########################
-		#                                            $4              $5
-		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--git|--cc) (.*?)(\e| b\/|$)/) {
+		#                                            $4                          $5
+		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--recursive|--git|--cc) (.*?)(\e| b\/|$)/) {
 
 			# Mercurial looks like: diff -r 82e55d328c8c hello.c
-			if ($4 eq "-r") {
+			if ($4 eq "-r" || $4 eq "--recursive") {
 				$is_mercurial = 1;
 				$meta_color = get_config_color("meta");
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
