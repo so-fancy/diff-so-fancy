@@ -247,27 +247,3 @@ teardown_file() {
 	assert_line --index 1 --partial "modified: doc/manual.xml.head"
 	assert_line --index 3 --partial "@ doc/manual.xml.head:8355 @"
 }
-
-@test "recursive vanilla diff -r -bu as Mercurial" {
-	output=$( load_fixture "recursive_default_as_mercurial" | $diff_so_fancy )
-	run printf "%s" "$output"
-
-	assert_line --index 1 --partial "renamed:"
-	assert_line --index 3 --partial "@ language/app.py:4 @"
-	assert_line --index 19 --partial "renamed:"
-	assert_line --index 21 --partial "@ language/__init__.py:1 @"
-	assert_line --index 25 --partial "renamed:"
-	assert_line --index 27 --partial "@ language/README.md:1 @"
-}
-
-@test "recursive vanilla diff --recursive -u as Mercurial" {
-	output=$( load_fixture "recursive_longhand_as_mercurial" | $diff_so_fancy )
-	run printf "%s" "$output"
-
-	assert_line --index 1 --partial "renamed:"
-	assert_line --index 3 --partial "@ language/app.py:4 @"
-	assert_line --index 19 --partial "renamed:"
-	assert_line --index 21 --partial "@ language/__init__.py:1 @"
-	assert_line --index 25 --partial "renamed:"
-	assert_line --index 27 --partial "@ language/README.md:1 @"
-}
