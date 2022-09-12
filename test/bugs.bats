@@ -69,3 +69,9 @@ teardown_file() {
 	assert_line --index 25 --partial "renamed:"
 	assert_line --index 27 --partial "@ language/README.md:1 @"
 }
+
+@test "Functional part with bright color (#444)" {
+  output=$( load_fixture "move_with_content_change" | $diff_so_fancy )
+  run printf "%s" "$output"
+  assert_line --index 3 --partial  "@[0m[93m height"
+}

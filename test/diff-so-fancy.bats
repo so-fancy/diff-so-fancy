@@ -247,10 +247,3 @@ teardown_file() {
 	assert_line --index 1 --partial "modified: doc/manual.xml.head"
 	assert_line --index 3 --partial "@ doc/manual.xml.head:8355 @"
 }
-
-@test "Functionnal part with bright color" {
-  output=$( load_fixture "move_with_content_change" | $diff_so_fancy )
-  run printf "%s" "$output"
-  assert_line --index 3 --partial  "@[0m[93m height"
-}
-
