@@ -890,6 +890,7 @@ sub git_ansi_color {
 	if (!@parts) {
 		return '';
 	}
+
 	my $colors = {
 		'black'   => 0,
 		'red'     => 1,
@@ -900,6 +901,8 @@ sub git_ansi_color {
 		'cyan'    => 6,
 		'white'   => 7,
 	};
+
+	# Bright colors are just offsets from the "regular" color
 	for my $k (keys %{ $colors }) {
 		$colors->{"bright" . $k} = $colors->{$k} + 60;
 	}
