@@ -900,6 +900,9 @@ sub git_ansi_color {
 		'cyan'    => 6,
 		'white'   => 7,
 	};
+	for my $k (keys %{ $colors }) {
+		$colors->{"bright" . $k} = $colors->{$k} + 60;
+	}
 
 	my @ansi_part = ();
 
@@ -930,11 +933,7 @@ sub git_ansi_color {
 		}
 	# It's a simple 16 color OG ansi
 	} elsif ($fg) {
-		my $bright    = $fg =~ s/bright//;
 		my $color_num = ($colors->{$fg} // 0) + 30;
-
-		if ($bright) { $color_num += 60; } # Set bold
-
 		push(@ansi_part, $color_num);
 	}
 
@@ -951,11 +950,7 @@ sub git_ansi_color {
 		}
 	# It's a simple 16 color OG ansi
 	} elsif ($bg) {
-		my $bright    = $bg =~ s/bright//;
 		my $color_num = ($colors->{$bg} // 0) + 40;
-
-		if ($bright) { $color_num += 60; } # Set bold
-
 		push(@ansi_part, $color_num);
 	}
 
