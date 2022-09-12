@@ -907,6 +907,16 @@ sub git_ansi_color {
 		push(@ansi_part, "1");
 	}
 
+	if (grep { /dim/ } @parts) {
+		push(@ansi_part, "2");
+		@parts = grep { !/dim/ } @parts; # Remove from array
+	}
+
+	if (grep { /ul/ } @parts) {
+		push(@ansi_part, "4");
+		@parts = grep { !/ul/ } @parts; # Remove from array
+	}
+
 	if (grep { /reverse/ } @parts) {
 		push(@ansi_part, "7");
 	}
