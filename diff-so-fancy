@@ -300,7 +300,7 @@ sub do_dsf_stuff {
 				print $frag_color;
 			}
 
-			print "@ $last_file_seen:$start_line \@${bold}${last_function_color}${remain}${reset_color}\n";
+			print "@ $last_file_seen:$start_line \@${reset_color}${last_function_color}${remain}${reset_color}\n";
 		###################################
 		# Remove any new file permissions #
 		###################################
