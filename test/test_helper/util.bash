@@ -26,6 +26,7 @@ setup_default_dsf_git_config() {
 	old = red bold
 	new = green bold
 	whitespace = red reverse
+	func = brightyellow
 
 [color "diff-highlight"]
 	oldNormal = red bold
