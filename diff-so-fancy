@@ -4,7 +4,7 @@ my $VERSION = "1.4.2";
 
 #################################################################################
 
-use v5.010;                                                 # Require Perl 5.10 for 'state' variables
+use v5.014;                                                 # Require Perl 5.14 for 'state' variables and /u in regexes
 use warnings FATAL => 'all';
 use strict;
 
