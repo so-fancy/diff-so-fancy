@@ -40,7 +40,7 @@ my $dsf_version = get_version($input_file);
 my $cmd = "fatpack pack $input_file 2>/dev/null > $output_file";
 
 my $exit = system($cmd);
-$exit    = $exit >> 8;
+$exit  >>= 8;
 
 rmdir("fatlib"); # fatpack leaves empty fatlib dirs so we remove them
 my $size = -s $output_file;

@@ -114,7 +114,7 @@ sub average {
 	}
 
 	my $count = scalar(@_);
-	$ret = $ret / $count;
+	$ret     /= $count;
 
 	return $ret;
 }
