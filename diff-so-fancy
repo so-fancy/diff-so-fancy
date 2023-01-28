@@ -909,19 +909,19 @@ sub git_ansi_color {
 
 	my @ansi_part = ();
 
-	if (grep { /bold/ } @parts) {
+	if (grep { /^bold$/ } @parts) {
 		push(@ansi_part, "1");
 	}
 
-	if (grep { /dim/ } @parts) {
+	if (grep { /^dim$/ } @parts) {
 		push(@ansi_part, "2");
 	}
 
-	if (grep { /ul/ } @parts) {
+	if (grep { /^ul$/ } @parts) {
 		push(@ansi_part, "4");
 	}
 
-	if (grep { /reverse/ } @parts) {
+	if (grep { /^reverse$/ } @parts) {
 		push(@ansi_part, "7");
 	}
 
