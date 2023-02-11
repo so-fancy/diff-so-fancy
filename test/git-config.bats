@@ -24,6 +24,7 @@ declare -Ag ansi_colors=(
     [magenta]='5'
     [cyan]='6'
     [white]='7'
+    [default]='9'
 )
 
 # get a foreground or background color code
@@ -109,4 +110,21 @@ teardown_file() {
     assert_line --index 3 --partial  "${escape}[${fg_blue};${bg_white}m@"
     assert_line --index 6 --partial  "${escape}[${fg_red};${bg_yellow}m--"
     assert_line --index 7 --partial  "${escape}[${fg_brightgreen}m--"
+}
+
+@test "Test normal and default git colors" {
+    config="
+	frag = normal default
+	old = default
+    "
+    setup_dsf_git_config "$config"
+
+	output=$( load_fixture "leading-dashes" | $diff_so_fancy )
+	run printf "%s" "$output"
+
+    fg_default=$(fg_color default)
+    bg_default=$(bg_color default)
+
+    assert_line --index 3 --partial  "${escape}[${bg_default}m@"
+    assert_line --index 6 --partial  "${escape}[${fg_default}m--"
 }

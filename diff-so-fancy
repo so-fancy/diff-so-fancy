@@ -900,6 +900,8 @@ sub git_ansi_color {
 		'magenta' => 5,
 		'cyan'    => 6,
 		'white'   => 7,
+		'default' => 9, # pseudo color (39/49 = set default)
+		'normal'  => -1, # placeholder color to be ignored
 	};
 
 	# Bright colors are just offsets from the "regular" color
@@ -957,7 +959,7 @@ sub set_ansi_color {
 			push(@$ansi_part, "$base8_code;5;$color");
 		}
 	# It's a simple 16 color OG ansi
-	} else {
+	} elsif ($color ne "normal") {
 		my $color_num = $colors->{$color} + $base_code;
 		push(@$ansi_part, $color_num);
 	}
