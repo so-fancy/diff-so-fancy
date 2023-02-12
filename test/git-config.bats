@@ -53,6 +53,27 @@ bg_color() {
     ansi_color $1 10
 }
 
+# get rgb color codes from hex
+rgb_color() {
+    incr=$2
+    base_code=$((38+$incr))
+    [[ $1 =~ ^.(..)(..)(..)$ ]]
+    rgb1="${BASH_REMATCH[1]}"
+    rgb2="${BASH_REMATCH[2]}"
+    rgb3="${BASH_REMATCH[3]}"
+    echo "${base_code};2;$(( 16#${rgb1} ));$(( 16#${rgb2} ));$(( 16#${rgb3} ))"
+}
+
+# get a foreground color code
+fg_rgb_color() {
+    rgb_color $1 0
+}
+
+# get a background color code
+bg_rgb_color() {
+    rgb_color $1 10
+}
+
 # build config using passed in values
 setup_dsf_git_config() {
   GIT_CONFIG="$(dsf_test_git_config)" || return $?
@@ -127,4 +148,24 @@ teardown_file() {
 
     assert_line --index 3 --partial  "${escape}[${bg_default}m@"
     assert_line --index 6 --partial  "${escape}[${fg_default}m--"
+}
+
+# Special characters in git config must be quoted (word or all values)
+@test "Test rgb git colors" {
+    rgb="#408050"
+    config="
+	frag = \"${rgb}\" default
+	old = normal \"${rgb}\"
+    "
+    setup_dsf_git_config "$config"
+
+	output=$( load_fixture "leading-dashes" | $diff_so_fancy )
+	run printf "%s" "$output"
+
+    fg_rgb=$(fg_rgb_color "${rgb}")
+    bg_default=$(bg_color default)
+    bg_rgb=$(bg_rgb_color "${rgb}")
+
+    assert_line --index 3 --partial  "${escape}[${fg_rgb};${bg_default}m@"
+    assert_line --index 6 --partial  "${escape}[${bg_rgb}m--"
 }

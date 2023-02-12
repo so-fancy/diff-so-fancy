@@ -928,7 +928,7 @@ sub git_ansi_color {
 	}
 
 	# Remove parts that aren't colors
-	@parts = grep { exists $colors->{$_} || is_numeric($_) } @parts;
+	@parts = grep { exists $colors->{$_} || is_numeric($_) || /^\#/ } @parts;
 
 	my $fg  = $parts[0] // "";
 	my $bg  = $parts[1] // "";
@@ -958,6 +958,10 @@ sub set_ansi_color {
 		} else {
 			push(@$ansi_part, "$base8_code;5;$color");
 		}
+	# It's a full rgb code
+	} elsif ($color =~ /^#/) {
+		my ($rgbr, $rgbg, $rgbb) = $color =~ /.(..)(..)(..)/;
+		push(@$ansi_part, "$base8_code;2;" . hex($rgbr) . ";" . hex($rgbg) . ";" . hex($rgbb));
 	# It's a simple 16 color OG ansi
 	} elsif ($color ne "normal") {
 		my $color_num = $colors->{$color} + $base_code;
