@@ -187,8 +187,10 @@ teardown_file() {
 
 @test "Reworked hunks" {
 	output=$( load_fixture "file-moves" | $diff_so_fancy )
-	assert_output --partial '@ square.yml:4 @'
-	assert_output --partial '@ package.json:1 @'
+	run printf "%s" "$output"
+
+	assert_line --index 46 --partial "@ package.json:1 @"
+	assert_line --index 79 --partial "@ square.yml:1 @"
 }
 
 @test "Reworked hunks (noprefix)" {

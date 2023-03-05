@@ -51,7 +51,7 @@ teardown_file() {
 	run printf "%s" "$output"
 
 	assert_line --index 1 --partial "renamed:"
-	assert_line --index 3 --partial "@ language/app.py:4 @"
+	assert_line --index 3 --partial "@ language/app.py:1 @"
 	assert_line --index 19 --partial "renamed:"
 	assert_line --index 21 --partial "@ language/__init__.py:1 @"
 	assert_line --index 25 --partial "renamed:"
@@ -63,7 +63,7 @@ teardown_file() {
 	run printf "%s" "$output"
 
 	assert_line --index 1 --partial "renamed:"
-	assert_line --index 3 --partial "@ language/app.py:4 @"
+	assert_line --index 3 --partial "@ language/app.py:1 @"
 	assert_line --index 19 --partial "renamed:"
 	assert_line --index 21 --partial "@ language/__init__.py:1 @"
 	assert_line --index 25 --partial "renamed:"
