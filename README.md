@@ -6,13 +6,13 @@
 
 Vanilla `git diff` vs `git` and `diff-so-fancy`
 
-![diff-highlight vs diff-so-fancy](https://user-images.githubusercontent.com/3429760/32387617-44c873da-c082-11e7-829c-6160b853adcb.png)
+![diff-highlight vs diff-so-fancy](diff-so-fancy.png)
 
 ## Install
 
 Installation is as simple as cloning this repo and then putting the `diff-so-fancy` script in to your `$PATH`. The `lib/` directory will need to be kept relative to the core script.
 
-`diff-so-fancy` is also available from the [NPM registry](https://www.npmjs.com/package/diff-so-fancy), [brew](https://formulae.brew.sh/formula/diff-so-fancy), and as a package on [Nix](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/diff-so-fancy/default.nix), [Fedora](https://packages.fedoraproject.org/pkgs/diff-so-fancy/diff-so-fancy/), in the [Arch community repo](https://archlinux.org/packages/community/any/diff-so-fancy/), [Gentoo Guru](https://github.com/gentoo/guru/tree/master/app-misc/diff-so-fancy), [ppa:aos for Debian/Ubuntu Linux](https://github.com/aos/dsf-debian).
+`diff-so-fancy` is also available from the [NPM registry](https://www.npmjs.com/package/diff-so-fancy), [brew](https://formulae.brew.sh/formula/diff-so-fancy), as a package on [Nix](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/diff-so-fancy/default.nix), in the [Arch community repo](https://archlinux.org/packages/community/any/diff-so-fancy/), as [ppa:aos for Debian/Ubuntu Linux](https://github.com/aos/dsf-debian), and as [Fedora COPR repository](https://copr.fedorainfracloud.org/coprs/kopfkrieg/diff-so-fancy/).
 
 Issues relating to packaging ('installation does not work', 'version is out of date', etc.) should be directed to those packages' own repositories/issue trackers where applicable.
 
@@ -58,6 +58,15 @@ Use `-u` with `diff` for unified output, and pipe the output to `diff-so-fancy`:
 diff -u file_a file_b | diff-so-fancy
 ```
 
+It also supports the recursive mode of diff with `-r` or `--recursive` as **first argument**
+
+```shell
+diff -r -u folder_a folder_b | diff-so-fancy
+```
+
+```shell
+diff --recursive -u folder_a folder_b | diff-so-fancy
+```
 ## Options
 
 ### markEmptyLines

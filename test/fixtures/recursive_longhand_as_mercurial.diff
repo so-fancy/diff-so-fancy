@@ -1,0 +1,38 @@
+diff --recursive -u core/app.py language/app.py
+--- core/app.py	2022-06-08 13:42:10.658920131 +0900
++++ language/app.py	2022-06-08 12:07:22.773069512 +0900
+@@ -1,13 +1,13 @@
+-from flask import Flask, abort
+-from . import CORE_MODULES
++from flask import Flask
++from . import SECTION
+ 
+ app = Flask(__name__)
+ 
+-@app.route('/<name>')
++@app.route(f'/{SECTION}/<name>')
+ def index(name):
+-    if name in CORE_MODULES:
+-        return "Welcome to the documentation for the core module"
+-    abort(404)
++    return f"Welcome to the documentation for {name}"
+ 
++if __name__ == "__main__":
++    app.run(host="0.0.0.0",port=3000)
+ 
+ 
+diff --recursive -u core/__init__.py language/__init__.py
+--- core/__init__.py	2022-06-08 12:16:35.203331282 +0900
++++ language/__init__.py	2022-06-08 12:03:32.464264288 +0900
+@@ -1 +1 @@
+-CORE_MODULES=['base','utils','status']
++SECTION="language"
+diff --recursive -u core/README.md language/README.md
+--- core/README.md	2022-06-08 13:52:56.962174912 +0900
++++ language/README.md	2022-06-08 13:52:39.498090643 +0900
+@@ -1,4 +1,4 @@
+-# Core
++# Language
+ 
+ ## Installation
+ 

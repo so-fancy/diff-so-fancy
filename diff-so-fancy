@@ -1,10 +1,10 @@
 #!/usr/bin/env perl
 
-my $VERSION = "1.4.2";
+my $VERSION = "1.4.4";
 
 #################################################################################
 
-use v5.010;                                                 # Require Perl 5.10 for 'state' variables
+use v5.014;                                                 # Require Perl 5.14 for 'state' variables and /u in regexes
 use warnings FATAL => 'all';
 use strict;
 
@@ -26,6 +26,7 @@ my $use_unicode_dash_for_ruler = git_config_boolean("diff-so-fancy.useUnicodeRul
 my $ruler_width                = git_config("diff-so-fancy.rulerWidth", undef);
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
+my $CONTEXT_LINES              = undef; # Number of lines of context diff used
 
 my $ansi_regex = qr/\e\[([0-9]{1,3}(;[0-9]{1,3}){0,10})[mK]/;
 my $ansi_color_regex = qr/(${ansi_regex})?/;
@@ -139,6 +140,11 @@ do_dsf_stuff(\@lines);
 sub do_dsf_stuff {
 	my $input = shift();
 
+	# Calculate the context lines the first time
+	if (!defined $CONTEXT_LINES) {
+		$CONTEXT_LINES = calculate_context_lines(@lines);
+	}
+
 	#print STDERR "START -------------------------------------------------\n";
 	#print STDERR join("",@$input);
 	#print STDERR "END ---------------------------------------------------\n";
@@ -192,11 +198,11 @@ sub do_dsf_stuff {
 		#########################
 		# Look for the filename #
 		#########################
-		#                                            $4              $5
-		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--git|--cc) (.*?)(\e| b\/|$)/) {
+		#                                            $4                          $5
+		} elsif ($line =~ /^${ansi_color_regex}diff (-r|--recursive|--git|--cc) (.*?)(\e| b\/|$)/) {
 
 			# Mercurial looks like: diff -r 82e55d328c8c hello.c
-			if ($4 eq "-r") {
+			if ($4 eq "-r" || $4 eq "--recursive") {
 				$is_mercurial = 1;
 				$meta_color = get_config_color("meta");
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
@@ -300,11 +306,11 @@ sub do_dsf_stuff {
 				print $frag_color;
 			}
 
-			print "@ $last_file_seen:$start_line \@${bold}${last_function_color}${remain}${reset_color}\n";
+			print "@ $last_file_seen:$start_line \@${reset_color}${last_function_color}${remain}${reset_color}\n";
 		###################################
 		# Remove any new file permissions #
 		###################################
-		} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}.*new file mode/) {
+		} elsif ($remove_file_add_header && $line =~ /^${ansi_color_regex}new file mode [0-7]{6}/) {
 			# Don't print the line (i.e. remove it from the output);
 			$last_file_mode = "add";
 			if ($patch_mode) {
@@ -313,7 +319,7 @@ sub do_dsf_stuff {
 		######################################
 		# Remove any delete file permissions #
 		######################################
-		} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode/) {
+		} elsif ($remove_file_delete_header && $line =~ /^${ansi_color_regex}deleted file mode [0-7]{6}/) {
 			# Don't print the line (i.e. remove it from the output);
 			$last_file_mode = "delete";
 			if ($patch_mode) {
@@ -448,7 +454,7 @@ sub boolean {
 
 # Get the git config
 sub git_config_raw {
-	my $cmd = "git config --list";
+	my $cmd = "git config --list 2>&1";
 	my @out = `$cmd`;
 
 	return \@out;
@@ -491,24 +497,10 @@ sub git_config_boolean {
 	my $search_key    = lc($_[0] || "");
 	my $default_value = lc($_[1] || 0); # Default to false
 
-	# If we're in a unit test, use the default (don't read the users config)
-	if (in_unit_test()) {
-		return boolean($default_value);
-	}
-
 	my $result = git_config($search_key,$default_value);
 	my $ret    = boolean($result);
 
 	return $ret;
-}
-
-# Check if we're inside of BATS
-sub in_unit_test {
-	if ($ENV{BATS_CWD}) {
-		return 1;
-	} else {
-		return 0;
-	}
 }
 
 sub get_less_charset {
@@ -548,16 +540,14 @@ sub start_line_calc {
 		return 1;
 	}
 
-	# Git defaults to three lines of context
-	my $default_context_lines = 3;
 	# Three lines on either side, and the line itself = 7
-	my $expected_context      = ($default_context_lines * 2 + 1);
+	my $expected_context = ($CONTEXT_LINES * 2 + 1);
 
 	# The first three lines
 	if ($line_num == 1 && $diff_context < $expected_context) {
-		$ret = $diff_context - $default_context_lines;
+		$ret = $diff_context - $CONTEXT_LINES;
 	} else {
-		$ret = $line_num + $default_context_lines;
+		$ret = $line_num + $CONTEXT_LINES;
 	}
 
 	if ($ret < 1) {
@@ -904,6 +894,7 @@ sub git_ansi_color {
 	if (!@parts) {
 		return '';
 	}
+
 	my $colors = {
 		'black'   => 0,
 		'red'     => 1,
@@ -913,64 +904,41 @@ sub git_ansi_color {
 		'magenta' => 5,
 		'cyan'    => 6,
 		'white'   => 7,
+		'default' => 9, # pseudo color (39/49 = set default)
+		'normal'  => -1, # placeholder color to be ignored
 	};
+
+	# Bright colors are just offsets from the "regular" color
+	for my $k (keys %{ $colors }) {
+		$colors->{"bright" . $k} = $colors->{$k} + 60;
+	}
 
 	my @ansi_part = ();
 
-	if (grep { /bold/ } @parts) {
+	if (grep { /^bold$/ } @parts) {
 		push(@ansi_part, "1");
-		@parts = grep { !/bold/ } @parts; # Remove from array
 	}
 
-	if (grep { /reverse/ } @parts) {
-		push(@ansi_part, "7");
-		@parts = grep { !/reverse/ } @parts; # Remove from array
+	if (grep { /^dim$/ } @parts) {
+		push(@ansi_part, "2");
 	}
+
+	if (grep { /^ul$/ } @parts) {
+		push(@ansi_part, "4");
+	}
+
+	if (grep { /^reverse$/ } @parts) {
+		push(@ansi_part, "7");
+	}
+
+	# Remove parts that aren't colors
+	@parts = grep { exists $colors->{$_} || is_numeric($_) || /^\#/ } @parts;
 
 	my $fg  = $parts[0] // "";
 	my $bg  = $parts[1] // "";
 
-	#############################################
-
-	# It's an numeric value, so it's an 8 bit color
-	if (is_numeric($fg)) {
-		if ($fg < 8) {
-			push(@ansi_part, $fg + 30);
-		} elsif ($fg < 16) {
-			push(@ansi_part, $fg + 82);
-		} else {
-			push(@ansi_part, "38;5;$fg");
-		}
-	# It's a simple 16 color OG ansi
-	} elsif ($fg) {
-		my $bright    = $fg =~ s/bright//;
-		my $color_num = $colors->{$fg} + 30;
-
-		if ($bright) { $color_num += 60; } # Set bold
-
-		push(@ansi_part, $color_num);
-	}
-
-	#############################################
-
-	# It's an numeric value, so it's an 8 bit color
-	if (is_numeric($bg)) {
-		if ($bg < 8) {
-			push(@ansi_part, $bg + 40);
-		} elsif ($bg < 16) {
-			push(@ansi_part, $bg + 92);
-		} else {
-			push(@ansi_part, "48;5;$bg");
-		}
-	# It's a simple 16 color OG ansi
-	} elsif ($bg) {
-		my $bright    = $bg =~ s/bright//;
-		my $color_num = $colors->{$bg} + 40;
-
-		if ($bright) { $color_num += 60; } # Set bold
-
-		push(@ansi_part, $color_num);
-	}
+	set_ansi_color($fg, 0 , \@ansi_part, $colors) if $fg;
+	set_ansi_color($bg, 10, \@ansi_part, $colors) if $bg;
 
 	#############################################
 
@@ -978,6 +946,32 @@ sub git_ansi_color {
 	my $ret      = "\e[" . $ansi_str . "m";
 
 	return $ret;
+}
+
+sub set_ansi_color {
+	my ($color, $increment, $ansi_part, $colors) = @_;
+
+	my $base_code  = 30 + $increment;
+	my $base8_code = 38 + $increment;
+	my $ext_code   = 82 + $increment;
+
+	if (is_numeric($color)) {
+		if ($color < 8) {
+			push(@$ansi_part, $color + $base_code);
+		} elsif ($color < 16) {
+			push(@$ansi_part, $color + $ext_code);
+		} else {
+			push(@$ansi_part, "$base8_code;5;$color");
+		}
+	# It's a full rgb code
+	} elsif ($color =~ /^#/) {
+		my ($rgbr, $rgbg, $rgbb) = $color =~ /.(..)(..)(..)/;
+		push(@$ansi_part, "$base8_code;2;" . hex($rgbr) . ";" . hex($rgbg) . ";" . hex($rgbb));
+	# It's a simple 16 color OG ansi
+	} elsif ($color ne "normal") {
+		my $color_num = $colors->{$color} + $base_code;
+		push(@$ansi_part, $color_num);
+	}
 }
 
 sub is_numeric {
@@ -1033,11 +1027,17 @@ sub get_terminal_width {
 
 sub show_debug_info {
 	my @less    = get_less_charset();
-	my $git_ver = trim(`git --version`);
+	my $git_ver = trim(`git --version 2>&1`);
 	$git_ver    =~ s/[^\d.]//g;
 
+	if ($git_ver !~ /git/) {
+		$git_ver = "Unknown";
+	} else {
+		$git_ver = "v" . $git_ver;
+	}
+
 	print "Diff-so-fancy   : v$VERSION\n";
-	print "Git             : v$git_ver\n";
+	print "Git             : $git_ver\n";
 	print "Perl            : $^V\n";
 	print "\n";
 
@@ -1088,20 +1088,47 @@ sub debug_log {
 	return 1;
 }
 
-# Enable k() and kd() if there is a DSF_DEBUG environment variable
-BEGIN {
-	if ($ENV{"DSF_DEBUG"}) {
-		require Data::Dump::Color;
-		*k  = sub { Data::Dump::Color::dd(@_) };
-		*kd = sub {
+sub calculate_context_lines {
+	my @lines     = @_;
+	my $count     = 0;
+	my $hunk_line = 0;
+
+	foreach my $line (@lines) {
+		if ($line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
+			$hunk_line = $count;
+		} elsif ($hunk_line && $line =~ /^${ansi_color_regex}[+-]/) {
+			my $diff = $count - $hunk_line - 1;
+			#print "Hunk: $hunk_line, ChangedLine: $count ($diff context)\n";
+			return $diff;
+		}
+
+		$count++;
+	};
+
+	# If for some reason we can't figure it out, assume 3
+	return 3;
+}
+
+# Borrowed from: https://www.perturb.org/display/1097_Perl_detect_if_a_module_is_installed_before_using_it.html
+sub AUTOLOAD {
+	our $AUTOLOAD; # keep 'use strict' happy
+
+	if ($AUTOLOAD eq 'main::k' || $AUTOLOAD eq 'main::kd') {
+		if (eval { require Data::Dump::Color }) {
+			*k = sub { Data::Dump::Color::dd(@_) };
+		} else {
+			require Data::Dumper;
+			*k = sub { print Data::Dumper::Dumper(@_) };
+		}
+
+		sub kd {
 			k(@_);
 
 			printf("Died at %2\$s line #%3\$s\n",caller());
 			exit(15);
 		}
-	} else {
-		*k  = sub {};
-		*kd = sub {};
+
+		eval($AUTOLOAD . '(@_)');
 	}
 }
 
