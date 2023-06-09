@@ -454,7 +454,7 @@ sub boolean {
 
 # Get the git config
 sub git_config_raw {
-	my $cmd = "git config --list";
+	my $cmd = "git config --list 2>&1";
 	my @out = `$cmd`;
 
 	return \@out;
@@ -1030,11 +1030,17 @@ sub get_terminal_width {
 
 sub show_debug_info {
 	my @less    = get_less_charset();
-	my $git_ver = trim(`git --version`);
+	my $git_ver = trim(`git --version 2>&1`);
 	$git_ver    =~ s/[^\d.]//g;
 
+	if ($git_ver !~ /git/) {
+		$git_ver = "Unknown";
+	} else {
+		$git_ver = "v" . $git_ver;
+	}
+
 	print "Diff-so-fancy   : v$VERSION\n";
-	print "Git             : v$git_ver\n";
+	print "Git             : $git_ver\n";
 	print "Perl            : $^V\n";
 	print "\n";
 
