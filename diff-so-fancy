@@ -937,8 +937,8 @@ sub git_ansi_color {
 	my $fg  = $parts[0] // "";
 	my $bg  = $parts[1] // "";
 
-	set_ansi_color( $fg, 0, \@ansi_part, $colors ) if $fg;
-	set_ansi_color( $bg, 10, \@ansi_part, $colors ) if $bg;
+	set_ansi_color($fg, 0 , \@ansi_part, $colors) if $fg;
+	set_ansi_color($bg, 10, \@ansi_part, $colors) if $bg;
 
 	#############################################
 
@@ -950,9 +950,10 @@ sub git_ansi_color {
 
 sub set_ansi_color {
 	my ($color, $increment, $ansi_part, $colors) = @_;
-	my $base_code = 30 + $increment;
+
+	my $base_code  = 30 + $increment;
 	my $base8_code = 38 + $increment;
-	my $ext_code = 82 + $increment;
+	my $ext_code   = 82 + $increment;
 
 	if (is_numeric($color)) {
 		if ($color < 8) {
