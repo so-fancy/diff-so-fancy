@@ -904,6 +904,8 @@ sub git_ansi_color {
 		'magenta' => 5,
 		'cyan'    => 6,
 		'white'   => 7,
+		'default' => 9, # pseudo color (39/49 = set default)
+		'normal'  => -1, # placeholder color to be ignored
 	};
 
 	# Bright colors are just offsets from the "regular" color
@@ -913,61 +915,30 @@ sub git_ansi_color {
 
 	my @ansi_part = ();
 
-	if (grep { /bold/ } @parts) {
+	if (grep { /^bold$/ } @parts) {
 		push(@ansi_part, "1");
 	}
 
-	if (grep { /dim/ } @parts) {
+	if (grep { /^dim$/ } @parts) {
 		push(@ansi_part, "2");
 	}
 
-	if (grep { /ul/ } @parts) {
+	if (grep { /^ul$/ } @parts) {
 		push(@ansi_part, "4");
 	}
 
-	if (grep { /reverse/ } @parts) {
+	if (grep { /^reverse$/ } @parts) {
 		push(@ansi_part, "7");
 	}
 
 	# Remove parts that aren't colors
-	@parts = grep { exists $colors->{$_} || is_numeric($_) } @parts;
+	@parts = grep { exists $colors->{$_} || is_numeric($_) || /^\#/ } @parts;
 
 	my $fg  = $parts[0] // "";
 	my $bg  = $parts[1] // "";
 
-	#############################################
-
-	# It's an numeric value, so it's an 8 bit color
-	if (is_numeric($fg)) {
-		if ($fg < 8) {
-			push(@ansi_part, $fg + 30);
-		} elsif ($fg < 16) {
-			push(@ansi_part, $fg + 82);
-		} else {
-			push(@ansi_part, "38;5;$fg");
-		}
-	# It's a simple 16 color OG ansi
-	} elsif ($fg) {
-		my $color_num = ($colors->{$fg} // 0) + 30;
-		push(@ansi_part, $color_num);
-	}
-
-	#############################################
-
-	# It's an numeric value, so it's an 8 bit color
-	if (is_numeric($bg)) {
-		if ($bg < 8) {
-			push(@ansi_part, $bg + 40);
-		} elsif ($bg < 16) {
-			push(@ansi_part, $bg + 92);
-		} else {
-			push(@ansi_part, "48;5;$bg");
-		}
-	# It's a simple 16 color OG ansi
-	} elsif ($bg) {
-		my $color_num = ($colors->{$bg} // 0) + 40;
-		push(@ansi_part, $color_num);
-	}
+	set_ansi_color( $fg, 0, \@ansi_part, $colors ) if $fg;
+	set_ansi_color( $bg, 10, \@ansi_part, $colors ) if $bg;
 
 	#############################################
 
@@ -975,6 +946,31 @@ sub git_ansi_color {
 	my $ret      = "\e[" . $ansi_str . "m";
 
 	return $ret;
+}
+
+sub set_ansi_color {
+	my ($color, $increment, $ansi_part, $colors) = @_;
+	my $base_code = 30 + $increment;
+	my $base8_code = 38 + $increment;
+	my $ext_code = 82 + $increment;
+
+	if (is_numeric($color)) {
+		if ($color < 8) {
+			push(@$ansi_part, $color + $base_code);
+		} elsif ($color < 16) {
+			push(@$ansi_part, $color + $ext_code);
+		} else {
+			push(@$ansi_part, "$base8_code;5;$color");
+		}
+	# It's a full rgb code
+	} elsif ($color =~ /^#/) {
+		my ($rgbr, $rgbg, $rgbb) = $color =~ /.(..)(..)(..)/;
+		push(@$ansi_part, "$base8_code;2;" . hex($rgbr) . ";" . hex($rgbg) . ";" . hex($rgbb));
+	# It's a simple 16 color OG ansi
+	} elsif ($color ne "normal") {
+		my $color_num = $colors->{$color} + $base_code;
+		push(@$ansi_part, $color_num);
+	}
 }
 
 sub is_numeric {
