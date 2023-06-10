@@ -78,7 +78,7 @@ teardown_file() {
 @test "Should not show unicode bytes in hex if missing LC_*/LANG _and_ piping the output" {
   unset LESSCHARSET LESSCHARDEF LC_ALL LC_CTYPE LANG
   # pipe to cat(1) so we don't open stdout
-  header=$( printf "%s" "$(load_fixture "ls-function" | $diff_so_fancy | cat)" | head -n3 )
+  header=$( load_fixture "ls-function" | $diff_so_fancy | cat | head -n3 )
   run printf "%s" "$header"
   assert_line --index 0 --partial "-----"
   assert_line --index 1 --partial "modified: fish/functions/ls.fish"
@@ -121,13 +121,13 @@ teardown_file() {
 @test "Empty file add" {
   output=$( load_fixture "add_empty_file" | $diff_so_fancy )
   run printf "%s" "$output"
-  assert_line --index 5 --regexp "added:.*empty_file.txt"
+  assert_line --index 7 --regexp "added:.*empty_file.txt"
 }
 
 @test "Empty file delete" {
   output=$( load_fixture "remove_empty_file" | $diff_so_fancy )
   run printf "%s" "$output"
-  assert_line --index 5 --regexp "deleted:.*empty_file.txt"
+  assert_line --index 7 --regexp "deleted:.*empty_file.txt"
 }
 
 @test "Move with content change" {
@@ -211,8 +211,8 @@ teardown_file() {
 	output=$( load_fixture "complex-hunks" | $diff_so_fancy 2>&1 )
 	run printf "%s" "$output"
 
-	assert_line --index 4 --partial "@ libs/header_clean/header_clean.pl:107 @"
-    refute_output --partial 'Use of uninitialized value'
+	assert_line --index 6 --partial "@ libs/header_clean/header_clean.pl:107 @"
+	refute_output --partial 'Use of uninitialized value'
 }
 
 @test "Hunk formatting: @@ -1,6 +1,6 @@" {
@@ -225,7 +225,7 @@ teardown_file() {
 	# stderr forced into output
 	output=$( load_fixture "single-line-remove" | $diff_so_fancy )
 	run printf "%s" "$output"
-	assert_line --index 4 --regexp 'var delayedMessage = "It worked";'
+	assert_line --index 4 --partial 'var delayedMessage = "It worked";'
 }
 
 @test "Three way merge" {
