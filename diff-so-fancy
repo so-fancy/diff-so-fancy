@@ -28,7 +28,7 @@ my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
 my $CONTEXT_LINES              = undef; # Number of lines of context diff used
 
-my $ansi_regex = qr/\e\[([0-9]{1,3}(;[0-9]{1,3}){0,10})[mK]/;
+my $ansi_regex       = qr/\e\[([0-9]{0,3}(;[0-9]{1,3}){0,10})[mK]/;
 my $ansi_color_regex = qr/(${ansi_regex})?/;
 my $reset_color      = color("reset");
 my $bold             = color("bold");
