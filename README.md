@@ -25,7 +25,7 @@ Issues relating to packaging ('installation does not work', 'version is out of d
 Configure git to use `diff-so-fancy` for all diff output:
 
 ```shell
-git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+git config --global core.pager "diff-so-fancy | less --tabs=4 -RF"
 git config --global interactive.diffFilter "diff-so-fancy --patch"
 ```
 
