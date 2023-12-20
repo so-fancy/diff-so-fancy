@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
 
 my $args   = join(" ",@ARGV);
 my ($perl) = $args =~ /--perl/;
@@ -19,16 +20,10 @@ if ($perl && has_term_ansicolor(4.0)) {
 	#print "TERM::ANSIColor constant names:\n";
 	term_ansicolor();
 } else {
-	my $cols = 120;
-	my $rows = 24;
-	if (-f '/bin/stty') {
-		($rows,$cols) = split(/ /,`/bin/stty size`);
-	}
-
 	my $section  = 1;
 	my $grouping = 8;
 
-	for (my $i=0;$i<256;$i++) {
+	for (my $i = 0; $i < 256; $i++) {
 		print set_bcolor($i); # Set the background color
 
 		if (needs_white($i)) {
@@ -40,7 +35,7 @@ if ($perl && has_term_ansicolor(4.0)) {
 		}
 
 		print set_fcolor(); # Reset both colors
-		print "  "; # Seperators
+		print "  ";         # Seperator
 
 		if ($i == 15 || $i == 231) {
 			print set_bcolor(); # Reset
@@ -65,7 +60,6 @@ END {
 
 sub has_term_ansicolor {
 	my $version = shift();
-	$version ||= 4;
 
 	eval {
 		# Check if we have Term::ANSIColor version 4.0
@@ -98,19 +92,6 @@ sub set_bcolor {
 	else { $ret .= "\e[48;5;${c}m"; }
 
 	return $ret;
-}
-
-sub highlight_string {
-	my $needle = shift();
-	my $haystack = shift();
-	my $color = shift() || 2; # Green if they don't pass in a color
-
-	my $fc = set_fcolor($color);
-	my $reset = set_fcolor();
-
-	$haystack =~ s/$needle/$fc.$needle.$reset/e;
-
-	return $haystack;
 }
 
 sub get_color_mapping {
@@ -196,16 +177,23 @@ sub get_color_names {
 }
 
 sub needs_white {
-	my $num = shift();
-
 	# Sorta lame, but it's a hard coded list of which background colors need a white foreground
-	my @white = qw(0 1 4 5 8 232 233 234 235 236 237 238 239 240 241 242 243 16 17 18
+	my @needs_white = qw(0 1 4 5 8 232 233 234 235 236 237 238 239 240 241 242 243 16 17 18
 	19 20 21 22 28 52 53 54 55 25 56 57 58 59 60 88 89 90 91 92 93 124 125 29 30 31 26
 	27 61 62 64 160 196 161 126 63 94 95 100 101 127 128 129 12 130 131 23 24);
 
-	if (grep(/\b$num\b/,@white)) {
-		return 1,
-	} else {
-		return 0;
+	my $num = shift();
+	my $ret = in_array($num, @needs_white);
+
+	return $ret;
+}
+
+sub in_array {
+	my ($needle, @haystack) = @_;
+
+	foreach my $l (@haystack) {
+		if ($l == $needle) { return 1; }
 	}
+
+	return 0;
 }
