@@ -45,22 +45,27 @@ between files with `n`/`N` keys:
     diff = diff-so-fancy | less --tabs=4 -RFXS --pattern '^(Date|added|deleted|modified): '
 ```
 
-## Zsh plugin providing diff-so-fancy
+## Zsh plugin suppport for diff-so-fancy
 
-Zsh plugin [zdharma-continuum/zsh-diff-so-fancy](https://github.com/zdharma-continuum/zsh-diff-so-fancy) has this
-project as a submodule, so installing the plugin installs `diff-so-fancy`. The plugin provides
-the subcommand `git dsf` out of the box. Installation with Zinit, Zplug, and Zgen:
+This project includes a `.plugin.zsh` file providing ZSH framework support, so you can use any framework that supports the ZSH plugin standard to install `diff-so-fancy` and add it to your `$PATH`. Installation with Zinit, Zplug, and Zgen:
 
-```zsh
-# zinit
+### Install with zinit
+
+```sh
 zinit ice lucid as"program" pick"bin/git-dsf"
-zinit load zdharma-continuum/zsh-diff-so-fancy
+zinit load so-fancy/diff-so-fancy
+```
 
-# zplug
-zplug "zdharma-continuum/zsh-diff-so-fancy", as:command, use:bin/git-dsf
+### Install with zplug
 
-# zgen and others
-zgen zdharma-continuum/zsh-diff-so-fancy
+```sh
+zplug "so-fancy/diff-so-fancy", as:command, use:bin/git-dsf
+```
+
+# zgenom and others
+
+```sh
+zgenom load so-fancy/diff-so-fancy
 ```
 
 ## `hg` configuration
