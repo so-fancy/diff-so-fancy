@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# initalize the bats components
+# initialize the bats components
 git submodule sync && git submodule update --init
