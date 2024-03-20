@@ -17,7 +17,7 @@ cd ~/projects/catfabulator && git diff
 The tests use [bats-core](https://bats-core.readthedocs.io/en/latest/index.html), the Bash automated testing system.
 
 ```sh
-# initalize the bats components
+# initialize the bats components
 git submodule sync && git submodule update --init
 
 # run the test suite once:
