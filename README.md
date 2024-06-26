@@ -101,7 +101,9 @@ git config --bool --global diff-so-fancy.stripLeadingSymbols false
 
 ### useUnicodeRuler
 
-By default, the separator for the file header uses Unicode line-drawing characters. If this is causing output errors on your terminal, set this to `false` to use ASCII characters instead. (Default: true)
+By default, the separator for the file header uses Unicode line-drawing characters.
+If this is causing output errors on your terminal, set this to `false` to use
+ASCII characters instead. (Default: true)
 
 ```shell
 git config --bool --global diff-so-fancy.useUnicodeRuler false
@@ -109,10 +111,73 @@ git config --bool --global diff-so-fancy.useUnicodeRuler false
 
 ### rulerWidth
 
-By default, the separator for the file header spans the full width of the terminal. Use this setting to set the width of the file header manually.
+By default, the separator for the file header spans the full width of the terminal.
+Use this setting to set the width of the file header manually.
 
 ```shell
 git config --global diff-so-fancy.rulerWidth 80
+```
+
+### hideTopRuler and hideBottomRuler
+
+By default, show both top & bottom horizontal ruler.
+
+```bash
+git config --bool --global diff-so-fancy.hideTopRuler    false
+git config --bool --global diff-so-fancy.hideBottomRuler false
+
+# __OR__ use the command line options to hide the ruler
+diff-so-fancy -U # hide top ruler, -U is short for --no-thr
+diff-so-fancy -D # hide bottom ruler, -D is short for --no-bhr
+
+# __OR__ use the command line options to show the ruler
+diff-so-fancy -u # show top ruler, -u is short for --show-thr
+diff-so-fancy -d # show bottom ruler, -d is short for --show-bhr
+```
+
+**NOTE** the priority (show)`-u/-d` > (hide)`-U/-D` > `hideTopRuler/hideBottomRuler`
+
+- if default config to **show**, it is easy to hide it use cmd args of `-U/-D`
+- if default config to **hide**, it is easy to show it use cmd args of `-u/-d`
+
+By default, if a ruler is to hide, then it will be replaced by an newline.
+
+- A: if a ruler is going to hide, then make it replaced by an newline
+  * This is controled by `-x`, the default is **ON**
+- B: if a ruler is to be showing, then make it replaced by an newline
+  * This is controled by `-X`, the default is **OFF**
+
+```bash
+# -X tells to replace both showing ruler with newline
+diff-so-fancy -X        ### both rulers are newline ###
+# -X make showing bottom newline, -U make hidding top newline
+diff-so-fancy -X -U     ### both rulers are newline ###
+# -X make showing top newline, -U make hidding bottom newline
+diff-so-fancy -X -D     ### both rulers are newline ###
+
+# -X make showing bottom newline, -U -x make top completely hidding
+diff-so-fancy -X -U -x  # no top ruler, bottom ruler newline
+diff-so-fancy -x -U     # no top ruler, bottom ruler dash
+
+# -X make showing top newline, -D -x make bottom completely hidding
+diff-so-fancy -X -D -x  # no bottom ruler, top ruler newline
+diff-so-fancy -x -D     # no bottom ruler, top ruler dash
+
+diff-so-fancy -x -U -D  # completely hide both ruler at all
+```
+
+### sectionChar
+
+By default, the section char is set to unicode wide char `◯`, If this is causing
+output errors on your terminal, then you can reset it to other char or make it
+completely none.
+
+```bash
+git config --global diff-so-fancy.sectionChar ""   # set to none
+git config --global diff-so-fancy.sectionChar "DIFF" # set to DIFF
+# __OR__ use the command line options
+diff-so-fancy --use-sc "DIFF" # set to any chars you like
+diff-so-fancy -N # none, -N is short for --no-section-char
 ```
 
 ## The diff-so-fancy team

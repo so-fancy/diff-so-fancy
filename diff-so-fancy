@@ -23,7 +23,10 @@ my $change_hunk_indicators     = git_config_boolean("diff-so-fancy.changeHunkInd
 my $strip_leading_indicators   = git_config_boolean("diff-so-fancy.stripLeadingSymbols","true");
 my $mark_empty_lines           = git_config_boolean("diff-so-fancy.markEmptyLines","true");
 my $use_unicode_dash_for_ruler = git_config_boolean("diff-so-fancy.useUnicodeRuler","true");
+my $hide_top_ruler             = git_config_boolean("diff-so-fancy.hideTopRuler","false");
+my $hide_bot_ruler             = git_config_boolean("diff-so-fancy.hideBottomRuler","false");
 my $ruler_width                = git_config("diff-so-fancy.rulerWidth", undef);
+my $section_char               = git_config("diff-so-fancy.sectionChar", "◯  ");
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $has_stdin                  = has_stdin();
 my $CONTEXT_LINES              = undef; # Number of lines of context diff used
@@ -46,6 +49,15 @@ my $in_hunk           = 0;
 my $columns_to_remove = 0;
 my $is_mercurial      = 0;
 my $color_forced      = 0; # Has the color been forced on/off
+
+# Default show top & bottom ruler
+my $show_top_ruler = 1;
+my $show_bot_ruler = 1;
+
+# The ruler is an empty newline, not dash
+my $ruler_is_newline_if_no_hide = 0;
+# The ruler is an empty newline only if it is to be hidden
+my $ruler_is_newline_hide_only = 1;
 
 # We try and be smart about whether we need to do line coloring, but
 # this is an option to force it on/off
@@ -88,6 +100,68 @@ if (!$has_stdin) {
 		}
 	} else {
 		die("Missing input on STDIN\n");
+	}
+}
+
+if ($args->{N} || $args->{'no-section-char'}) {
+	$section_char = '';
+} elsif ($args->{'use-sc'}) {
+	$section_char = $args->{'use-sc'};
+}
+
+# hide up/top horizontal ruler
+if ($args->{U} || $args->{'no-thr'} || $hide_top_ruler) {
+	$show_top_ruler = 0;
+}
+# hide down/bottom horizontal ruler
+if ($args->{D} || $args->{'no-bhr'} || $hide_bot_ruler) {
+	$show_bot_ruler = 0;
+}
+
+# show up/top horizontal ruler
+if ($args->{u} || $args->{'show-thr'}) {
+	$show_top_ruler = 1;
+}
+# show down/bottom horizontal ruler
+if ($args->{d} || $args->{'show-bhr'}) {
+	$show_bot_ruler = 1;
+}
+
+if ($args->{x}) {
+	$ruler_is_newline_hide_only = 0;
+}
+
+if ($args->{X}) {
+	$ruler_is_newline_if_no_hide = 1;
+}
+
+sub draw_top_ruler($) {
+	my ($ruler_color) = @_;
+	if ($show_top_ruler) {
+		if ($ruler_is_newline_if_no_hide) {
+			print "\n";
+		} else {
+			print horizontal_rule($ruler_color);
+		}
+	} else {
+		if ($ruler_is_newline_hide_only) {
+			print "\n";
+		}
+	}
+}
+
+sub draw_bot_ruler($) {
+	my ($ruler_color) = @_;
+	if ($show_bot_ruler) {
+		if ($ruler_is_newline_if_no_hide) {
+			print "\n";
+		} else {
+			print horizontal_rule($ruler_color);
+		}
+	} else {
+		if ($ruler_is_newline_hide_only) {
+			print "\n";
+		}
 	}
 }
 
@@ -191,9 +265,9 @@ sub do_dsf_stuff {
 			}
 
 			if ($file_1 && $file_2) {
-				print horizontal_rule($meta_color);
+				draw_top_ruler($meta_color);
 				print $meta_color . file_change_string($file_1,$file_2) . "\n";
-				print horizontal_rule($meta_color);
+				draw_bot_ruler($meta_color);
 			}
 		#########################
 		# Look for the filename #
@@ -248,7 +322,7 @@ sub do_dsf_stuff {
 
 			# Print out the top horizontal line of the header
 			print $reset_color;
-			print horizontal_rule($meta_color);
+			draw_top_ruler($meta_color);
 
 			# Mercurial coloring is slightly different so we need to hard reset colors
 			if ($is_mercurial) {
@@ -259,7 +333,7 @@ sub do_dsf_stuff {
 			print file_change_string($file_1,$file_2) . "\n";
 
 			# Print out the bottom horizontal line of the header
-			print horizontal_rule($meta_color);
+			draw_bot_ruler($meta_color);
 		########################################
 		# Check for "@@ -3,41 +3,63 @@" syntax #
 		########################################
@@ -330,9 +404,9 @@ sub do_dsf_stuff {
 		################################
 		} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
 			my $change = file_change_string($2,$4);
-			print horizontal_rule($meta_color);
+			draw_top_ruler($meta_color);
 			print "$meta_color$change (binary)\n";
-			print horizontal_rule($meta_color);
+			draw_bot_ruler($meta_color);
 		#####################################################
 		# Check if we're changing the permissions of a file #
 		#####################################################
@@ -376,9 +450,9 @@ sub do_dsf_stuff {
 
 				my $change = file_change_string($file1,$file2);
 
-				print horizontal_rule($meta_color);
+				draw_top_ruler($meta_color);
 				print $meta_color . $change . "\n";
-				print horizontal_rule($meta_color);
+				draw_bot_ruler($meta_color);
 			}
 
 			$i += 3; # We've consumed three lines
@@ -645,25 +719,25 @@ sub file_change_string {
 
 	# If they're the same it's a modify
 	if ($file_1 eq $file_2) {
-		return "modified: $file_1";
+		return $section_char . "modified: $file_1";
 	# If the first is /dev/null it's a new file
 	} elsif ($file_1 eq "/dev/null") {
 		my $add_color = $DiffHighlight::NEW_HIGHLIGHT[1];
-		return "added: $add_color$file_2$reset_color";
+		return $section_char . "added: $add_color$file_2$reset_color";
 	# If the second is /dev/null it's a deletion
 	} elsif ($file_2 eq "/dev/null") {
 		my $del_color = $DiffHighlight::OLD_HIGHLIGHT[1];
-		return "deleted: $del_color$file_1$reset_color";
+		return $section_char . "deleted: $del_color$file_1$reset_color";
 	# If the files aren't the same it's a rename
 	} elsif ($file_1 ne $file_2) {
 		my ($old, $new) = DiffHighlight::highlight_pair($file_1,$file_2,{only_diff => 1});
 		# highlight_pair already includes reset_color, but adds newline characters that need to be trimmed off
 		$old = trim($old);
 		$new = trim($new);
-		return "renamed: $old$meta_color to $new"
+		return $section_char . "renamed: $old$meta_color to $new"
 	# Something we haven't thought of yet
 	} else {
-		return "$file_1 -> $file_2";
+		return $section_char . "$file_1 -> $file_2";
 	}
 }
 
@@ -715,11 +789,29 @@ diff-so-fancy --colors                   # View the commands to set the recommen
 diff-so-fancy --set-defaults             # Configure git-diff to use diff-so-fancy and suggested colors
 diff-so-fancy --patch                    # Use diff-so-fancy in patch mode (interoperable with `git add --patch`)
 
+diff-so-fancy -N                         # No section-chars, default is ◯
+diff-so-fancy --use-sc 'DIFF'            # Customizing the section-chars
+
 # Configure git to use d-s-f for *all* diff operations
 git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"
 
 # Configure git to use d-s-f for `git add --patch`
-git config --global interactive.diffFilter \"diff-so-fancy --patch\"\n";
+git config --global interactive.diffFilter \"diff-so-fancy --patch\"
+
+More Ruler Control Arguments:
+
+By default, both top/bottom ruler is showing, and use Unicode line-drawing char.
+And the if ruler is hiding then replace it by newline flag is set ON by default.
+
+  -U  Mark the top ruler to hiding when drawing
+  -u  Mark the top ruler to showing when drawing
+  -D  Mark the bottom ruler to hiding when drawing
+  -d  Mark the bottom ruler to showing when drawing
+
+  -x  If ruler is marked hiding, then replace it by newline, default ON
+  -X  If ruler is marked showing, then replace it by newline, default OFF
+
+";
 
 	return $out;
 }
