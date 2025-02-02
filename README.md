@@ -10,7 +10,7 @@ Vanilla `git diff` vs `git` and `diff-so-fancy`
 
 ## Install
 
-Simply copy the `diff-so-fancy` script from the latest release into your `$PATH` and you're done. Alternately to test development features you can clone this repo and then put the `diff-so-fancy` script (symlink will work) into your `$PATH`. The `lib/` directory will need to be kept relative to the core script.
+Simply copy the `diff-so-fancy` script and the directory `lib` from the latest release to the same location your `$PATH`, make `diff-so-fancy` executable (`chmod +x /path/to/diff-so-fancy`), and you're done. Alternately to test development features you can clone this repo and then put the `diff-so-fancy` script (symlink will work) into your `$PATH`.
 
 If you are using a ZSH framework like [zgenom](https://github.com/jandamm/zgenom) or [oh-my-zsh](https://ohmyz.sh), refer to [Zsh plugin support for diff-so-fancy](pro-tips.md) for detailed installation instructions.
 
