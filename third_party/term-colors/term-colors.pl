@@ -20,6 +20,7 @@ if ($perl && has_term_ansicolor(4.0)) {
 	#print "TERM::ANSIColor constant names:\n";
 	term_ansicolor();
 } else {
+	my $padding = 2;
 	my $section  = 1;
 	my $grouping = 8;
 
@@ -28,11 +29,10 @@ if ($perl && has_term_ansicolor(4.0)) {
 
 		if (needs_white($i)) {
 			print set_fcolor(15); # White
-			printf("    %03d    ",$i); # Ouput the color number in white
 		} else {
 			print set_fcolor(0); # Black
-			printf("    %03d    ",$i); # Ouput the color number in black
 		}
+		printf(" " x $padding . "%03d" . " " x $padding,$i);
 
 		print set_fcolor(); # Reset both colors
 		print "  ";         # Seperator
@@ -42,6 +42,7 @@ if ($perl && has_term_ansicolor(4.0)) {
 			print "\n\n";
 			$section  = 0;
 			$grouping = 6;
+			$padding = 4;
 		} elsif ($section > 0 && ($section % $grouping == 0)) {
 			print set_bcolor(); # Reset
 			print "\n";
