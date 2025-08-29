@@ -1,6 +1,6 @@
 package DiffHighlight;
 
-use 5.008;
+require v5.26;
 use warnings FATAL => 'all';
 use strict;
 
@@ -11,18 +11,16 @@ my $NULL = File::Spec->devnull();
 
 # Highlight by reversing foreground and background. You could do
 # other things like bold or underline if you prefer.
-our @OLD_HIGHLIGHT = (
-	undef,
-	"\e[7m",
-	"\e[27m",
+my @OLD_HIGHLIGHT = (
+	color_config('color.diff-highlight.oldnormal'),
+	color_config('color.diff-highlight.oldhighlight', "\x1b[7m"),
+	color_config('color.diff-highlight.oldreset', "\x1b[27m")
 );
-our @NEW_HIGHLIGHT = (
-	$OLD_HIGHLIGHT[0],
-	$OLD_HIGHLIGHT[1],
-	$OLD_HIGHLIGHT[2],
+my @NEW_HIGHLIGHT = (
+	color_config('color.diff-highlight.newnormal', $OLD_HIGHLIGHT[0]),
+	color_config('color.diff-highlight.newhighlight', $OLD_HIGHLIGHT[1]),
+	color_config('color.diff-highlight.newreset', $OLD_HIGHLIGHT[2])
 );
-
-
 
 my $RESET = "\x1b[m";
 my $COLOR = qr/\x1b\[[0-9;]*m/;
@@ -74,7 +72,7 @@ sub handle_line {
 	      (?:$COLOR?\|$COLOR?[ ])* # zero or more trailing "|"
 	                         [ ]*  # trailing whitespace for merges
 	    /x) {
-	        my $graph_prefix = $&;
+		my $graph_prefix = $&;
 
 		# We must flush before setting graph indent, since the
 		# new commit may be indented differently from what we
@@ -114,7 +112,7 @@ sub handle_line {
 	# Since we can receive arbitrary input, there's no optimal
 	# place to flush. Flushing on a blank line is a heuristic that
 	# happens to match git-log output.
-	if (!length) {
+	if (/^$/) {
 		$flush_cb->();
 	}
 }
@@ -141,11 +139,7 @@ sub highlight_stdin {
 # fallback, which means we will work even if git can't be run.
 sub color_config {
 	my ($key, $default) = @_;
-
-	# Removing the redirect speeds up execution by about 12ms
-	#my $s = `git config --get-color $key 2>$NULL`;
-	my $s = `git config --get-color $key`;
-
+	my $s = `git config --get-color $key 2>$NULL`;
 	return length($s) ? $s : $default;
 }
 
