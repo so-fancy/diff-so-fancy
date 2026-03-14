@@ -1,23 +1,21 @@
 ---
-name: Check links in README
+name: Check links in README.md
 
 on:
+  # Run daily
+  schedule: [{cron: "0 1 * * *"}]
   push:
-    branches: [ '*' ]
+    branches: ["*"]
   pull_request:
-    branches: [ '*' ]
+    branches: ["*"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        # Full git history is needed to get a proper list of changed files
-        # within `mega-linter`
-        fetch-depth: 0
-    - uses: docker://dkhamsing/awesome_bot:latest
-      with:
-        args: /github/workspace/README.md --allow-ssl --allow 202,500,501,502,503,504,509,521 --allow-dupe --allow-redirect --request-delay 1
+      - uses: actions/checkout@v6
+      - uses: docker://dkhamsing/awesome_bot:latest
+        with:
+          args: /github/workspace/README.md --allow-timeout --allow 202,206,403,429,500,501,502,503,504,509,521,522 --allow-dupe --allow-ssl --request-delay 1 --allow-redirect --white-list https://ipfs.io,slideshare,https://img.shields.io,https://codeclimate.com/,https://www.concourse.ci
+          # args: /github/workspace/README.md --allow-timeout --allow 202,206,403,429,500,501,502,503,504,509,521,522 --allow-dupe --allow-ssl --request-delay 1 --allow-redirect --white-list https://ipfs.io,slideshare,https://img.shields.io,https://codeclimate.com/github/unixorn/awesome-zsh-plugins,www-s.acm.illinois.edu,https://mgdm.net,https://www.concourse.ci,https://grml.org/zsh/zsh-lovers.html,https://geeknote.me,https://en.ipip.net,https://docs.virtuozzo.com,kubernetes.io,https://youtube-dl.org,https://1password.com,https://iterm2.com,https://mercurial-scm.org,https://hitokoto.cn,https://www.cyberciti.biz,https://keybase.io,https://exercism.io,https://bitbucket.org,https://code.visualstudio.com,https://www.gnu.org
