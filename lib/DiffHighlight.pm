@@ -9,18 +9,11 @@ use File::Spec;
 
 my $NULL = File::Spec->devnull();
 
-# Highlight by reversing foreground and background. You could do
-# other things like bold or underline if you prefer.
-my @OLD_HIGHLIGHT = (
-	color_config('color.diff-highlight.oldnormal'),
-	color_config('color.diff-highlight.oldhighlight', "\x1b[7m"),
-	color_config('color.diff-highlight.oldreset', "\x1b[27m")
-);
-my @NEW_HIGHLIGHT = (
-	color_config('color.diff-highlight.newnormal', $OLD_HIGHLIGHT[0]),
-	color_config('color.diff-highlight.newhighlight', $OLD_HIGHLIGHT[1]),
-	color_config('color.diff-highlight.newreset', $OLD_HIGHLIGHT[2])
-);
+# The color theme is initially set to nothing here to allow outside callers
+# to set the colors for their application. If nothing is sent in we use
+# colors from .gitconfig in flush()
+our @OLD_HIGHLIGHT = ();
+our @NEW_HIGHLIGHT = ();
 
 my $RESET = "\x1b[m";
 my $COLOR = qr/\x1b\[[0-9;]*m/;
@@ -118,6 +111,31 @@ sub handle_line {
 }
 
 sub flush {
+	# If the colors were NOT set from outside this module we load them on-demand
+	# from the ~/.gitconfig
+
+	# The zeroth element is often undef so we don't check for that
+	my $has_new_theme = ($NEW_HIGHLIGHT[1] && $NEW_HIGHLIGHT[2]);
+	my $has_old_theme = ($OLD_HIGHLIGHT[1] && $OLD_HIGHLIGHT[2]);
+
+	# Load the new theme from ~/.gitconfig
+	if (!$has_new_theme) {
+		@NEW_HIGHLIGHT = (
+			color_config('color.diff-highlight.newnormal'   , $OLD_HIGHLIGHT[0]),
+			color_config('color.diff-highlight.newhighlight', $OLD_HIGHLIGHT[1]),
+			color_config('color.diff-highlight.newreset'    , $OLD_HIGHLIGHT[2]),
+		);
+	};
+
+	# Load the old theme from ~/.gitconfig
+	if (!$has_old_theme) {
+		@OLD_HIGHLIGHT = (
+			color_config('color.diff-highlight.oldnormal'   , undef),
+			color_config('color.diff-highlight.oldhighlight', "\x1b[7m"),
+			color_config('color.diff-highlight.oldreset'    , "\x1b[27m"),
+		);
+	}
+
 	# Flush any queued hunk (this can happen when there is no trailing
 	# context in the final diff of the input).
 	show_hunk(\@removed, \@added);
