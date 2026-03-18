@@ -301,3 +301,17 @@ sub is_pair_interesting {
 	       $suffix_a !~ /^$BORING*$/ ||
 	       $suffix_b !~ /^$BORING*$/;
 }
+
+# Main code entrance if called as a script
+sub main {
+	highlight_stdin();
+}
+
+# If we're called directly (not loaded as a module) we highlight the STDIN
+# Example: diff -u a.txt b.txt | perl DiffHighlight.pm
+if (!caller()) {
+	main();
+}
+
+# Module must return true
+1;
