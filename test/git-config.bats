@@ -14,18 +14,20 @@ ansi_dim=2
 ansi_ul=4
 ansi_reverse=7
 
-# hash of colors
-declare -Ag ansi_colors=(
-    [black]='0'
-    [red]='1'
-    [green]='2'
-    [yellow]='3'
-    [blue]='4'
-    [magenta]='5'
-    [cyan]='6'
-    [white]='7'
-    [default]='9'
-)
+# get a foreground or background color code
+ansi_color_code() {
+	case "$1" in
+		black)   echo 0 ;;
+		red)     echo 1 ;;
+		green)   echo 2 ;;
+		yellow)  echo 3 ;;
+		blue)    echo 4 ;;
+		magenta) echo 5 ;;
+		cyan)    echo 6 ;;
+		white)   echo 7 ;;
+		default) echo 9 ;;
+	esac
+}
 
 # get a foreground or background color code
 ansi_color() {
@@ -39,7 +41,7 @@ ansi_color() {
         color=${BASH_REMATCH[2]}
         base_code=$((90+$incr))
     fi
-    code=$(($base_code+${ansi_colors[$color]}))
+    code=$(($base_code+$(ansi_color_code "$color")))
     echo "$code"
 }
 
