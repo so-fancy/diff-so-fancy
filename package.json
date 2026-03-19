@@ -28,6 +28,9 @@
   ],
   "author": "Paul Irish",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "bugs": {
     "url": "https://github.com/so-fancy/diff-so-fancy/issues"
   },
