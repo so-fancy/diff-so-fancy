@@ -52,6 +52,8 @@ git show | diff-so-fancy  # ensure it works
 
 npm publish --dry-run # ensure listed files are what you want published. update .npmignore as desired
 
-npm publish
+# npm login --registry https://registry.npmjs.org/  # maybe.
+
+npm publish --registry https://registry.npmjs.org/
 ```
 
