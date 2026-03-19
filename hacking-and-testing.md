@@ -29,3 +29,25 @@ find  ./* test/* test/fixtures/* -maxdepth 0 | entr ./test/bats/bin/bats test
 ```
 
 When writing assertions, you'll likely want to compare to expected output. To grab that reliably, you can use something like `git --no-pager diff | ./diff-so-fancy > output.txt`
+
+
+### Publishing to npm
+
+Run these one-by-one, manually.
+
+```sh
+./diff-so-fancy --version # get latest version from perl script
+
+npm version vX.X.X   # bump package.json to match.
+
+npm uninstall -g diff-so-fancy && npm link  # make global symlink, if not already present
+
+diff-so-fancy --version  # ensure latest version is shown
+
+git show | diff-so-fancy  # ensure it works
+
+npm publish --dry-run # ensure listed files are what you want published. update .npmignore as desired
+
+npm publish
+```
+
