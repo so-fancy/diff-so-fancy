@@ -33,7 +33,18 @@ When writing assertions, you'll likely want to compare to expected output. To gr
 
 ### Publishing to npm
 
-Run these one-by-one, manually.
+
+Now mostly automated (hopefully) thanks to [npm github provenance trusted publishing](https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-github-actions).  See [publish.yml](./.github/workflows/publish.yml)
+
+1. Update `package.json`'s version when bumping library version.
+2. Set git tag only after package.json's version is updated.
+3. Push the tag.
+4. Rest of the npm package publish should be automatic. Watch [gh actions](https://github.com/so-fancy/diff-so-fancy/actions) for the publish workflow.
+
+
+
+#### Old manual instructions
+
 
 ```sh
 diff-so-fancy --version # see the old version (probably)

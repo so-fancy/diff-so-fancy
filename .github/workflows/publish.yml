@@ -25,15 +25,12 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install and Build
         run: |
-          npm ci
           npm run build
 
       - name: Publish to npm
         run: |
-          npm install -g npm@latest
           npm publish --provenance --access public --registry https://registry.npmjs.org/
