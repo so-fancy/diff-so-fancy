@@ -38,7 +38,7 @@ Run these one-by-one, manually.
 ```sh
 diff-so-fancy --version # see the old version (probably)
 
-npm run build
+npm run build  # build the fatpack into dist.
 
 ./dist/diff-so-fancy --version # get latest version from perl script
 
