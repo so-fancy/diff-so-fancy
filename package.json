@@ -3,7 +3,7 @@
   "version": "1.4.6",
   "description": "Good-lookin' diffs with diff-highlight and more",
   "bin": {
-    "diff-so-fancy": "./dist/diff-so-fancy"
+    "diff-so-fancy": "dist/diff-so-fancy"
   },
   "files": [
     "dist/diff-so-fancy"

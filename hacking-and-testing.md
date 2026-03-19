@@ -36,7 +36,11 @@ When writing assertions, you'll likely want to compare to expected output. To gr
 Run these one-by-one, manually.
 
 ```sh
-./diff-so-fancy --version # get latest version from perl script
+diff-so-fancy --version # see the old version (probably)
+
+npm run build
+
+./dist/diff-so-fancy --version # get latest version from perl script
 
 npm version vX.X.X   # bump package.json to match.
 
