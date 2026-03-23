@@ -301,7 +301,17 @@ sub do_dsf_stuff {
 				my $start_line = extract_start_line($line, $input, $context_lines);
 				print file_change_string($file_1,$file_2) . " ${reset_color}${meta_color}\@ $start_line${reset_color}\n";
 			} else {
-				print file_change_string($file_1,$file_2) . "\n";
+				my $extra = "";
+
+				# Check if there is any submodule stuff in the header
+				if ($chunk_str =~ m/Submodule (.*?) contains (.*)/) {
+					my $module_name = $1 || "";
+					my $desc        = $2 || "";
+
+					$extra = " ($desc)";
+				}
+
+				print file_change_string($file_1,$file_2) . "$extra\n";
 			}
 
 			# Print out the bottom horizontal line of the header
