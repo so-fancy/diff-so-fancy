@@ -1,0 +1,19 @@
+Submodule js contains modified content
+Submodule js c3c5887..5b042f0:
+[93mdiff --git a/js/README.md b/js/README.md[m
+[93mindex 2d44d48..e4e36e7 100644[m
+[93m--- a/js/README.md[m
+[93m+++ b/js/README.md[m
+[1;35m@@ -7,4 +7,9 @@[m [m[1;38;5;146mThis repository contains several commits of a single project file as a simple ex[m
+ [m
+ * Adding an [example-dependency](https://github.com/githubtraining/example-dependency) with `git submodule add`[m
+ * Examining how repositories track submodules by ref[m
+[1;31m-* Changing submodule ref with `git checkout` within the subdirectory[m
+\ No newline at end of file[m
+[1;32m+[m[1;32m* Changing submodule ref with `git checkout` within the subdirectory[m
+[1;32m+[m
+[1;32m+[m[1;32m Committed test diff in README[m
+[1;32m+[m
+[1;32m+[m
+[1;32m+[m[1;32m Dirty test diff in README[m
+[93mdiff --git a/js/README.md b/js/README.md[m

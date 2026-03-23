@@ -104,3 +104,9 @@ teardown_file() {
 	run printf "%s" "$output"
 	assert_line --index 0 --regexp "one line"
 }
+
+@test "Submodule modfied files (#351)" {
+	output=$( load_fixture "submodule_modified" | $diff_so_fancy | $ansi_reveal)
+	run printf "%s" "$output"
+	assert_line --index 3 --regexp "modified: .*\(modified content\)"
+}
