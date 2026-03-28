@@ -1,4 +1,4 @@
-# Add our plugin diretory to user's path
+# Add our plugin directory to user's path
 #
 # See following web page for explanation of the line "ZERO=...":
 # https://zdharma-continuum.github.io/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html
