@@ -1073,13 +1073,21 @@ sub yes_no {
 
 # If there are colors set in the gitconfig use those, otherwise leave the defaults
 sub init_diff_highlight_colors {
-	$DiffHighlight::NEW_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.newnormal'))    || $DiffHighlight::NEW_HIGHLIGHT[0];
-	$DiffHighlight::NEW_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.newhighlight')) || $DiffHighlight::NEW_HIGHLIGHT[1];
-	$DiffHighlight::NEW_HIGHLIGHT[2] = git_ansi_color(git_config('color.diff-highlight.newreset'))     || "\e[0m";
+	my $nn = git_config('color.diff-highlight.newnormal');
+	my $nh = git_config('color.diff-highlight.newhighlight');
+	my $nr = git_config('color.diff-highlight.newreset');
 
-	$DiffHighlight::OLD_HIGHLIGHT[0] = git_ansi_color(git_config('color.diff-highlight.oldnormal'))    || $DiffHighlight::OLD_HIGHLIGHT[0];
-	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color(git_config('color.diff-highlight.oldhighlight')) || $DiffHighlight::OLD_HIGHLIGHT[1];
-	$DiffHighlight::NEW_HIGHLIGHT[2] = git_ansi_color(git_config('color.diff-highlight.oldreset'))     || "\e[0m";
+	my $on = git_config('color.diff-highlight.oldnormal');
+	my $oh = git_config('color.diff-highlight.oldhighlight');
+	my $or = git_config('color.diff-highlight.oldreset');
+
+	$DiffHighlight::NEW_HIGHLIGHT[0] = git_ansi_color($nn) || color("2_bold")                  || $DiffHighlight::NEW_HIGHLIGHT[0];
+	$DiffHighlight::NEW_HIGHLIGHT[1] = git_ansi_color($nh) || color("2_bold") . color("on_22") || $DiffHighlight::NEW_HIGHLIGHT[1];
+	$DiffHighlight::NEW_HIGHLIGHT[2] = git_ansi_color($nr) || "\e[0m";
+
+	$DiffHighlight::OLD_HIGHLIGHT[0] = git_ansi_color($on) || color("1_bold")                  || $DiffHighlight::OLD_HIGHLIGHT[0];
+	$DiffHighlight::OLD_HIGHLIGHT[1] = git_ansi_color($oh) || color("1_bold") . color("on_52") || $DiffHighlight::OLD_HIGHLIGHT[1];
+	$DiffHighlight::OLD_HIGHLIGHT[2] = git_ansi_color($or) || "\e[0m";
 }
 
 # Human readable datetime string with milliseconds
