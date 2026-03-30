@@ -1084,9 +1084,9 @@ sub init_diff_highlight_colors {
 
 # Human readable datetime string with milliseconds
 sub date_str {
-	use Time::HiRes qw(gettimeofday);
+	require Time::HiRes;
 
-	my ($sec, $usec) = gettimeofday();
+	my ($sec, $usec) = Time::HiRes::gettimeofday();
 	my @t            = localtime($sec);
 
 	my $ret = sprintf(
