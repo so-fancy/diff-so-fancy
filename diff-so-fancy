@@ -345,8 +345,9 @@ sub do_dsf_stuff {
 			}
 
 			if (!$short_headers) {
-				print $frag_color;
-				print "@ $last_file_seen:$start_line \@${reset_color}${last_function_color}${remain}${reset_color}\n";
+				my $str = "$frag_color@ $last_file_seen:$start_line \@${reset_color}${last_function_color}${remain}${reset_color}\n";
+
+				print $str;
 			}
 		###################################
 		# Remove any new file permissions #
@@ -442,6 +443,7 @@ sub do_dsf_stuff {
 			if ($strip_leading_indicators) {
 				$line = strip_leading_indicators($line,$columns_to_remove);
 			}
+
 			print $line;
 		}
 
