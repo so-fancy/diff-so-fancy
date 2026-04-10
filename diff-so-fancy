@@ -1362,6 +1362,7 @@ BEGIN {
 	# If you're me you load a debug library
 	if ($ENV{USER} && ($ENV{USER} eq "bakers")) {
 		require Dump::Krumo;
+		$Dump::Krumo::use_color = 2;
 		Dump::Krumo->import(qw(k kd));
 	}
 }
