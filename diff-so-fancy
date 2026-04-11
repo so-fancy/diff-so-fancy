@@ -1438,4 +1438,4 @@ terminal. Use rulerWidth to set the width of the file header manually.
 
 - https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Pagers.md#diff-so-fancy
 
-# vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
+# vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4 filetype=perl
