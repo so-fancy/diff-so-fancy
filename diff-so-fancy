@@ -745,8 +745,9 @@ diff-so-fancy --colors                   # View the commands to set the recommen
 diff-so-fancy --set-defaults             # Configure git-diff to use diff-so-fancy and suggested colors
 diff-so-fancy --patch                    # Use diff-so-fancy in patch mode (interoperable with `git add --patch`)
 
-# Configure git to use d-s-f for *all* diff operations
-git config --global core.pager \"diff-so-fancy | less --tabs=4 -RFX\"
+# Configure git to use d-s-f for common diff operations
+git config --global pager.diff \"diff-so-fancy | less --tabs=4 -RFX\"
+git config --global pager.show \"diff-so-fancy | less --tabs=4 -RFX\"
 
 # Configure git to use d-s-f for `git add --patch`
 git config --global interactive.diffFilter \"diff-so-fancy --patch\"\n";
@@ -793,11 +794,14 @@ sub is_windows {
 
 sub set_defaults {
 	my $color_config = get_default_colors();
-	my $git_config   = 'git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"';
+	my @git_configs  = (
+		'git config --global pager.diff "diff-so-fancy | less --tabs=4 -RFX"',
+		'git config --global pager.show "diff-so-fancy | less --tabs=4 -RFX"',
+	);
 	my $first_cmd    = 'git config --global diff-so-fancy.first-run false';
 
 	my @cmds = split(/\n/,$color_config);
-	push(@cmds,$git_config);
+	push(@cmds,@git_configs);
 	push(@cmds,$first_cmd);
 
 	# Remove all comments from the commands
@@ -1384,10 +1388,20 @@ helps improve code quality and helps you spot defects faster.
 
 =head2 Git
 
-Configure git to use C<diff-so-fancy> for all diff output:
+Configure git to use C<diff-so-fancy> for common diff output:
 
-    git config --global core.pager "diff-so-fancy | less --tabs=4 -RF"
+    git config --global pager.diff "diff-so-fancy | less --tabs=4 -RF"
+    git config --global pager.show "diff-so-fancy | less --tabs=4 -RF"
     git config --global interactive.diffFilter "diff-so-fancy --patch"
+
+If you also want C<diff-so-fancy> for C<git log>, opt in separately:
+
+    git config --global pager.log "diff-so-fancy | less --tabs=4 -RF"
+
+Using C<core.pager> is broader than this and will send non-diff paged Git
+output through C<diff-so-fancy> too. That mostly passes through, but lines
+that look like diff metadata, hunk headers, or C<commit> headers can be
+reformatted.
 
 =head2 Diff
 

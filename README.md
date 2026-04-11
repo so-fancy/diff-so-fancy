@@ -20,12 +20,23 @@ Issues relating to packaging ("installation does not work", "version is out of d
 
 ### Git
 
-Configure git to use `diff-so-fancy` for all diff output:
+Configure git to use `diff-so-fancy` for common diff output:
 
 ```shell
-git config --global core.pager "diff-so-fancy | less --tabs=4 -RF"
+git config --global pager.diff "diff-so-fancy | less --tabs=4 -RF"
+git config --global pager.show "diff-so-fancy | less --tabs=4 -RF"
 git config --global interactive.diffFilter "diff-so-fancy --patch"
 ```
+
+If you also want `diff-so-fancy` for `git log`, opt in separately:
+
+```shell
+git config --global pager.log "diff-so-fancy | less --tabs=4 -RF"
+```
+
+Using `core.pager` is broader than this and will send non-diff paged Git output
+through `diff-so-fancy` too. That mostly passes through, but lines that look like
+diff metadata, hunk headers, or `commit` headers can be reformatted.
 
 ### Diff
 

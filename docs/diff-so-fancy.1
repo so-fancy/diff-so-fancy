@@ -67,12 +67,24 @@ helps improve code quality and helps you spot defects faster.
 .IX Header "USAGE"
 .SS Git
 .IX Subsection "Git"
-Configure git to use \f(CW\*(C`diff\-so\-fancy\*(C'\fR for all diff output:
+Configure git to use \f(CW\*(C`diff\-so\-fancy\*(C'\fR for common diff output:
 .PP
 .Vb 2
-\&    git config \-\-global core.pager "diff\-so\-fancy | less \-\-tabs=4 \-RF"
+\&    git config \-\-global pager.diff "diff\-so\-fancy | less \-\-tabs=4 \-RF"
+\&    git config \-\-global pager.show "diff\-so\-fancy | less \-\-tabs=4 \-RF"
 \&    git config \-\-global interactive.diffFilter "diff\-so\-fancy \-\-patch"
 .Ve
+.PP
+If you also want \f(CW\*(C`diff\-so\-fancy\*(C'\fR for \f(CW\*(C`git log\*(C'\fR, opt in separately:
+.PP
+.Vb 1
+\&    git config \-\-global pager.log "diff\-so\-fancy | less \-\-tabs=4 \-RF"
+.Ve
+.PP
+Using \f(CW\*(C`core.pager\*(C'\fR is broader than this and will send non\-diff paged Git
+output through \f(CW\*(C`diff\-so\-fancy\*(C'\fR too. That mostly passes through, but lines
+that look like diff metadata, hunk headers, or \f(CW\*(C`commit\*(C'\fR headers can be
+reformatted.
 .SS Diff
 .IX Subsection "Diff"
 Use \f(CW\*(C`\-u\*(C'\fR with diff for unified output, and pipe the output to \f(CW\*(C`diff\-so\-fancy\*(C'\fR:
