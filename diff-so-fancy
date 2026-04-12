@@ -1388,7 +1388,7 @@ sub get_sem_info {
 
 	my $cmd  = "sem diff --color always $file";
 	my @out  = `$cmd`;
-	my $exit = $? > 8;
+	my $exit = $? >> 8;
 
 	if ($exit != 0) {
 		return '';
