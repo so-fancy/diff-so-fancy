@@ -312,7 +312,7 @@ sub do_dsf_stuff {
 			} else {
 				$str = file_change_string($file_1,$file_2) . "\n";
 
-				if ($do_sem_stuff) {
+				if ($do_sem_stuff && !$patch_mode) {
 					my $sem_str  = get_sem_info($file_2);
 					$str        .= "\n" . $sem_str;
 				}
