@@ -77,6 +77,14 @@ sub dump_ansi {
 			$ret .= "[BOLD]";
 		} elsif ($p eq "0" || $p eq "") {
 			$ret .= "[RESET]";
+		} elsif ($p eq "2") {
+			$ret .= "[DIM]";
+		} elsif ($p eq "3") {
+			$ret .= "[ITALIC]";
+		} elsif ($p eq "4") {
+			$ret .= "[UNDERLINE]";
+		} elsif ($p eq "5") {
+			$ret .= "[BLINK]";
 		} elsif ($p eq "7") {
 			$ret .= "[REVERSE]";
 		} elsif ($p eq "27") {
