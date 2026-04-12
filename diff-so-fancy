@@ -10,6 +10,7 @@ use strict;
 
 use File::Spec;                                             # For catdir
 use File::Basename;                                         # For dirname
+use JSON::PP;
 use Cwd qw(abs_path);                                       # For realpath()
 use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
 use open ':encoding(UTF-8)';                                # Use UTF-8 when opening files
@@ -1322,6 +1323,71 @@ sub extract_start_line {
 	return $start_line;
 }
 
+sub get_sem_info {
+	my $file = shift();
+
+	# Make sure we have the real sem and not the GNU parallels version
+    state $sem_help = `sem --help`;
+    state $sem_exit = ($? >> 8);
+    if (($sem_exit > 0) || !$sem_help || ($sem_help =~ m/GNU Parallel/)) {
+        return '';
+    }
+
+	#################################################
+
+	my $cmd = "sem diff --format json $file";
+	my $out = `$cmd`;
+
+	# If it's not JSON
+	if ($out !~ /^{/) { return ''; }
+
+	my $x       = decode_json($out);
+	my @changes = @{$x->{changes}};
+
+	# Pull out the data we need from the JSON
+	my $data = [];
+	foreach my $x (@changes) {
+		my $obj = {
+			file   => $x->{filePath}   || "",
+			change => $x->{changeType} || "",
+			entity => $x->{entityType} || "",
+			name   => $x->{entityName} || "",
+		};
+
+		push(@$data, $obj);
+	}
+
+	# Build the output string
+	my $ret = '';
+	foreach my $x (@$data) {
+		my $glyph  = "~";
+		my $color  = '';
+		my $reset  = color('reset');
+
+		my $change = $x->{change}              || "";
+		my $entity = $reset . $x->{entity}     || "";
+		my $name   = color('white', $x->{name} || "");
+
+		if ($change eq 'added') {
+			$glyph = "+";
+			$color = 'green';
+		} elsif ($change eq 'deleted') {
+			$glyph = "-";
+			$color = 'red';
+		} else {
+			$glyph = "~";
+			$color = 'yellow';
+		}
+
+		# Colorize the glyph
+		$glyph = color($color, $glyph);
+
+		$ret .= sprintf("%s %-18s %-40s %s%s%s\n", $glyph, $entity, $name, color($color), $change, color('reset'));
+	}
+
+	return $ret;
+}
+
 sub draw_ruler {
 	my ($str, $type, $color) = @_;
 
@@ -1374,38 +1440,6 @@ sub draw_ruler {
 		}
 		print $color . ($dash x $len) . $bot_r . $reset_color . "\n";
 	}
-}
-
-sub get_sem_info {
-	my $file = shift();
-
-	# Make sure we have the real sem and not the GNU parallels version
-	state $sem_help = `sem --help`;
-	state $sem_exit = ($? >> 8);
-	if (($sem_exit > 0) || !$sem_help || ($sem_help =~ m/GNU Parallel/)) {
-		return '';
-	}
-
-	my $cmd  = "sem diff --color always $file";
-	my @out  = `$cmd`;
-	my $exit = $? >> 8;
-
-	if ($exit != 0) {
-		return '';
-	}
-
-	# Throw away the first two, and last four lines
-	my $cnt = scalar(@out);
-	@out = @out[2 .. $cnt - 5];
-
-	# Remove the "|  " at the start of the ling
-	foreach my $line (@out) {
-		$line =~ s/^.+?  //;
-	}
-
-	my $ret = join("", @out);
-
-	return $ret;
 }
 
 # Borrowed from: https://www.perturb.org/display/1097_Perl_detect_if_a_module_is_installed_before_using_it.html
