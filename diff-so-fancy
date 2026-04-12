@@ -258,7 +258,7 @@ sub do_dsf_stuff {
 			draw_ruler($line, "ruler", $meta_color);
 		########################################
 		# Find the first file: --- a/README.md #
-		# This is a standard lines changes     #
+		# This is a standard line change       #
 		########################################
 		} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
 			$meta_color = get_config_color("meta");
