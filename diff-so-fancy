@@ -1382,7 +1382,7 @@ sub get_sem_info {
 		# Colorize the glyph
 		$glyph = color($color, $glyph);
 
-		$ret .= sprintf("%s %-18s %-40s %s%s%s\n", $glyph, $entity, $name, color($color), $change, color('reset'));
+		$ret .= sprintf("%s %-18s %-50s %s%s%s\n", $glyph, $entity, $name, color($color), $change, color('reset'));
 	}
 
 	return $ret;
