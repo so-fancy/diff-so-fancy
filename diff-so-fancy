@@ -314,7 +314,7 @@ sub do_dsf_stuff {
 				$str = file_change_string($file_1,$file_2) . "\n";
 
 				if ($do_sem_stuff && !$patch_mode) {
-					my $sem_str  = get_sem_info($file_2);
+					my $sem_str  = get_sem_info($file_2, $chunk_str);
 					$str        .= "\n" . $sem_str;
 				}
 			}
@@ -1324,7 +1324,8 @@ sub extract_start_line {
 }
 
 sub get_sem_info {
-	my $file = shift();
+	my ($file, $diff_str) = @_;
+	$diff_str             = bleach_text($diff_str);
 
 	# Make sure we have the real sem and not the GNU parallels version
     state $sem_help = `sem --help`;
@@ -1335,8 +1336,22 @@ sub get_sem_info {
 
 	#################################################
 
-	my $cmd = "sem diff --format json $file";
-	my $out = `$cmd`;
+	use IPC::Open3;
+	use Symbol 'gensym';
+
+	# Open a handle to sem
+	my $stderr = gensym;
+	my $pid    = open3(my $stdin, my $stdout, $stderr, "sem diff --patch --format json");
+
+	# Send this diff chunk as STDIN to sem
+	print $stdin $diff_str;
+	close $stdin;
+
+	# Read the output from sem
+	my $out = do { local $/; <$stdout> };
+	waitpid($pid, 0);
+
+	#################################################
 
 	# If it's not JSON
 	if ($out !~ /^{/) { return ''; }
