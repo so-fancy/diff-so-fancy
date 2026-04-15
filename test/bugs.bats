@@ -110,6 +110,6 @@ teardown_file() {
 	run printf "%s" "$output"
 
 	assert_line --index 1 --regexp "commit 943ef89c4"
-	assert_line --index 6 --regexp "^\[COLOR227\]─────────────────────────┐"
-	assert_line --index 8 --regexp "^\[COLOR227\]─────────────────────────┘"
+	assert_line --index 6 --regexp "^\[COLOR227\]──────────────────────────┐"
+	assert_line --index 8 --regexp "^\[COLOR227\]──────────────────────────┘"
 }
