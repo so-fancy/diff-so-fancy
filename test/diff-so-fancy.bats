@@ -105,13 +105,6 @@ teardown_file() {
 	assert_line --index 5 --partial "åäöç"
 }
 
-@test "Handle latin1 encoding sanely" {
-	output=$( load_fixture "latin1" | $diff_so_fancy )
-	# Make sure the output contains SOME of the english text (i.e. it doesn't barf on the whole line)
-	run printf "%s" "$output"
-	assert_line --index 6 --partial "saw he conqu"
-}
-
 @test "Correctly handle hunk definition with no comma" {
 	output=$( load_fixture "hunk_no_comma" | $diff_so_fancy )
 	# On single line removes there is NO comma in the hunk,

@@ -12,7 +12,13 @@ use File::Spec;                                             # For catdir
 use File::Basename;                                         # For dirname
 use Cwd qw(abs_path);                                       # For realpath()
 use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
+use open ':encoding(UTF-8)';                                # Use UTF-8 when opening files
 use DiffHighlight;
+
+# Everything UTF-8 everywhere
+binmode(STDIN , ":encoding(UTF-8)");
+binmode(STDOUT, ":encoding(UTF-8)");
+binmode(STDERR, ":encoding(UTF-8)");
 
 my $remove_file_add_header     = 1;
 my $remove_file_delete_header  = 1;
@@ -1335,11 +1341,11 @@ sub draw_ruler {
 
 	# If we're in unicode mode we use unicode chars instead
 	if ($use_unicode_dash_for_ruler && should_print_unicode()) {
-		# perl -E 'use Dump::Krumo; use Encode; kx(Encode::encode("UTF-8", "\x{2503}"));'
-		$dash  = "\x{E2}\x{94}\x{80}";
-		$top_r = "\x{E2}\x{94}\x{90}";
-		$bot_r = "\x{E2}\x{94}\x{98}";
-		$right = "\x{E2}\x{94}\x{82}";
+		# https://unicodeplus.com/block/2500
+		$dash  = "\x{2500}";
+		$top_r = "\x{2510}";
+		$bot_r = "\x{2518}";
+		$right = "\x{2502}";
 	}
 
 	if ($type eq 'ruler') {
