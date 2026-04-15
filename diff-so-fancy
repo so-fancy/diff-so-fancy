@@ -1316,6 +1316,17 @@ sub draw_ruler {
 	$type  ||= 'ruler';
 	$color ||= "";
 
+	my @lines = split(/\n/, $str);
+	my $max   = 0;
+	foreach my $line (@lines) {
+		my $raw = bleach_text($line);
+		my $len = length($raw);
+
+		if ($len > $max) { $max = $len; }
+	}
+
+	$max++; # Give us a little padding on the right
+
 	# Default to ASCII chars
 	my $dash  = "-";
 	my $top_r = "+";
@@ -1339,10 +1350,15 @@ sub draw_ruler {
 		print $color . $str . $reset_color . "\n";
 		print $line  . "\n";
 	} elsif ($type eq 'box') {
-		my $len = length(bleach_text($str));
+		my $len = $max;
 
 		print $color . ($dash x $len) . $top_r . $reset_color . "\n";
-		print $color . $str . $right           . $reset_color . "\n";
+		foreach my $line (@lines) {
+			my $padding  = $len - length(bleach_text($line));
+			$line       .= " " x $padding;
+
+			print $color . $line . $color . $right . $reset_color . "\n";
+		}
 		print $color . ($dash x $len) . $bot_r . $reset_color . "\n";
 	}
 }
