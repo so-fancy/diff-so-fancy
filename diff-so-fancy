@@ -10,7 +10,6 @@ use strict;
 
 use File::Spec;                                             # For catdir
 use File::Basename;                                         # For dirname
-use JSON::PP;
 use Cwd qw(abs_path);                                       # For realpath()
 use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
 use open ':encoding(UTF-8)';                                # Use UTF-8 when opening files
@@ -1336,12 +1335,13 @@ sub get_sem_info {
 
 	#################################################
 
-	use IPC::Open3;
-	use Symbol 'gensym';
+	require JSON::PP;
+	require IPC::Open3;
+	require Symbol;
 
 	# Open a handle to sem
-	my $stderr = gensym;
-	my $pid    = open3(my $stdin, my $stdout, $stderr, "sem diff --patch --format json");
+	my $stderr = Symbol::gensym();
+	my $pid    = IPC::Open3::open3(my $stdin, my $stdout, $stderr, "sem diff --patch --format json");
 
 	# Send this diff chunk as STDIN to sem
 	print $stdin $diff_str;
@@ -1356,7 +1356,7 @@ sub get_sem_info {
 	# If it's not JSON
 	if ($out !~ /^{/) { return ''; }
 
-	my $x       = decode_json($out);
+	my $x       = JSON::PP::decode_json($out);
 	my @changes = @{$x->{changes}};
 
 	# Pull out the data we need from the JSON
