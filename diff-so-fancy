@@ -1343,6 +1343,8 @@ sub get_sem_info {
 	my $stderr = Symbol::gensym();
 	my $pid    = IPC::Open3::open3(my $stdin, my $stdout, $stderr, "sem diff --patch --format json");
 
+	binmode($stdin, ":encoding(UTF-8)");
+
 	# Send this diff chunk as STDIN to sem
 	print $stdin $diff_str;
 	close $stdin;
