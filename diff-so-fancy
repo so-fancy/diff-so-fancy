@@ -1523,20 +1523,25 @@ B<changeHunkIndicators:> Simplify Git header chunks to a human readable format. 
 
     git config --bool --global diff-so-fancy.changeHunkIndicators false
 
-B<stripLeadingSymbols:> Should the + or - symbols at line-start be removed. (Default: true)
+B<stripLeadingSymbols:> Remove the C<+> or C<-> symbols at start of each diff line. (Default: true)
 
     git config --bool --global diff-so-fancy.stripLeadingSymbols false
 
-B<useUnicodeRuler:> By default, the separator for the file header uses Unicode line-drawing
-characters. If this is causing output errors on your terminal, set this to false to use ASCII
-characters instead. (Default: true)
+B<useUnicodeRuler:> Use Unicode to draw the ruler lines. Setting this to false will use ASCII instead. (Default: true)
 
     git config --bool --global diff-so-fancy.useUnicodeRuler false
 
-B<rulerWidth:> By default, the separator for the file header spans the full width of the
-terminal. Use rulerWidth to set the width of the file header manually.
+B<rulerWidth:> rulerWidth sets the width of the ruler lines. (Default: screen width)
 
     git config --global diff-so-fancy.rulerWidth 80
+
+B<rulerWidth:> Simplify the header inforation to a single line for filename and line number. (Default false)
+
+    git config --global diff-so-fancy.shortHeaders true
+
+B<semIntegration> Include the summary from sem in the header for each changed file. (Default false)
+
+    git config --global diff-so-fancy.semIntegration true
 
 =head1 HOMEPAGE
 

@@ -93,6 +93,15 @@ number. (Default false)
 git config --global diff-so-fancy.shortHeaders true
 ```
 
+### semIntegration
+
+Include the summary from [sem](github.com/Ataraxy-Labs/sem) in the header
+for each changed file. (Default false)
+
+```shell
+git config --global diff-so-fancy.semIntegration true
+```
+
 ## 👨 The diff-so-fancy team
 
 | Person                | Role             |
