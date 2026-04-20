@@ -32,6 +32,7 @@ my $mark_empty_lines           = git_config_boolean("diff-so-fancy.markEmptyLine
 my $use_unicode_dash_for_ruler = git_config_boolean("diff-so-fancy.useUnicodeRuler","true");
 my $ruler_width                = git_config("diff-so-fancy.rulerWidth", undef);
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
+my $do_sem_stuff               = git_config_boolean("diff-so-fancy.semIntegration","false");
 my $has_stdin                  = has_stdin();
 
 my $ansi_regex       = qr/\e\[([0-9]{0,3}(;[0-9]{1,3}){0,10})[mK]/;
@@ -256,6 +257,7 @@ sub do_dsf_stuff {
 			draw_ruler($line, "ruler", $meta_color);
 		########################################
 		# Find the first file: --- a/README.md #
+		# This is a standard line change       #
 		########################################
 		} elsif (!$in_hunk && $line =~ /^$ansi_color_regex--- (\w\/)?(.+?)(\e|\t|$)/) {
 			$meta_color = get_config_color("meta");
@@ -309,6 +311,11 @@ sub do_dsf_stuff {
 				$str = file_change_string($file_1,$file_2) . " ${reset_color}${meta_color}\@ $start_line${reset_color}\n";
 			} else {
 				$str = file_change_string($file_1,$file_2) . "\n";
+
+				if ($do_sem_stuff && !$patch_mode) {
+					my $sem_str  = get_sem_info($file_2, $chunk_str);
+					$str        .= "\n" . $sem_str;
+				}
 			}
 
 			draw_ruler($str, $ruler_shape, $meta_color);
@@ -1315,6 +1322,89 @@ sub extract_start_line {
 	return $start_line;
 }
 
+sub get_sem_info {
+	my ($file, $diff_str) = @_;
+	$diff_str             = bleach_text($diff_str);
+
+	# Make sure we have the real sem and not the GNU parallels version
+    state $sem_help = `sem --help`;
+    state $sem_exit = ($? >> 8);
+    if (($sem_exit > 0) || !$sem_help || ($sem_help =~ m/GNU Parallel/)) {
+        return '';
+    }
+
+	#################################################
+
+	require JSON::PP;
+	require IPC::Open3;
+	require Symbol;
+
+	# Open a handle to sem
+	my $stderr = Symbol::gensym();
+	my $pid    = IPC::Open3::open3(my $stdin, my $stdout, $stderr, "sem diff --patch --format json");
+
+	binmode($stdin, ":encoding(UTF-8)");
+
+	# Send this diff chunk as STDIN to sem
+	print $stdin $diff_str;
+	close $stdin;
+
+	# Read the output from sem
+	my $out = do { local $/; <$stdout> };
+	waitpid($pid, 0);
+
+	#################################################
+
+	# If it's not JSON
+	if ($out !~ /^{/) { return ''; }
+
+	my $x       = JSON::PP::decode_json($out);
+	my @changes = @{$x->{changes}};
+
+	# Pull out the data we need from the JSON
+	my $data = [];
+	foreach my $x (@changes) {
+		my $obj = {
+			file   => $x->{filePath}   || "",
+			change => $x->{changeType} || "",
+			entity => $x->{entityType} || "",
+			name   => $x->{entityName} || "",
+		};
+
+		push(@$data, $obj);
+	}
+
+	# Build the output string
+	my $ret = '';
+	foreach my $x (@$data) {
+		my $glyph  = "~";
+		my $color  = '';
+		my $reset  = color('reset');
+
+		my $change = $x->{change}              || "";
+		my $entity = $reset . $x->{entity}     || "";
+		my $name   = color('white', $x->{name} || "");
+
+		if ($change eq 'added') {
+			$glyph = "+";
+			$color = 'green';
+		} elsif ($change eq 'deleted') {
+			$glyph = "-";
+			$color = 'red';
+		} else {
+			$glyph = "~";
+			$color = 'yellow';
+		}
+
+		# Colorize the glyph
+		$glyph = color($color, $glyph);
+
+		$ret .= sprintf("%s %-18s %-50s %s%s%s\n", $glyph, $entity, $name, color($color), $change, color('reset'));
+	}
+
+	return $ret;
+}
+
 sub draw_ruler {
 	my ($str, $type, $color) = @_;
 
@@ -1345,7 +1435,7 @@ sub draw_ruler {
 		$dash  = "\x{2500}";
 		$top_r = "\x{2510}";
 		$bot_r = "\x{2518}";
-		$right = "\x{2503}";
+		$right = "\x{2502}";
 	}
 
 	if ($type eq 'ruler') {
