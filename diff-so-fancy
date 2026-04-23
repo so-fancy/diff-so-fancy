@@ -53,7 +53,6 @@ my $i                 = 0;
 my $in_hunk           = 0;
 my $columns_to_remove = 0;
 my $is_mercurial      = 0;
-my $color_forced      = 0; # Has the color been forced on/off
 
 if ($args->{rulerWidth}) {
 	$ruler_width = int($args->{rulerWidth});
@@ -68,10 +67,8 @@ if (defined($args->{shortHeaders})) {
 # this is an option to force it on/off
 if ($args->{color_on}) {
 	$manually_color_lines = 1;
-	$color_forced         = 1;
 } elsif ($args->{color_off}) {
 	$manually_color_lines = 0;
-	$color_forced         = 1;
 }
 
 if ($args->{debug}) {
@@ -122,12 +119,6 @@ local $DiffHighlight::line_cb = sub {
 
 my $line_count = 0;
 while (my $line = <STDIN>) {
-	# If the very first line of the diff doesn't start with ANSI color we're assuming
-	# it's a raw patch file, and we have to color the added/removed lines ourself
-	if (!$color_forced && $line_count == 0 && !starts_with_ansi($line)) {
-		$manually_color_lines = 1;
-	}
-
 	my $ok = DiffHighlight::handle_line($line);
 	$line_count++;
 }
@@ -158,6 +149,13 @@ sub do_dsf_stuff {
 	if ($cnt == 4) {
 		$patch_mode    = 1;
 		$short_headers = 0; # shortHeaders has to be off in --patch mode
+	}
+
+	# If we don't see ANY ANSI in the chunk we enable manual coloring mode
+	if (!$args->{color_off} && $chunk_str !~ /$ansi_regex/) {
+		$manually_color_lines = 1;
+	} else {
+		$manually_color_lines = 0;
 	}
 
 	# Calculate the context lines for this chunk
