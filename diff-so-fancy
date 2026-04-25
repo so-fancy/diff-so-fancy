@@ -74,7 +74,7 @@ if ($args->{color_on}) {
 }
 
 if ($args->{debug}) {
-	show_debug_info();
+	log_debug_info();
 }
 
 # We only process ARGV if we don't have STDIN
@@ -1065,7 +1065,7 @@ sub get_terminal_width {
 	return $width;
 }
 
-sub show_debug_info {
+sub log_debug_info {
 	my @less    = get_less_charset();
 	my $git_str = trim(`git --version 2>&1`);
 
@@ -1093,8 +1093,6 @@ sub show_debug_info {
 	$out    .= "\n";
 	$out    .= "Is Windows      : " . yes_no(is_windows()) . "\n";
 	$out    .= "Operating System: $^O\n";
-
-	print $out;
 
 	my @lines = split(/\n/, $out);
 	debug_log(@lines);
@@ -1160,7 +1158,7 @@ sub debug_log {
 
 	state $fh;
 	if (!$fh) {
-		printf("%sDebug log enabled:%s $file\n", color('orange'), color());
+		printf(STDERR "%sDebug log enabled:%s $file\n", color('orange'), color());
 		open ($fh, ">", $file) or die("Cannot write to $file");
 	}
 
