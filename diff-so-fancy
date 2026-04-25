@@ -140,9 +140,6 @@ sub do_dsf_stuff {
 	my $input     = shift();
 	my $chunk_str = join("", @$input); # Store the full chunk text for lookbacks
 
-	# If we're in debug mode we want to log the chunks we see
-	if ($args->{debug}) { log_chunks($input); }
-
 	# FIXME: There is a scenario where there are FIVE diff header lines
 	# I'm not sure if we need to account for that or not. Unit tests pass so... bees?
 	my $cnt = count_git_header_lines(@$input);
@@ -161,6 +158,16 @@ sub do_dsf_stuff {
 	# Calculate the context lines for this chunk
 	my $context_lines = calculate_context_lines(@$input);
 	my $git_show_mode = 0;
+
+	# If we're in debug mode we want to log the chunks we see
+	if ($args->{debug}) {
+		debug_log("-------------- Config -------------");
+		debug_log("Manually color : $manually_color_lines");
+		debug_log("Strip leading  : $strip_leading_indicators");
+		debug_log("Mark empty     : $mark_empty_lines");
+		debug_log("Ruler width    : $ruler_width");
+		log_chunks($input);
+	}
 
 	#print STDERR "START -------------------------------------------------\n";
 	#print STDERR join("",@$input);
