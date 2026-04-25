@@ -14,6 +14,7 @@ use Cwd qw(abs_path);                                       # For realpath()
 use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/ to @INC
 use open ':encoding(UTF-8)';                                # Use UTF-8 when opening files
 use DiffHighlight;
+use Time::Local;
 
 # Everything UTF-8 everywhere
 binmode(STDIN , ":encoding(UTF-8)");
@@ -267,6 +268,18 @@ sub do_dsf_stuff {
 			$ruler_shape = 'box';
 
 			draw_ruler($line, "ruler", $meta_color);
+		################################################
+		# Add a human readable string to "Date:" lines #
+		################################################
+		} elsif ($line =~ /^Date:.*?(\w.+)/) {
+			my $unixtime = git_datestr_unixtime($1);
+			my $diff     = time() - $unixtime;
+			my $human    = human_time_diff($diff, 1);
+
+			# Append the human string to the line
+			$line =~ s/$/ ($human)/;
+
+			print $line;
 		########################################
 		# Find the first file: --- a/README.md #
 		# This is a standard line change       #
@@ -1480,6 +1493,80 @@ sub draw_ruler {
 		}
 		print $color . ($dash x $len) . $bot_r . $reset_color . "\n";
 	}
+}
+
+sub git_datestr_unixtime {
+	my $str = shift();
+
+	my @p = split(' ', $str);
+
+	my %month = (
+		Jan => 0, Feb => 1, Mar => 2, Apr => 3,
+		May => 4, Jun => 5, Jul => 6, Aug => 7,
+		Sep => 8, Oct => 9, Nov => 10, Dec => 11,
+	);
+
+	my ($wday, $mon_str, $mday, $time, $year, $tz) = @p;
+	my ($hour, $min, $sec) = split /:/, $time;
+
+	my $mon = $month{$mon_str} || "";
+
+	# Convert local time to UTC using timezone offset like -700
+	my $offset_hours   = int($tz / 100);
+	my $offset_minutes = abs($tz % 100);
+	my $offset_seconds = ($offset_hours * 3600) + ($offset_minutes * 60);
+
+	if ($tz > 0) {
+		$offset_seconds *= -1;
+	}
+
+	my $epoch = Time::Local::timegm($sec, $min, $hour, $mday, $mon, $year - 1900);
+	my $ret   = $epoch - $offset_seconds;
+
+	return $ret;
+}
+
+sub human_time_diff {
+	my ($raw, $add_extra) = @_;
+
+	my $seconds = abs(int($raw));
+	my $num     = 0;
+	my $unit    = "";
+
+	my $extra  = " ago";
+	if ($raw < 0) {
+		$extra = " in the future";
+	}
+
+	my $ret = "";
+	if ($seconds < 120) {
+		$ret = "just now";
+		return $ret;
+	} elsif ($seconds < 3600) {
+		$num  = int($seconds / 60);
+		$unit = "minute";
+	} elsif ($seconds < 86400) {
+		$num  = int($seconds / 3600);
+		$unit = "hour";
+	} elsif ($seconds < 86400 * 30) {
+		$num  = int($seconds / 86400);
+		$unit = "day";
+	} elsif ($seconds < (86400 * 365)) {
+		$num  = int($seconds / (86400 * 30));
+		$unit = "month";
+	} else {
+		$num  = int($seconds / (86400 * 365));
+		$unit = "year";
+	}
+
+	if ($num > 1) { $unit .= "s"; }
+	if ($unit) { $ret = "$num $unit"; }
+
+	if ($add_extra) {
+		$ret .= $extra;
+	}
+
+	return $ret;
 }
 
 # Borrowed from: https://www.perturb.org/display/1097_Perl_detect_if_a_module_is_installed_before_using_it.html
