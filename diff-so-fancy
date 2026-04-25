@@ -1067,10 +1067,12 @@ sub get_terminal_width {
 
 sub show_debug_info {
 	my @less    = get_less_charset();
-	my $git_ver = trim(`git --version 2>&1`);
-	$git_ver    =~ s/[^\d.]//g;
+	my $git_str = trim(`git --version 2>&1`);
 
-	if ($git_ver !~ /git/) {
+	# `git version 2.47.3`
+	my ($git_ver) = $git_str =~ m/([\d\.]+)/;
+
+	if (!$git_ver || $git_ver !~ /\d/) {
 		$git_ver = "Unknown";
 	} else {
 		$git_ver = "v" . $git_ver;
