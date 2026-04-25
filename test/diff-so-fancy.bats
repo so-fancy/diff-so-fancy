@@ -247,3 +247,10 @@ teardown_file() {
 	run printf "%s" "$output"
 	assert_line --index 1 --regexp 'deleted: .*@ 1'
 }
+
+@test "In 'git show' mode we add a human time to the date" {
+	output=$( load_fixture "gitshow" | $diff_so_fancy | $ansi_reveal)
+	run printf "%s" "$output"
+
+	assert_line --index 4 --regexp "ago"
+}
