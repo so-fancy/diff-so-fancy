@@ -95,7 +95,7 @@ git config --global diff-so-fancy.shortHeaders true
 
 ### semIntegration
 
-Include the summary from [sem](github.com/Ataraxy-Labs/sem) in the header
+Include the summary from [sem](https://github.com/Ataraxy-Labs/sem) in the header
 for each changed file. (Default false)
 
 ```shell
