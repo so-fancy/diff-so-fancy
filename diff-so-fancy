@@ -111,6 +111,7 @@ local $DiffHighlight::line_cb = sub {
 	# Wait until we have enough lines to process, then divide up into safe
 	# parseable chunks and have d-s-f do it's magic
 	if (@lines > 100) {
+
 		my @chunks = get_diff_chunks(\@lines);
 		@lines     = ();
 
@@ -444,10 +445,10 @@ sub do_dsf_stuff {
 				next;
 			}
 
-			my $next    = shift(@$input);
+			my $next    = shift(@$input) || "";
 			my ($action1, $file1) = $next =~ /(copy|rename) from (.+?)(\e|\t|$)/;
 
-			$next       = shift(@$input);
+			$next       = shift(@$input) || "";
 			my ($action2, $file2) = $next =~ /(copy|rename) to (.+?)(\e|\t|$)/;
 
 			if ($file1 && $file2) {
