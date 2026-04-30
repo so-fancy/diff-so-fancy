@@ -113,7 +113,10 @@ local $DiffHighlight::line_cb = sub {
 	if (@lines > 100) {
 
 		my @chunks = get_diff_chunks(\@lines);
-		@lines     = ();
+
+		# Leave the last chunk in @lines so we do not miss lines on a split.
+		my $last_chunk = pop(@chunks) // [];
+		@lines         = @$last_chunk;
 
 		foreach my $chunk (@chunks) {
 			do_dsf_stuff($chunk);
