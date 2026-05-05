@@ -1206,7 +1206,7 @@ sub get_diff_chunks {
 	# Loop through all the lines and build end line numbers for each "chunk"
 	for (my $i = 0; $i < $total_lines; $i++) {
 		my $line           = $lines[$i];
-		my $is_header_line = $line =~ m/^${ansi_color_regex}(diff|index|Submodule|---|\+\+\+|@@?|new|deleted|old)\s/;
+		my $is_header_line = $line =~ m/^${ansi_color_regex}(diff|index|Submodule|---|\+\+\+|@@?|new|deleted|old|commit)\s/;
 		$is_header_line    = int($is_header_line);
 
 		#if ($is_header_line) {
