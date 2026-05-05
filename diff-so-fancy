@@ -130,6 +130,14 @@ local $DiffHighlight::line_cb = sub {
 		foreach my $chunk (@chunks) {
 			do_dsf_stuff($chunk);
 		}
+
+		# If after processing chunks there are still a lot of lines left
+		# we process immediately. This may happen in a big `git log` or
+		# `git show` where there are NOT small defined chunks
+		if (@lines > 100) {
+			do_dsf_stuff(\@lines);
+			@lines = ();
+		}
 	}
 };
 
