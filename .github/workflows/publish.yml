@@ -33,4 +33,5 @@ jobs:
 
       - name: Publish to npm
         run: |
+          npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version
           npm publish --provenance --access public --registry https://registry.npmjs.org/
