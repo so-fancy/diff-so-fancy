@@ -15,6 +15,13 @@ git config --global alias.dsf "diff --color"
 git config --global pager.dsf "diff-so-fancy | less --tabs=4 -RFXS"
 ```
 
+or with long flags:
+
+```shell
+git config --global alias.dsf "diff --color"
+git config --global pager.dsf "diff-so-fancy | less --tabs=4 --RAW-CONTROL-CHARS --quit-if-one-screen --no-init --chop-long-lines"
+```
+
 ## Opting-out
 
 Sometimes you will want to bypass diff-so-fancy. Use `--no-pager` for that:
@@ -64,6 +71,13 @@ between files with `n`/`N` keys:
 ```ini
 [pager]
     diff = diff-so-fancy | less --tabs=4 -RFXS --pattern '^(Date|added|deleted|modified): '
+```
+
+or with long flags:
+
+```ini
+[pager]
+    diff = diff-so-fancy | less --tabs=4 --RAW-CONTROL-CHARS --quit-if-one-screen --no-init --chop-long-lines --pattern='^(Date|added|deleted|modified): '
 ```
 
 ## Zsh plugin suppport for diff-so-fancy
