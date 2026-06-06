@@ -177,7 +177,7 @@ sub do_dsf_stuff {
 		$manually_color_lines = 1;
 
 		# If we're manually coloring, we load the colors here so they're
-		# available gloablly
+		# available globally
 		$add_line_color    = get_config_color("add_line");
 		$remove_line_color = get_config_color("remove_line");
 	} else {
@@ -374,7 +374,7 @@ sub do_dsf_stuff {
 			my $hunk_header = $4;
 			my $remain      = bleach_text($5);
 
-			# The number of colums to remove (1 or 2) is based on how many commas in the hunk header
+			# The number of columns to remove (1 or 2) is based on how many commas in the hunk header
 			$columns_to_remove   = (char_count(",",$hunk_header)) - 1;
 			# On single line removes there is NO comma in the hunk so we force one
 			if ($columns_to_remove <= 0) {
@@ -1167,7 +1167,7 @@ sub debug_log {
 	return 1;
 }
 
-# Find the commom prefix chars between two strings
+# Find the common prefix chars between two strings
 # common_prefix("foobar", "food is yummy"); # 'foo'
 sub common_prefix {
 	my ($a, $b) = @_;
@@ -1673,7 +1673,7 @@ B<rulerWidth:> rulerWidth sets the width of the ruler lines. (Default: screen wi
 
     git config --global diff-so-fancy.rulerWidth 80
 
-B<rulerWidth:> Simplify the header inforation to a single line for filename and line number. (Default false)
+B<rulerWidth:> Simplify the header information to a single line for filename and line number. (Default false)
 
     git config --global diff-so-fancy.shortHeaders true
 
