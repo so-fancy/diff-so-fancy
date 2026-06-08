@@ -1,6 +1,6 @@
 # 🎩 diff-so-fancy  [![Circle CI build](https://circleci.com/gh/so-fancy/diff-so-fancy.svg?style=shield)](https://circleci.com/gh/so-fancy/diff-so-fancy) [![AppVeyor build](https://ci.appveyor.com/api/projects/status/github/so-fancy/diff-so-fancy?branch=master&svg=true)](https://ci.appveyor.com/project/stevemao/diff-so-fancy/branch/master)
 
-`diff-so-fancy` makes your diffs **human** readable instead of machine readable. This helps improve code quality and helps you spot defects faster.
+`diff-so-fancy` makes your diffs **human-readable** instead of machine-readable. This helps improve code quality and helps you spot defects faster.
 
 ## 🖼️ Screenshot
 
@@ -86,7 +86,7 @@ git config --global diff-so-fancy.rulerWidth 80
 
 ### shortHeaders
 
-Simplify the header inforation to a *single* line for filename and line
+Simplify the header information to a *single* line for filename and line
 number. (Default false)
 
 ```shell
