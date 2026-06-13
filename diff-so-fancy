@@ -255,7 +255,7 @@ sub do_dsf_stuff {
 				$is_mercurial = 1;
 				$meta_color   = get_config_color("meta");
 
-				$last_file_seen = basename($3 || "");
+				$last_file_seen = sanitize_display(basename($3 || ""));
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
 			} elsif ($extra =~ m/--git/) {
 				# Note file may contains spaces
@@ -263,7 +263,7 @@ sub do_dsf_stuff {
 				$a_file ||= "";
 				$b_file ||= "";
 
-				$last_file_seen = $a_file;
+				$last_file_seen = sanitize_display($a_file);
 			}
 
 			$last_file_seen =~ s|^\w/||; # Remove a/ (and handle diff.mnemonicPrefix).
@@ -372,7 +372,7 @@ sub do_dsf_stuff {
 
 			my $frag_color  = $1;
 			my $hunk_header = $4;
-			my $remain      = bleach_text($5);
+			my $remain      = sanitize_display(bleach_text($5));
 
 			# The number of columns to remove (1 or 2) is based on how many commas in the hunk header
 			$columns_to_remove   = (char_count(",",$hunk_header)) - 1;
@@ -509,7 +509,7 @@ sub do_dsf_stuff {
 				}
 			}
 
-			print $line;
+			print sanitize_display($line);
 		}
 
 		$i++;
@@ -719,6 +719,22 @@ sub bleach_text {
 	return $str;
 }
 
+
+sub sanitize_display {
+	my $s = shift();
+
+	# Remove line feeds
+	$s =~ s/\r//g;
+	# Strip OSC (Operating System Command) sequences.
+	$s =~ s/\e\].*?(?:\x07|\e\\)//gs;
+	# Strip DCS / PM / APC / SOS sequences
+	$s =~ s/\e[P\^X_].*?\e\\//gs;
+	# Strips other escape sequences like: cursor movement, mode changes, etc
+	$s =~ s/\e(?!\[[0-9;]*m).//g;
+
+	return $s;
+}
+
 # Remove all trailing and leading spaces
 sub trim {
 	my $s = shift();
@@ -733,6 +749,9 @@ sub trim {
 sub file_change_string {
 	my $file_1 = shift();
 	my $file_2 = shift();
+
+	$file_1 = sanitize_display($file_1);
+	$file_2 = sanitize_display($file_2);
 
 	my $ret = "";
 
