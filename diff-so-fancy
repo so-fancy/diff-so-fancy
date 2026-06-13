@@ -322,7 +322,7 @@ sub do_dsf_stuff {
 			}
 
 			if ($file_2 ne "/dev/null") {
-				$last_file_seen = $file_2;
+				$last_file_seen = sanitize_display($file_2);
 			}
 
 			# Check if the last 'diff' line specified recursive
