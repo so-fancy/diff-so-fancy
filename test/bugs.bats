@@ -113,3 +113,20 @@ teardown_file() {
 	assert_line --index 6 --regexp "^\[COLOR227\]──────────────────────────┐"
 	assert_line --index 8 --regexp "^\[COLOR227\]──────────────────────────┘"
 }
+
+@test "Patch mode line count matches on add/delete" {
+	for fixture in add_file_with_content delete_file_with_content; do
+		local in out
+		in=$( load_fixture "$fixture" | wc -l )
+		out=$( load_fixture "$fixture" | $diff_so_fancy --patch | wc -l )
+		[ "$in" -eq "$out" ] || fail "fixture '$fixture': $in input lines but $out output lines"
+	done
+
+	for fixture in add_empty_file remove_empty_file; do
+		local bare in out
+		bare=$( load_fixture "$fixture" | sed -n '/^diff --git/,$p' )
+		in=$( printf '%s\n' "$bare" | wc -l )
+		out=$( printf '%s\n' "$bare" | $diff_so_fancy --patch | wc -l )
+		[ "$in" -eq "$out" ] || fail "fixture '$fixture' (bare): $in input lines but $out output lines"
+	done
+}
