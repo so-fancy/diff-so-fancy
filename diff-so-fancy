@@ -164,12 +164,14 @@ sub do_dsf_stuff {
 	my $input     = shift();
 	my $chunk_str = join("", @$input); # Store the full chunk text for lookbacks
 
-	# FIXME: There is a scenario where there are FIVE diff header lines
-	# I'm not sure if we need to account for that or not. Unit tests pass so... bees?
+	# git requires interactive.diffFilter output to stay 1:1 with input. Add/delete
+	# with content have 3 header lines (not 4) but still need balancing; empty ones (no @@) don't.
 	my $cnt = count_git_header_lines(@$input);
-	if ($cnt == 4) {
+	if ($cnt == 4 || ($cnt == 3 && grep { /^${ansi_color_regex}@@/ } @$input)) {
 		$patch_mode    = 1;
 		$short_headers = 0; # shortHeaders has to be off in --patch mode
+	} else {
+		$patch_mode    = 0;
 	}
 
 	# If we don't see ANY ANSI in the chunk we enable manual coloring mode
