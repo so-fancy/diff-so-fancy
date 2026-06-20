@@ -129,6 +129,14 @@ if ($args->{debug}) {
 	debug_log("Ruler width    : $ruler_width");
 }
 
+# Announce protocol support as the first output: a version-only OSC 1717 record
+# (the handshake). It lets a host probe diff-so-fancy on an empty diff — which emits
+# no per-line records — and tell "speaks the protocol" apart from "unsupported
+# pager". See diff-line-metadata-osc-spec.md §4.4.
+if ($osc_metadata_version) {
+	print "\e]1717;${osc_metadata_version}\e\\";
+}
+
 my @lines;
 local $DiffHighlight::line_cb = sub {
 	push(@lines,@_);

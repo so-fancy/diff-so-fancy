@@ -25,8 +25,14 @@ teardown() {
 
 # Extract the OSC 1717 payloads (everything between "ESC ] 1717 ;" and the
 # string terminator) from stdin, one record per line, for line-wise assertions.
-osc_records() {
+all_osc_records() {
 	perl -ne 'while (/\e\]1717;([^\e\a]*)(?:\e\\|\a)/g) { print "$1\n"; }'
+}
+
+# As all_osc_records, but skips the version-only handshake record (no fields; see
+# the dedicated handshake tests), so per-line assertions stay focused on content.
+osc_records() {
+	all_osc_records | perl -ne 'print if /;/;'
 }
 
 # Render a fixture with the host handshake set to V1, returning just the records.
@@ -52,6 +58,22 @@ records_for() {
 	output=$( load_fixture "add_file_with_content" | OSC1717=V0,V1,V2 "$diff_so_fancy" | osc_records )
 	run printf "%s" "$output"
 	assert_line --index 0 "1;a;1;;newfile.txt"
+}
+
+@test "a version-only handshake is emitted first, before any per-line record" {
+	# The handshake (just the version, no further fields) announces protocol support;
+	# it precedes the per-line records so a host sees it up front.
+	output=$( load_fixture "add_file_with_content" | OSC1717=V1 "$diff_so_fancy" | all_osc_records )
+	run printf "%s" "$output"
+	assert_line --index 0 "1"
+	assert_line --index 1 "1;a;1;;newfile.txt"
+}
+
+@test "the handshake is emitted even for an empty diff, so a host can probe" {
+	# An empty diff has no content lines and so no per-line records; the handshake is
+	# still emitted, letting a host probe diff-so-fancy with empty input.
+	output=$( printf "" | OSC1717=V1 "$diff_so_fancy" | all_osc_records )
+	assert_output "1"
 }
 
 @test "added lines carry the new-file line and an empty old-file field" {
