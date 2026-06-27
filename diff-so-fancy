@@ -25,6 +25,7 @@ my $remove_file_add_header     = 1;
 my $remove_file_delete_header  = 1;
 my $clean_permission_changes   = 1;
 my $patch_mode                 = 0;
+my $input_has_ansi             = 0;
 my $manually_color_lines       = 0; # Usually git/hg colorizes the lines, but for raw patches we use this
 my $short_headers              = git_config_boolean("diff-so-fancy.shortHeaders","false");
 my $change_hunk_indicators     = git_config_boolean("diff-so-fancy.changeHunkIndicators","true");
@@ -143,6 +144,10 @@ local $DiffHighlight::line_cb = sub {
 
 my $line_count = 0;
 while (my $line = <STDIN>) {
+	if (!$input_has_ansi && $line =~ /$ansi_regex/) {
+		$input_has_ansi = 1;
+	}
+
 	my $ok = DiffHighlight::handle_line($line);
 	$line_count++;
 }
@@ -174,8 +179,8 @@ sub do_dsf_stuff {
 		$patch_mode    = 0;
 	}
 
-	# If we don't see ANY ANSI in the chunk we enable manual coloring mode
-	if (!$args->{color_off} && $chunk_str !~ /$ansi_regex/) {
+	# If we don't see ANY ANSI in the input we enable manual coloring mode
+	if (!$args->{color_off} && !$input_has_ansi) {
 		$manually_color_lines = 1;
 
 		# If we're manually coloring, we load the colors here so they're
