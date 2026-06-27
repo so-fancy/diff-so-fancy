@@ -1182,7 +1182,12 @@ sub debug_log {
 
 	foreach my $log_line (@lines) {
 		$log_line = trim($log_line);
-		print $fh "$date_str: $log_line\n";
+
+		if ($log_line) {
+			print $fh "$date_str: $log_line\n";
+		} else {
+			print $fh "$date_str:\n";
+		}
 	}
 
 	return 1;
