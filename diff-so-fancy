@@ -36,6 +36,7 @@ my $ruler_width                = git_config("diff-so-fancy.rulerWidth", undef);
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $do_sem_stuff               = git_config_boolean("diff-so-fancy.semIntegration","false");
 my $has_stdin                  = has_stdin();
+my $osc_metadata_version       = negotiated_osc_version();
 
 my $ansi_regex        = qr/\e\[([0-9]{0,3}(;[0-9]{1,3}){0,10})[mK]/;
 my $ansi_color_regex  = qr/(${ansi_regex})?/;
@@ -57,6 +58,14 @@ my $i                 = 0;
 my $in_hunk           = 0;
 my $columns_to_remove = 0;
 my $is_mercurial      = 0;
+
+# OSC 1717 state: the new-/old-file line counters and the file path, all seeded
+# at each hunk header (osc_seed_hunk) and advanced per content line
+# (osc_for_content_line), plus a flag for hunks we don't annotate.
+my $osc_old_line      = 0;
+my $osc_new_line      = 0;
+my $osc_file          = "";
+my $osc_skip_hunk     = 1;
 
 if ($args->{rulerWidth}) {
 	$ruler_width = int($args->{rulerWidth});
@@ -112,6 +121,14 @@ if ($args->{debug}) {
 	debug_log("Strip leading  : $strip_leading_indicators");
 	debug_log("Mark empty     : $mark_empty_lines");
 	debug_log("Ruler width    : $ruler_width");
+}
+
+# Announce protocol support as the first output: a version-only OSC 1717 record
+# (the handshake). It lets a host probe diff-so-fancy on an empty diff — which emits
+# no per-line records — and tell "speaks the protocol" apart from "unsupported
+# pager". See diff-line-metadata-osc-spec.md §4.4.
+if ($osc_metadata_version) {
+	print "\e]1717;${osc_metadata_version}\e\\";
 }
 
 my @lines;
@@ -372,10 +389,12 @@ sub do_dsf_stuff {
 		########################################
 		} elsif (!$change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
 			$in_hunk = 1;
+			osc_seed_hunk($line);
 
 			print $line;
 		} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
 			$in_hunk = 1;
+			osc_seed_hunk($line);
 
 			my $frag_color  = $1;
 			my $hunk_header = $4;
@@ -495,6 +514,9 @@ sub do_dsf_stuff {
 		# Just a regular line, print it out #
 		#####################################
 		} else {
+			# Save the line before we muck around with it
+			my $orig = $line;
+
 			# Mark empty line with a red/green box indicating addition/removal
 			if ($mark_empty_lines) {
 				$line = mark_empty_line($line);
@@ -516,6 +538,12 @@ sub do_dsf_stuff {
 				}
 			}
 
+			# Classify the line for OSC 1717 metadata while its leading +/-
+			# indicator is still present, before we rewrite the line below.
+			if ($osc_metadata_version) {
+				print osc_for_content_line($orig);
+			}
+
 			print sanitize_display($line);
 		}
 
@@ -534,6 +562,107 @@ sub parse_hunk_header {
 	$o_cnt = 1 unless defined $o_cnt;
 	$n_cnt = 1 unless defined $n_cnt;
 	return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
+}
+
+# Negotiate the OSC 1717 diff-line-metadata protocol version against the host's
+# advertised list in OSC1717_METADATA (e.g. "V1" or "V1,V2"). Returns the
+# highest version we both understand, or undef when no host is asking (the
+# variable is unset), in which case nothing is emitted and the output is
+# byte-for-byte unchanged. See diff-line-metadata-osc-spec.md for the protocol.
+sub negotiated_osc_version {
+	my $supported  = 1; # Highest version this build knows how to emit
+	my $advertised = $ENV{OSC1717_METADATA} || "";
+
+	if (!$advertised) {
+		return undef;
+	}
+
+	# Loop through all the OSC params looking for 'V1' and pull out
+	# the highest number
+	my $best = undef;
+	foreach my $v (split(/,/, $advertised)) {
+		$v = trim($v);
+		if ($v !~ /^V(\d+)$/) { next; }
+
+		my $num = int($1);
+		if ($num > $supported) { next; }
+
+		if (!defined($best) || $num > $best) {
+			$best = $num;
+		}
+	}
+
+	return $best;
+}
+
+# Seed the OSC 1717 line counters at a hunk header. Combined/merge diffs (@@@)
+# carry multiple old-file sides and a different line-number model, so we don't
+# annotate them (matching the delta/difftastic prototypes); the same goes for an
+# unparseable header.
+sub osc_seed_hunk {
+	my ($line) = @_;
+
+	if (!$osc_metadata_version) {
+		return undef;
+	}
+
+	my $bleached = bleach_text($line);
+	if ($bleached =~ /^@@@/) {
+		$osc_skip_hunk = 1;
+		return undef;
+	}
+
+	my ($o_ofs, $o_cnt, $n_ofs, $n_cnt) = parse_hunk_header($bleached);
+	if (!defined($o_ofs) || !defined($n_ofs)) {
+		$osc_skip_hunk = 1;
+		return undef;
+	}
+
+	# The record carries the new-file path, falling back to the old path for a
+	# deletion (where the new side is /dev/null) -- the same preference the host
+	# applies. $file_1/$file_2 are this file's old/new paths from its ---/+++
+	# lines; preferring them over $last_file_seen keeps the path for a noprefix
+	# deletion, which never reaches $last_file_seen.
+	my $path = $file_1;
+	if (defined($file_2) && $file_2 ne "" && $file_2 ne "/dev/null") {
+		$path = $file_2;
+	}
+
+	$osc_old_line  = $o_ofs;
+	$osc_new_line  = $n_ofs;
+	$osc_file      = sanitize_display(defined($path) ? $path : "");
+	$osc_skip_hunk = 0;
+}
+
+# Build the OSC 1717 record for a content line and advance the line counters.
+# Returns the escape sequence to print before the line, or "" for non-content
+# lines (e.g. "\ No newline at end of file") and un-annotated hunks. Must be
+# called before the leading +/- indicator is stripped, as that is how the line
+# is classified; the indicator survives DiffHighlight, after any leading ANSI.
+sub osc_for_content_line {
+	my ($line) = @_;
+
+	if (!$osc_metadata_version || $osc_skip_hunk) { return ''; }
+	if ($line !~ /^${ansi_color_regex}([ +-])/)   { return ''; }
+	my $indicator = $4;
+
+	my ($type, $new_line, $old_field);
+	if ($indicator eq "+") {
+		# Addition: advances the new-file side only.
+		($type, $new_line, $old_field) = ("a", $osc_new_line++, "");
+	} elsif ($indicator eq "-") {
+		# Deletion: sits at the current new-file position (which does not
+		# advance) and carries its own old-file line; advances the old side.
+		($type, $new_line, $old_field) = ("d", $osc_new_line, $osc_old_line++);
+	} else {
+		# Context: advances both sides.
+		($type, $new_line, $old_field) = ("c", $osc_new_line++, "");
+		$osc_old_line++;
+	}
+
+	my $ret = "\e]1717;${osc_metadata_version};${type};${new_line};${old_field};${osc_file}\e\\";
+
+	return $ret;
 }
 
 # Mark the first char of an empty line
