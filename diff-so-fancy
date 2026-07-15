@@ -1660,10 +1660,6 @@ sub git_datestr_unixtime {
 	my $offset_minutes = abs($tz % 100);
 	my $offset_seconds = ($offset_hours * 3600) + ($offset_minutes * 60);
 
-	if ($tz > 0) {
-		$offset_seconds *= -1;
-	}
-
 	my $epoch = Time::Local::timegm($sec, $min, $hour, $mday, $mon, $year - 1900);
 	my $ret   = $epoch - $offset_seconds;
 
