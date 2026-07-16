@@ -271,7 +271,7 @@ sub do_dsf_stuff {
 			if ($file_1 && $file_2) {
 				my $str = $meta_color . file_change_string($file_1,$file_2) . "\n";
 
-				draw_ruler($str, $ruler_shape, $meta_color);
+				draw_ruler($str, $ruler_shape, $meta_color, osc_file_header_record($file_1, $file_2));
 			}
 		#########################
 		# Look for the filename #
@@ -389,7 +389,7 @@ sub do_dsf_stuff {
 				}
 			}
 
-			draw_ruler($str, $ruler_shape, $meta_color);
+			draw_ruler($str, $ruler_shape, $meta_color, osc_file_header_record($file_1, $file_2));
 		########################################
 		# Check for "@@ -3,41 +3,63 @@" syntax #
 		########################################
@@ -397,7 +397,7 @@ sub do_dsf_stuff {
 			$in_hunk = 1;
 			osc_seed_hunk($line);
 
-			print $line;
+			print osc_hunk_header_record() . $line;
 		} elsif ($change_hunk_indicators && $line =~ /^${ansi_color_regex}(@@@* .+? @@@*)(.*)/) {
 			$in_hunk = 1;
 			osc_seed_hunk($line);
@@ -431,7 +431,10 @@ sub do_dsf_stuff {
 			}
 
 			if (!$short_headers) {
-				my $str = "$frag_color@ $last_file_seen:$start_line \@${reset_color}${last_function_color}${remain}${reset_color}\n";
+				# The row announcing the hunk carries the hunk's `h` record.
+				# (With shortHeaders on, no hunk rows are rendered at all, so
+				# there is nothing to tag.)
+				my $str = osc_hunk_header_record() . "$frag_color@ $last_file_seen:$start_line \@${reset_color}${last_function_color}${remain}${reset_color}\n";
 
 				print $str;
 			}
@@ -457,10 +460,11 @@ sub do_dsf_stuff {
 		# Look for binary file changes #
 		################################
 		} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
-			my $change = file_change_string($2,$4);
+			my ($old_file, $new_file) = ($2, $4);
+			my $change = file_change_string($old_file,$new_file);
 			my $str    = "$meta_color$change (binary)\n";
 
-			draw_ruler($str, $ruler_shape, $meta_color);
+			draw_ruler($str, $ruler_shape, $meta_color, osc_file_header_record($old_file, $new_file));
 		#####################################################
 		# Check if we're changing the permissions of a file #
 		#####################################################
@@ -477,7 +481,18 @@ sub do_dsf_stuff {
 			if ($patch_mode) {
 				print "\n";
 			}
-			print "$last_file_seen changed file mode from $old_mode to $new_mode\n";
+
+			# For a mode-only change this line is the only row announcing the
+			# file, so it carries the file's `f` record -- that keeps files with
+			# no content lines visible to a host (spec §5.5). When the file also
+			# has content (an index/similarity line follows), the ruled file
+			# header drawn later is the file's header instead.
+			my $osc = "";
+			my $peek = $input->[0] || "";
+			if ($peek !~ /^${ansi_color_regex}(index |similarity index )/) {
+				$osc = osc_file_header_record($last_file_seen, $last_file_seen);
+			}
+			print $osc . "$last_file_seen changed file mode from $old_mode to $new_mode\n";
 
 		###############
 		# File rename #
@@ -511,7 +526,7 @@ sub do_dsf_stuff {
 
 				my $str = $meta_color . $change . "\n";
 
-				draw_ruler($str, $ruler_shape, $meta_color);
+				draw_ruler($str, $ruler_shape, $meta_color, osc_file_header_record($file1, $file2));
 			}
 
 			$i += 3; # We've consumed three lines
@@ -684,6 +699,37 @@ sub osc_for_content_line {
 	my $ret = "\e]1717;${osc_metadata_version};${type};${new_line};${old_field};${osc_file}\e\\";
 
 	return $ret;
+}
+
+# Build the OSC 1717 `f` (file-header) record for a file-header block, or ""
+# when no host negotiated the protocol. The path prefers the new-file side,
+# falling back to the old side for a deletion -- the same preference
+# osc_seed_hunk applies, so the header groups with its file's content records.
+# An `f` record never carries line numbers (spec §5.5): a file header needs
+# none, and a streaming renderer doesn't know the first hunk's line yet when
+# it draws the header.
+sub osc_file_header_record {
+	my ($old_path, $new_path) = @_;
+
+	if (!$osc_metadata_version) { return ''; }
+
+	my $path = $old_path;
+	if (defined($new_path) && $new_path ne "" && $new_path ne "/dev/null") {
+		$path = $new_path;
+	}
+	$path = sanitize_display(defined($path) ? $path : "");
+
+	return "\e]1717;${osc_metadata_version};f;;;${path}\e\\";
+}
+
+# Build the OSC 1717 `h` (hunk-header) record for the hunk osc_seed_hunk has
+# just seeded, or "" for un-annotated hunks. Its new-line is the hunk's first
+# new-file line (spec §5.2), which is exactly what the freshly seeded counter
+# holds. Must be called after osc_seed_hunk and before any content line.
+sub osc_hunk_header_record {
+	if (!$osc_metadata_version || $osc_skip_hunk) { return ''; }
+
+	return "\e]1717;${osc_metadata_version};h;${osc_new_line};;${osc_file}\e\\";
 }
 
 # Mark the first char of an empty line
@@ -1607,11 +1653,14 @@ sub get_sem_info {
 }
 
 sub draw_ruler {
-	my ($str, $type, $color) = @_;
+	my ($str, $type, $color, $osc) = @_;
 
 	$str     = trim($str);
 	$type  ||= 'ruler';
 	$color ||= "";
+	# An OSC 1717 record to attach to the block: every row of a multi-row
+	# header carries the same record, like a wrapped content line (spec §6.4).
+	$osc   ||= "";
 
 	my @lines = split(/\n/, $str);
 	my $max   = 0;
@@ -1643,20 +1692,26 @@ sub draw_ruler {
 		my $width = get_terminal_width();
 		my $line  = $color . $dash x $width . $reset_color;
 
-		print $line  . "\n";
-		print $color . $str . $reset_color . "\n";
-		print $line  . "\n";
+		# $str may span several rows (e.g. semantic info below the file name);
+		# each gets the record.
+		if ($osc) {
+			$str =~ s/\n/\n$osc/g;
+		}
+
+		print $osc   . $line . "\n";
+		print $osc   . $color . $str . $reset_color . "\n";
+		print $osc   . $line . "\n";
 	} elsif ($type eq 'box') {
 		my $len = $max;
 
-		print $color . ($dash x $len) . $top_r . $reset_color . "\n";
+		print $osc . $color . ($dash x $len) . $top_r . $reset_color . "\n";
 		foreach my $line (@lines) {
 			my $padding  = $len - length(bleach_text($line));
 			$line       .= " " x $padding;
 
-			print $color . $line . $color . $right . $reset_color . "\n";
+			print $osc . $color . $line . $color . $right . $reset_color . "\n";
 		}
-		print $color . ($dash x $len) . $bot_r . $reset_color . "\n";
+		print $osc . $color . ($dash x $len) . $bot_r . $reset_color . "\n";
 	}
 }
 
