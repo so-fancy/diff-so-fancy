@@ -1,0 +1,22 @@
+commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Author: A U Thor <author@example.com>
+Date:   Mon Aug 3 09:00:00 2026 +0200
+
+    first commit
+
+diff --git a/one.txt b/one.txt
+index 257cc56..5716ca5 100644
+--- a/one.txt
++++ b/one.txt
+@@ -1 +1 @@
+-foo
++bar
+
+commit bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+Author: A U Thor <author@example.com>
+Date:   Mon Aug 3 10:00:00 2026 +0200
+
+    second commit
+
+ two.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
