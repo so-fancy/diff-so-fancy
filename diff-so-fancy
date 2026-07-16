@@ -296,11 +296,14 @@ sub do_dsf_stuff {
 		################################################
 		} elsif ($line =~ /^Date:.*?(\w.+)/) {
 			my $unixtime = git_datestr_unixtime($1);
-			my $diff     = time() - $unixtime;
-			my $human    = human_time_diff($diff, 1);
 
-			# Append the human string to the line
-			$line =~ s/$/ ($human)/;
+			if ($unixtime) {
+				my $diff  = time() - $unixtime;
+				my $human = human_time_diff($diff, 1);
+
+				# Append the human string to the line
+				$line =~ s/$/ ($human)/;
+			}
 
 			print $line;
 		########################################
@@ -1513,23 +1516,59 @@ sub draw_ruler {
 sub git_datestr_unixtime {
 	my $str = shift();
 
+	if ($str !~ /:/) {
+		return '';
+	}
+
 	my @p = split(' ', $str);
 
 	my %month = (
-		Jan => 0, Feb => 1, Mar => 2, Apr => 3,
-		May => 4, Jun => 5, Jul => 6, Aug => 7,
+		Jan => 0, Feb => 1, Mar => 2 , Apr => 3 ,
+		May => 4, Jun => 5, Jul => 6 , Aug => 7 ,
 		Sep => 8, Oct => 9, Nov => 10, Dec => 11,
 	);
 
-	my ($wday, $mon_str, $mday, $time, $year, $tz) = @p;
+	my ($wday, $mon_str, $mday, $time, $year, $tz, $mon);
+
+	# Wed Jul 15 08:31:07 2026 -0700
+	if (scalar(@p) == 6) {
+		($wday, $mon_str, $mday, $time, $year, $tz) = @p;
+	# This is --date iso: `2026-07-15 10:21:01 -0700`
+	} elsif (scalar(@p) == 3) {
+		my $date = $p[0] || "";
+		my @x    = split(/-/, $date);
+
+		$year = $x[0] || 0;
+		$mon  = $x[1] || 0;
+		$mday = $x[2] || 0;
+
+		# For timegm months start at zero
+		if ($mon) {
+			$mon--;
+		}
+
+		$time = $p[1] || "";
+		$tz   = $p[2] || "";
+	} else {
+		return "";
+	}
+
 	my ($hour, $min, $sec) = split /:/, $time;
 
-	my $mon = $month{$mon_str} || "";
+	if (!defined($sec)) {
+		return "";
+	}
+
+	if (!defined($mon)) {
+		$mon = $month{$mon_str} || "";
+	}
 
 	# Convert local time to UTC using timezone offset like -700
 	my $offset_hours   = int($tz / 100);
 	my $offset_minutes = abs($tz % 100);
 	my $offset_seconds = ($offset_hours * 3600) + ($offset_minutes * 60);
+
+	#print "TIME: sec=$sec min=$min hour=$hour day=$mday mon=$mon year=$year tz=$tz";
 
 	my $epoch = Time::Local::timegm($sec, $min, $hour, $mday, $mon, $year - 1900);
 	my $ret   = $epoch - $offset_seconds;
