@@ -1521,47 +1521,28 @@ sub git_datestr_unixtime {
 		return '';
 	}
 
-	my @p = split(' ', $str);
-
 	my %month = (
-		Jan => 0, Feb => 1, Mar => 2 , Apr => 3 ,
-		May => 4, Jun => 5, Jul => 6 , Aug => 7 ,
-		Sep => 8, Oct => 9, Nov => 10, Dec => 11,
+		Jan => 1, Feb => 2 , Mar => 3 , Apr => 4 ,
+		May => 5, Jun => 6 , Jul => 7 , Aug => 8 ,
+		Sep => 9, Oct => 10, Nov => 11, Dec => 12,
 	);
 
-	my ($wday, $mon_str, $mday, $time, $year, $tz, $mon);
+	my ($wday, $mon_str, $mday, $year, $tz, $mon, $hour, $min, $sec);
 
 	# Wed Jul 15 08:31:07 2026 -0700
-	if (scalar(@p) == 6) {
-		($wday, $mon_str, $mday, $time, $year, $tz) = @p;
+	if ($str =~ m/^\w{3} \w{3} \d{1,2} /) {
+		my @p = split('[ :]', $str);
+
+		($wday, $mon_str, $mday, $hour, $min, $sec, $year, $tz) = @p;
+
+		$mon = $month{$mon_str} || 0;
 	# This is --date iso: `2026-07-15 10:21:01 -0700`
-	} elsif (scalar(@p) == 3) {
-		my $date = $p[0] || "";
-		my @x    = split(/-/, $date);
+	} elsif ($str =~ m/^\d{4}-\d{2}-\d{2} /) {
+		my @p = split('[-: ]', $str, 7);
 
-		$year = $x[0] || 0;
-		$mon  = $x[1] || 0;
-		$mday = $x[2] || 0;
-
-		# For timegm months start at zero
-		if ($mon) {
-			$mon--;
-		}
-
-		$time = $p[1] || "";
-		$tz   = $p[2] || "";
+		($year, $mon, $mday, $hour, $min, $sec, $tz) = @p;
 	} else {
 		return "";
-	}
-
-	my ($hour, $min, $sec) = split /:/, $time;
-
-	if (!defined($sec)) {
-		return "";
-	}
-
-	if (!defined($mon)) {
-		$mon = $month{$mon_str} || "";
 	}
 
 	# Convert local time to UTC using timezone offset like -700
@@ -1569,9 +1550,9 @@ sub git_datestr_unixtime {
 	my $offset_minutes = abs($tz % 100);
 	my $offset_seconds = ($offset_hours * 3600) + ($offset_minutes * 60);
 
-	#print "TIME: sec=$sec min=$min hour=$hour day=$mday mon=$mon year=$year tz=$tz";
+	#print "TIME: sec=$sec min=$min hour=$hour day=$mday mon=$mon year=$year tz=$tz\n";
 
-	my $epoch = Time::Local::timegm($sec, $min, $hour, $mday, $mon, $year - 1900);
+	my $epoch = Time::Local::timegm($sec, $min, $hour, $mday, $mon - 1, $year - 1900);
 	my $ret   = $epoch - $offset_seconds;
 
 	return $ret;
