@@ -1,0 +1,19 @@
+commit acb77a7d5b19d609aa486e7cafc0a8486d7c56b0
+Author: Paul Irish <commits@paul.irish>
+Date:   2026-07-16 09:11:48 -0700
+
+    .git suffix in repo url
+
+diff --git a/package.json b/package.json
+index 79c50c4..b395a51 100644
+--- a/package.json
++++ b/package.json
+@@ -14,7 +14,7 @@
+   },
+   "repository": {
+     "type": "git",
+-    "url": "https://github.com/so-fancy/diff-so-fancy"
++    "url": "https://github.com/so-fancy/diff-so-fancy.git"
+   },
+   "keywords": [
+     "git",

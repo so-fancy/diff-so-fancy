@@ -114,6 +114,13 @@ teardown_file() {
 	assert_line --index 8 --regexp "^\[COLOR227\]──────────────────────────┘"
 }
 
+@test "In 'git show' mode with ISO date we add a human time (#540)" {
+	output=$( load_fixture "gitshow-iso" | $diff_so_fancy | $ansi_reveal)
+	run printf "%s" "$output"
+
+	assert_line --index 4 --regexp "ago"
+}
+
 @test "Context lines starting with dash are not colored as removal (#542)" {
 	output=$( load_fixture "markdown-list" | $diff_so_fancy | $ansi_reveal )
 	run printf "%s" "$output"
