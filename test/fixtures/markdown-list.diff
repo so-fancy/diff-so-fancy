@@ -1,0 +1,10 @@
+diff --git a/list.md b/list.md
+index abc..def 100644
+--- a/list.md
++++ b/list.md
+@@ -1,4 +1,4 @@
+ shopping list:
+ - milk
+-- eggs
++- bread
+ - butter

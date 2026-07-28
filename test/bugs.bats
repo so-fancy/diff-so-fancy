@@ -114,6 +114,21 @@ teardown_file() {
 	assert_line --index 8 --regexp "^\[COLOR227\]──────────────────────────┘"
 }
 
+@test "Context lines starting with dash are not colored as removal (#542)" {
+	output=$( load_fixture "markdown-list" | $diff_so_fancy | $ansi_reveal )
+	run printf "%s" "$output"
+
+	# Context lines with dash content should have NO color
+	assert_line --index 5 --regexp '^- milk$'
+	assert_line --index 8 --regexp '^- butter$'
+
+	# Removal line should be RED
+	assert_line --index 6 --regexp '^\[BOLD\]\[RED\].*eggs'
+
+	# Addition line should be GREEN
+	assert_line --index 7 --regexp '^\[BOLD\]\[GREEN\].*bread'
+}
+
 @test "Patch mode line count matches on add/delete" {
 	for fixture in add_file_with_content delete_file_with_content; do
 		local in out
