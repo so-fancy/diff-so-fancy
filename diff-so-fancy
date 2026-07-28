@@ -508,8 +508,9 @@ sub do_dsf_stuff {
 				$line = strip_leading_indicators($line,$columns_to_remove);
 			}
 
-			# Raw diffs we color manually
-			if ($manually_color_lines) {
+			# Raw diffs we color manually, but only when strip_leading_indicators
+			# hasn't already handled it
+			if ($manually_color_lines && !$strip_leading_indicators) {
 				my $first_char = substr($line, 0, 1);
 
 				if ($first_char eq "+") {
