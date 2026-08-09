@@ -128,7 +128,7 @@ looking for any feedback or ideas on how to make `diff-so-fancy` even *fancier*.
 ## 🔃 Alternatives
 
 * [Delta](https://github.com/dandavison/delta)
-* [Lazygit](https://github.com/jesseduffield/lazygit) with diff-so-fancy [integration](https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Pagers.md#diff-so-fancy)
+* [Lazygit](https://github.com/jesseduffield/lazygit) with diff-so-fancy [integration](https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_DiffRenderers.md#diff-so-fancy)
 * [difftastic](https://github.com/Wilfred/difftastic)
 
 ## 🏛️ License
