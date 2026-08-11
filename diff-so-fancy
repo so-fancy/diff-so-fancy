@@ -1545,6 +1545,11 @@ sub git_datestr_unixtime {
 		return "";
 	}
 
+	# git's --date=local (and log.date=local) omit the timezone offset, so
+	# treat that as an already-local time with a zero offset instead of
+	# dying on the undefined value below (warnings are fatal in this file).
+	$tz //= 0;
+
 	# Convert local time to UTC using timezone offset like -700
 	my $offset_hours   = int($tz / 100);
 	my $offset_minutes = abs($tz % 100);
