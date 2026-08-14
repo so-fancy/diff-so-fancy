@@ -248,6 +248,20 @@ teardown_file() {
 	assert_line --index 1 --regexp 'deleted: .*@ 1'
 }
 
+@test "In 'git show' mode fileNameRulerShape switches file name boxes to rulers" {
+	# By default the file names are drawn in a box
+	output=$( load_fixture "gitshow" | $diff_so_fancy | $ansi_reveal)
+	run printf "%s" "$output"
+	assert_line --index 6 --partial "┐"
+
+	# With fileNameRulerShape=ruler they are drawn as full width rulers
+	git config --file "$(dsf_test_git_config)" diff-so-fancy.fileNameRulerShape ruler
+	output=$( load_fixture "gitshow" | $diff_so_fancy | $ansi_reveal)
+	git config --file "$(dsf_test_git_config)" --unset diff-so-fancy.fileNameRulerShape
+	run printf "%s" "$output"
+	refute_line --index 6 --partial "┐"
+}
+
 @test "In 'git show' mode we add a human time to the date" {
 	output=$( load_fixture "gitshow" | $diff_so_fancy | $ansi_reveal)
 	run printf "%s" "$output"
