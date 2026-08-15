@@ -152,3 +152,9 @@ teardown_file() {
 		[ "$in" -eq "$out" ] || fail "fixture '$fixture' (bare): $in input lines but $out output lines"
 	done
 }
+
+@test "Binary file with ' and ' in the name (#547)" {
+	output=$( load_fixture "binary-modified-name-with-and" | $diff_so_fancy )
+	run printf "%s" "$output"
+	assert_line --index 1 --partial "modified: a and b.png (binary)";
+}
