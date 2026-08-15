@@ -99,7 +99,7 @@ teardown_file() {
 	assert_line --index 1 --partial "modified: cancel.png (binary)";
 }
 
-@test "Handle binary modifications when the filename contains ' and '" {
+@test "Handle binary modifications when the filename contains ' and ' (#547)" {
 	output=$( load_fixture "binary-modified-name-with-and" | $diff_so_fancy )
 	run printf "%s" "$output"
 	assert_line --index 1 --partial "modified: a and b.png (binary)";
