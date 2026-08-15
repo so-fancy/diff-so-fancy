@@ -434,8 +434,25 @@ sub do_dsf_stuff {
 		################################
 		# Look for binary file changes #
 		################################
-		} elsif ($line =~ /^Binary files (\w\/)?(.+?) and (\w\/)?(.+?) differ/) {
-			my $change = file_change_string($2,$4);
+		} elsif ($line =~ /^Binary files (.+) differ/) {
+			my $names = $1;
+
+			# a file name may itself contain " and ", so prefer the separator
+			# that is followed by the b-side prefix (or /dev/null)
+			my ($file_1,$file_2) = $names =~ /^(.+) and (\w\/.+|\/dev\/null)$/;
+			if (!defined($file_1)) {
+				($file_1,$file_2) = $names =~ /^(.+?) and (.+)$/;
+			}
+			if (!defined($file_1)) {
+				print $line;
+				$i++;
+				next;
+			}
+
+			$file_1 =~ s|^\w/||;
+			$file_2 =~ s|^\w/||;
+
+			my $change = file_change_string($file_1,$file_2);
 			my $str    = "$meta_color$change (binary)\n";
 
 			draw_ruler($str, $ruler_shape, $meta_color);
