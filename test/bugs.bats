@@ -153,6 +153,14 @@ teardown_file() {
 	done
 }
 
+@test "File with a 'b/' prefix inside the name (#549)" {
+	output=$( load_fixture "file-with-b-prefix-in-name" | $diff_so_fancy | $ansi_reveal )
+	run printf "%s" "$output"
+
+	assert_line --index 0 --partial "my b/file.txt changed file mode from 100644 to 100755"
+	assert_line --index 4 --partial "@ my b/old.txt:1 @"
+}
+
 @test "Binary file with ' and ' in the name (#547)" {
 	output=$( load_fixture "binary-modified-name-with-and" | $diff_so_fancy )
 	run printf "%s" "$output"

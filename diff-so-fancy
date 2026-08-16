@@ -265,10 +265,17 @@ sub do_dsf_stuff {
 				$last_file_seen = sanitize_display(basename($3 || ""));
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
 			} elsif ($extra =~ m/--git/) {
-				# Note file may contains spaces
-				my ($a_file, $b_file) = $extra =~ m/(a\/.+) (b\/.+)/;
+				# Note file may contains spaces, and a file name may itself
+				# contain " b/", so we first try to split on the position that
+				# makes both sides the same path (the common case)
+				my ($a_file) = bleach_text($extra) =~ m/^--git (\w\/(.+)) \w\/\2$/;
+
+				if (!defined($a_file)) {
+					# Note file may contains spaces
+					($a_file) = $extra =~ m/(a\/.+) b\/.+/;
+				}
+
 				$a_file ||= "";
-				$b_file ||= "";
 
 				$last_file_seen = sanitize_display($a_file);
 			}
