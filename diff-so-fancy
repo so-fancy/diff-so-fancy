@@ -576,8 +576,12 @@ sub do_dsf_stuff {
 sub parse_hunk_header {
 	my ($line) = @_;
 	my ($o_ofs, $o_cnt, $n_ofs, $n_cnt) = $line =~ /^\@\@+(?: -(\d+)(?:,(\d+))?)+ \+(\d+)(?:,(\d+))? \@\@+/;
-	$o_cnt = 1 unless defined $o_cnt;
-	$n_cnt = 1 unless defined $n_cnt;
+	if (!defined $o_cnt) {
+		$o_cnt = 1;
+	}
+	if (!defined $n_cnt) {
+		$n_cnt = 1;
+	}
 	return ($o_ofs, $o_cnt, $n_ofs, $n_cnt);
 }
 
@@ -1043,8 +1047,12 @@ sub git_ansi_color {
 	my $fg  = $parts[0] // "";
 	my $bg  = $parts[1] // "";
 
-	set_ansi_color($fg, 0 , \@ansi_part, $colors) if $fg;
-	set_ansi_color($bg, 10, \@ansi_part, $colors) if $bg;
+	if ($fg) {
+		set_ansi_color($fg, 0 , \@ansi_part, $colors);
+	}
+	if ($bg) {
+		set_ansi_color($bg, 10, \@ansi_part, $colors);
+	}
 
 	#############################################
 
