@@ -468,13 +468,26 @@ sub do_dsf_stuff {
 		#####################################################
 		} elsif ($clean_permission_changes && $line =~ /^${ansi_color_regex}old mode (\d+)/) {
 			my ($old_mode) = $4;
-			my $next = shift(@$input);
+			my $line_color = $1;
+			my $next       = shift(@$input);
 
-			if ($1) {
-				print $1; # Print out whatever color we're using
+			my ($new_mode);
+			if (defined($next)) {
+				($new_mode) = $next =~ m/new mode (\d+)/;
 			}
 
-			my ($new_mode) = $next =~ m/new mode (\d+)/;
+			# The 'old mode' line isn't followed by a 'new mode' line (truncated
+			# input, or something else entirely). Print both lines untouched.
+			if (!defined($new_mode)) {
+				print $line;
+				unshift(@$input, $next) if defined($next);
+				$i++;
+				next;
+			}
+
+			if ($line_color) {
+				print $line_color; # Print out whatever color we're using
+			}
 
 			if ($patch_mode) {
 				print "\n";

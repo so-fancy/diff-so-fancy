@@ -166,3 +166,13 @@ teardown_file() {
 	run printf "%s" "$output"
 	assert_line --index 1 --partial "modified: a and b.png (binary)";
 }
+
+# A diff that ends right after 'old mode' made dsf warn about an
+# uninitialized value and abort (`use warnings FATAL => 'all'`).
+@test "Truncated diff ending on an 'old mode' line (#550)" {
+	run bash -c "cat '${BATS_TEST_DIRNAME}/fixtures/truncated-old-mode.diff' | $diff_so_fancy 2>&1"
+
+	assert_success
+	refute_output --partial "uninitialized value"
+	assert_line --index 0 --partial "old mode 100644"
+}
