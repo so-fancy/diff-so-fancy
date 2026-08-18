@@ -480,7 +480,11 @@ sub do_dsf_stuff {
 			# input, or something else entirely). Print both lines untouched.
 			if (!defined($new_mode)) {
 				print $line;
-				unshift(@$input, $next) if defined($next);
+
+				if (defined($next)) {
+					unshift(@$input, $next);
+				}
+
 				$i++;
 				next;
 			}
@@ -492,8 +496,8 @@ sub do_dsf_stuff {
 			if ($patch_mode) {
 				print "\n";
 			}
-			print "$last_file_seen changed file mode from $old_mode to $new_mode\n";
 
+			print "$last_file_seen changed file mode from $old_mode to $new_mode\n";
 		###############
 		# File rename #
 		###############
