@@ -84,6 +84,15 @@ rulerWidth sets the width of the ruler lines. (Default: screen width)
 git config --global diff-so-fancy.rulerWidth 80
 ```
 
+### fileNameRulerShape
+
+Shape of the ruler drawn around file names in `git show` output. Set this to
+`ruler` to use full width ruler lines instead of boxes. (Default: box)
+
+```shell
+git config --global diff-so-fancy.fileNameRulerShape ruler
+```
+
 ### shortHeaders
 
 Simplify the header information to a *single* line for filename and line
