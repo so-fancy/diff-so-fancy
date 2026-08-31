@@ -1773,7 +1773,7 @@ B<rulerWidth:> rulerWidth sets the width of the ruler lines. (Default: screen wi
 
     git config --global diff-so-fancy.rulerWidth 80
 
-B<rulerWidth:> Simplify the header information to a single line for filename and line number. (Default false)
+B<shortHeaders:> Simplify the header information to a single line for filename and line number. (Default false)
 
     git config --global diff-so-fancy.shortHeaders true
 
