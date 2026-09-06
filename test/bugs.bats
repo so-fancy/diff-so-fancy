@@ -176,3 +176,18 @@ teardown_file() {
 	refute_output --partial "uninitialized value"
 	assert_line --index 0 --partial "old mode 100644"
 }
+
+# A diff that ends right after 'similarity index' had its remaining lines
+# swallowed: the branch consumed the two lines it expects to follow without
+# checking they are there, so the whole diff vanished from the output.
+@test "Truncated diff ending on a 'similarity index' line" {
+	run bash -c "cat '${BATS_TEST_DIRNAME}/fixtures/truncated-similarity-index.diff' | $diff_so_fancy 2>&1"
+
+	assert_success
+	assert_line --index 0 --partial "similarity index 100%"
+
+	run bash -c "cat '${BATS_TEST_DIRNAME}/fixtures/truncated-similarity-index-partial.diff' | $diff_so_fancy 2>&1"
+
+	assert_success
+	assert_line --index 0 --partial "similarity index 85%"
+}
