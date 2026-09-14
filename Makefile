@@ -1,4 +1,4 @@
-.PHONY: default build test
+.PHONY: default build test docs
 
 default: build
 
@@ -8,3 +8,6 @@ build:
 
 test:
 	./test/bats/bin/bats test
+
+docs:
+	pod2man diff-so-fancy docs/diff-so-fancy.1
