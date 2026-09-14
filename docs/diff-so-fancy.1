@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "DIFF-SO-FANCY 1"
-.TH DIFF-SO-FANCY 1 2026-03-18 "perl v5.40.2" "User Contributed Perl Documentation"
+.TH DIFF-SO-FANCY 1 2026-08-31 "perl v5.40.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -100,25 +100,34 @@ We also support recursive mode with \f(CW\*(C`\-r\*(C'\fR or \f(CW\*(C`\-\-recur
 \&    git config \-\-bool \-\-global diff\-so\-fancy.changeHunkIndicators false
 .Ve
 .PP
-\&\fBstripLeadingSymbols:\fR Should the + or \- symbols at line-start be removed. (Default: true)
+\&\fBstripLeadingSymbols:\fR Remove the \f(CW\*(C`+\*(C'\fR or \f(CW\*(C`\-\*(C'\fR symbols at start of each diff line. (Default: true)
 .PP
 .Vb 1
 \&    git config \-\-bool \-\-global diff\-so\-fancy.stripLeadingSymbols false
 .Ve
 .PP
-\&\fBuseUnicodeRuler:\fR By default, the separator for the file header uses Unicode line-drawing
-characters. If this is causing output errors on your terminal, set this to false to use ASCII
-characters instead. (Default: true)
+\&\fBuseUnicodeRuler:\fR Use Unicode to draw the ruler lines. Setting this to false will use ASCII instead. (Default: true)
 .PP
 .Vb 1
 \&    git config \-\-bool \-\-global diff\-so\-fancy.useUnicodeRuler false
 .Ve
 .PP
-\&\fBrulerWidth:\fR By default, the separator for the file header spans the full width of the
-terminal. Use rulerWidth to set the width of the file header manually.
+\&\fBrulerWidth:\fR rulerWidth sets the width of the ruler lines. (Default: screen width)
 .PP
 .Vb 1
 \&    git config \-\-global diff\-so\-fancy.rulerWidth 80
+.Ve
+.PP
+\&\fBshortHeaders:\fR Simplify the header information to a single line for filename and line number. (Default false)
+.PP
+.Vb 1
+\&    git config \-\-global diff\-so\-fancy.shortHeaders true
+.Ve
+.PP
+\&\fBsemIntegration\fR Include the summary from sem in the header for each changed file. (Default false)
+.PP
+.Vb 1
+\&    git config \-\-global diff\-so\-fancy.semIntegration true
 .Ve
 .SH HOMEPAGE
 .IX Header "HOMEPAGE"
@@ -132,4 +141,4 @@ terminal. Use rulerWidth to set the width of the file header manually.
 .IX Subsection "Lazygit with diff-so-fancy integration"
 \&\- https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Pagers.md#diff\-so\-fancy
 .PP
-# vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4
+# vim: tabstop=4 shiftwidth=4 noexpandtab autoindent softtabstop=4 filetype=perl
