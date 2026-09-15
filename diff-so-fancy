@@ -504,34 +504,39 @@ sub do_dsf_stuff {
 		} elsif ($line =~ /^${ansi_color_regex}similarity index (\d+)%/) {
 			my $simil = $4;
 
-			# If it's a move with content change we ignore this and the next two lines
-			if ($simil != 100) {
-				shift(@$input);
-				shift(@$input);
+			my ($action1, $file1) = ($input->[0] || "") =~ /(copy|rename) from (.+?)(\e|\t|$)/;
+			my ($action2, $file2) = ($input->[1] || "") =~ /(copy|rename) to (.+?)(\e|\t|$)/;
+
+			# The 'from'/'to' pair git emits after a similarity index isn't there
+			# (truncated input, or something else entirely). Print the line
+			# untouched and consume nothing.
+			if (!$file1 || !$file2) {
+				print $line;
+				$i++;
 				next;
 			}
 
-			my $next    = shift(@$input) || "";
-			my ($action1, $file1) = $next =~ /(copy|rename) from (.+?)(\e|\t|$)/;
+			shift(@$input);
+			shift(@$input);
 
-			$next       = shift(@$input) || "";
-			my ($action2, $file2) = $next =~ /(copy|rename) to (.+?)(\e|\t|$)/;
-
-			if ($file1 && $file2) {
-				# We may not have extracted this yet, so we pull from the config if not
-				$meta_color = get_config_color("meta");
-
-				my $change = "???";
-				if ($action1 eq "copy") {
-					$change = "Copied $file1 to $file2";
-				} else {
-					$change = file_change_string($file1,$file2);
-				}
-
-				my $str = $meta_color . $change . "\n";
-
-				draw_ruler($str, $ruler_shape, $meta_color);
+			# If it's a move with content change we ignore this and the next two lines
+			if ($simil != 100) {
+				next;
 			}
+
+			# We may not have extracted this yet, so we pull from the config if not
+			$meta_color = get_config_color("meta");
+
+			my $change = "???";
+			if ($action1 eq "copy") {
+				$change = "Copied $file1 to $file2";
+			} else {
+				$change = file_change_string($file1,$file2);
+			}
+
+			my $str = $meta_color . $change . "\n";
+
+			draw_ruler($str, $ruler_shape, $meta_color);
 
 			$i += 3; # We've consumed three lines
 			next;
