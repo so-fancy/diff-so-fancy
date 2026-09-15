@@ -33,6 +33,7 @@ my $strip_leading_indicators   = git_config_boolean("diff-so-fancy.stripLeadingS
 my $mark_empty_lines           = git_config_boolean("diff-so-fancy.markEmptyLines","true");
 my $use_unicode_dash_for_ruler = git_config_boolean("diff-so-fancy.useUnicodeRuler","true");
 my $ruler_width                = git_config("diff-so-fancy.rulerWidth", undef);
+my $file_name_ruler_shape      = lc(git_config("diff-so-fancy.fileNameRulerShape","box")) eq 'ruler' ? 'ruler' : 'box';
 my $git_strip_prefix           = git_config_boolean("diff.noprefix","false");
 my $do_sem_stuff               = git_config_boolean("diff-so-fancy.semIntegration","false");
 my $has_stdin                  = has_stdin();
@@ -294,8 +295,8 @@ sub do_dsf_stuff {
 			$meta_color    = $1;
 			$git_show_mode = 1;
 
-			# Rulers after this (file names) are in a box
-			$ruler_shape = 'box';
+			# Rulers after this (file names) are in a box (see diff-so-fancy.fileNameRulerShape)
+			$ruler_shape = $file_name_ruler_shape;
 
 			draw_ruler($line, "ruler", $meta_color);
 		################################################
@@ -1772,6 +1773,10 @@ B<useUnicodeRuler:> Use Unicode to draw the ruler lines. Setting this to false w
 B<rulerWidth:> rulerWidth sets the width of the ruler lines. (Default: screen width)
 
     git config --global diff-so-fancy.rulerWidth 80
+
+B<fileNameRulerShape:> Shape of the ruler drawn around file names in C<git show> output. Set this to C<ruler> to use full width ruler lines instead of boxes. (Default: box)
+
+    git config --global diff-so-fancy.fileNameRulerShape ruler
 
 B<shortHeaders:> Simplify the header information to a single line for filename and line number. (Default false)
 
