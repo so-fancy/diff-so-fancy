@@ -184,6 +184,20 @@ content_records_for() {
 	refute_line --partial ";c;"
 }
 
+@test "a submodule carries an f record naming the submodule" {
+	# git gives a submodule no "diff --git" header, so the row it opens the
+	# section with is the only place its path is stated -- and it is a row of
+	# its own, not of a ruled block. The log lines below it carry no record.
+	output=$( records_for "submodule-log" )
+	assert_output "1;f;;;one.txt
+1;f;;;one.txt
+1;f;;;one.txt
+1;h;1;;one.txt
+1;d;1;1;one.txt
+1;a;1;;one.txt
+1;f;;;sub/mod"
+}
+
 @test "diffstat and commit-message lines after a hunk carry no records" {
 	# In `git log -p` output, the next commit's indented message body and its
 	# diffstat lines also begin with a space; none of them are content lines

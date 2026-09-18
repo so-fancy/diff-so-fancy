@@ -605,7 +605,7 @@ sub do_dsf_stuff {
 			# Classify the line for OSC 1717 metadata while its leading +/-
 			# indicator is still present, before we rewrite the line below.
 			if ($osc_metadata_version) {
-				print osc_for_content_line($orig);
+				print osc_record_for_line($orig);
 			}
 
 			print sanitize_display($line);
@@ -702,6 +702,46 @@ sub osc_seed_hunk {
 	$osc_new_remaining  = $n_cnt;
 	$osc_file           = sanitize_display(defined($path) ? $path : "");
 	$osc_skip_hunk      = 0;
+}
+
+# Build the OSC 1717 record for a line diff-so-fancy passes through unchanged.
+# Nearly all of those are content lines of a hunk; the exception is the row git
+# opens a submodule's section with, which announces a file of the diff and so
+# gets an `f` record naming the submodule.
+sub osc_record_for_line {
+	my ($line) = @_;
+
+	my $submodule = submodule_header_path($line);
+	if (defined($submodule)) {
+		return osc_file_header_record($submodule, $submodule);
+	}
+
+	return osc_for_content_line($line);
+}
+
+# The submodule a "Submodule ..." row names, or undef for any other line. git
+# gives a submodule no "diff --git" header, so this row is the only place its
+# path is stated. There are two shapes: the commit the submodule is checked out
+# at has moved ("Submodule sub a32f27c..2d9f921:", with "..." in place of ".."
+# where the move is no fast-forward, " (rewind)" where it goes backwards, and a
+# message in brackets in place of the colon where the two commits cannot both
+# be read), or its working tree is dirty ("Submodule sub contains untracked
+# content").
+#
+# The path is captured greedily: git writes it unquoted, so a path that itself
+# ends in something reading like a range of commits is told apart by matching
+# the last such range on the row.
+sub submodule_header_path {
+	my ($line) = @_;
+
+	my $bleached = bleach_text($line);
+	chomp($bleached);
+
+	if ($bleached =~ /^Submodule (.+) (?:contains (?:untracked|modified) content|[0-9a-f]+\.{2,3}[0-9a-f]+(?: \(.*\))?:?)$/) {
+		return $1;
+	}
+
+	return undef;
 }
 
 # Build the OSC 1717 record for a content line and advance the line counters.
