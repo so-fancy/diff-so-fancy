@@ -7,6 +7,11 @@ load_fixture() {
   cat "$BATS_TEST_DIRNAME/fixtures/${name}.diff"
 }
 
+# Drop the ANSI color sequences, so that a line's length is its width on screen
+strip_ansi() {
+  perl -pe 's/\e\[[0-9;]*m//g'
+}
+
 set_env() {
   export LC_CTYPE="en_US.UTF-8"
 }

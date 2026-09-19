@@ -76,6 +76,22 @@ teardown_file() {
 	assert_line --index 2 --partial "─────"
 }
 
+@test "COLUMNS states the width to render for" {
+	# $TERM is unset so that `tput cols` fails. An ncurses tput reads $COLUMNS itself,
+	# and would hide whether diff-so-fancy reads it too.
+	ruler=$( load_fixture "ls-function" | env -u TERM COLUMNS=40 $diff_so_fancy | head -n1 | strip_ansi )
+	assert_equal "${#ruler}" 40
+}
+
+@test "COLUMNS is ignored unless it holds a positive number" {
+	detected=$( load_fixture "ls-function" | env -u COLUMNS $diff_so_fancy | head -n1 | strip_ansi )
+
+	for columns in 0 -80 wide; do
+		ruler=$( load_fixture "ls-function" | COLUMNS="$columns" $diff_so_fancy | head -n1 | strip_ansi )
+		assert_equal "${#ruler}" "${#detected}"
+	done
+}
+
 # see https://git.io/vrOF4
 @test "Should not show unicode bytes in hex if missing LC_*/LANG _and_ piping the output" {
 	unset LESSCHARSET LESSCHARDEF LC_ALL LC_CTYPE LANG
