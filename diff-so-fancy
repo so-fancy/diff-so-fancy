@@ -1111,6 +1111,17 @@ sub starts_with_ansi {
 	}
 }
 
+# The width $COLUMNS states, or zero if it states none
+sub get_columns_env_width {
+	my $columns = trim($ENV{'COLUMNS'});
+
+	if (is_numeric($columns) && $columns > 0) {
+		return int($columns);
+	}
+
+	return 0;
+}
+
 sub get_terminal_width {
 	# Make width static so we only calculate it once
 	state $width;
@@ -1119,9 +1130,15 @@ sub get_terminal_width {
 		return $width;
 	}
 
+	my $columns_env_width = get_columns_env_width();
+
 	# If there is a ruler width in the config we use that
 	if ($ruler_width) {
 		$width = $ruler_width;
+	# A caller that runs us with no terminal on our output, such as an editor or a
+	# TUI showing the result in one of its own views, states the width in $COLUMNS
+	} elsif ($columns_env_width) {
+		$width = $columns_env_width;
 	# Otherwise we check the terminal width using tput
 	} else {
 		my $tput = `tput cols`;
@@ -1159,6 +1176,7 @@ sub log_debug_info {
 	$out    .= "Perl            : $^V\n";
 	$out    .= "\n";
 	$out    .= "Terminal width  : " . get_terminal_width() . "\n";
+	$out    .= "\$COLUMNS env var: " . ($ENV{COLUMNS} // "") . "\n";
 	$out    .= "Terminal \$LANG  : " . ($ENV{LANG} || "") . "\n";
 	$out    .= "\n";
 	$out    .= "Supports Unicode: " . yes_no(should_print_unicode()) . "\n";
@@ -1780,6 +1798,15 @@ B<shortHeaders:> Simplify the header information to a single line for filename a
 B<semIntegration> Include the summary from sem in the header for each changed file. (Default false)
 
     git config --global diff-so-fancy.semIntegration true
+
+=head1 ENVIRONMENT
+
+B<COLUMNS:> If C<COLUMNS> holds a positive number, C<diff-so-fancy> renders at that width instead
+of asking the terminal. This is how a caller that runs C<diff-so-fancy> with no terminal on its
+output, such as an editor or a TUI showing the result in one of its own views, states the width to
+render for. Git resolves its own width the same way, and sets C<COLUMNS> for the pager it spawns.
+
+C<diff-so-fancy.rulerWidth> still wins over C<COLUMNS>.
 
 =head1 HOMEPAGE
 
