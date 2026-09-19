@@ -1,0 +1,10 @@
+diff --git a/one.txt b/one.txt
+index 257cc56..5716ca5 100644
+--- a/one.txt
++++ b/one.txt
+@@ -1 +1 @@
+-foo
++bar
+Submodule sub/mod 1234567..89abcde:
+  > Add a feature
+  > Fix a bug
