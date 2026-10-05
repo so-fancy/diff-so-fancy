@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "DIFF-SO-FANCY 1"
-.TH DIFF-SO-FANCY 1 2026-08-31 "perl v5.40.2" "User Contributed Perl Documentation"
+.TH DIFF-SO-FANCY 1 2026-10-03 "perl v5.40.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -118,6 +118,12 @@ We also support recursive mode with \f(CW\*(C`\-r\*(C'\fR or \f(CW\*(C`\-\-recur
 \&    git config \-\-global diff\-so\-fancy.rulerWidth 80
 .Ve
 .PP
+\&\fBfileNameRulerShape:\fR Shape of the ruler drawn around file names in \f(CW\*(C`git show\*(C'\fR output. Set this to \f(CW\*(C`ruler\*(C'\fR to use full width ruler lines instead of boxes. (Default: box)
+.PP
+.Vb 1
+\&    git config \-\-global diff\-so\-fancy.fileNameRulerShape ruler
+.Ve
+.PP
 \&\fBshortHeaders:\fR Simplify the header information to a single line for filename and line number. (Default false)
 .PP
 .Vb 1
@@ -129,6 +135,14 @@ We also support recursive mode with \f(CW\*(C`\-r\*(C'\fR or \f(CW\*(C`\-\-recur
 .Vb 1
 \&    git config \-\-global diff\-so\-fancy.semIntegration true
 .Ve
+.SH ENVIRONMENT
+.IX Header "ENVIRONMENT"
+\&\fBCOLUMNS:\fR If \f(CW\*(C`COLUMNS\*(C'\fR holds a positive number, \f(CW\*(C`diff\-so\-fancy\*(C'\fR renders at that width instead
+of asking the terminal. This is how a caller that runs \f(CW\*(C`diff\-so\-fancy\*(C'\fR with no terminal on its
+output, such as an editor or a TUI showing the result in one of its own views, states the width to
+render for. Git resolves its own width the same way, and sets \f(CW\*(C`COLUMNS\*(C'\fR for the pager it spawns.
+.PP
+\&\f(CW\*(C`diff\-so\-fancy.rulerWidth\*(C'\fR still wins over \f(CW\*(C`COLUMNS\*(C'\fR.
 .SH HOMEPAGE
 .IX Header "HOMEPAGE"
 \&\- https://github.com/so\-fancy/diff\-so\-fancy
