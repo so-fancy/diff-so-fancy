@@ -1991,8 +1991,7 @@ BEGIN {
 
 =head1 NAME
 
-diff-so-fancy makes your diffs human readable instead of machine readable. This
-helps improve code quality and helps you spot defects faster.
+diff-so-fancy - human-readable diffs for improved code quality and faster defect detection
 
 =head1 USAGE
 
