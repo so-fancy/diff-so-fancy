@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -25,7 +26,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          registry-url: 'https://registry.npmjs.org'
+          node-version: lts/* # npm v11.5.1+ (Node v24+) is required for Trusted Publishing
 
       - name: Install and Build
         run: |
@@ -33,5 +34,5 @@ jobs:
 
       - name: Publish to npm
         run: |
-          npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version
+          npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
           npm publish --provenance --access public --registry https://registry.npmjs.org/
