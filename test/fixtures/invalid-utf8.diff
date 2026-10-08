@@ -1,0 +1,7 @@
+diff --git a/café.txt b/café.txt
+index 1111111..2222222 100644
+--- a/café.txt
++++ b/café.txt
+@@ -1 +1 @@
+-old é
++new é

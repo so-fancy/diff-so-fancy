@@ -176,3 +176,13 @@ teardown_file() {
 	refute_output --partial "uninitialized value"
 	assert_line --index 0 --partial "old mode 100644"
 }
+
+# Latin-1 bytes in the input are not valid UTF-8 and used to abort dsf under
+# `use warnings FATAL => 'all'`. Input is tolerated and the bad bytes pass through.
+@test "Invalid UTF-8 input does not abort (Latin-1 bytes)" {
+	run bash -c "cat '${BATS_TEST_DIRNAME}/fixtures/invalid-utf8.diff' | $diff_so_fancy 2>&1"
+
+	assert_success
+	refute_output --partial "does not map to Unicode"
+	assert_output --partial "new"
+}
