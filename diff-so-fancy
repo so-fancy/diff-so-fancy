@@ -6,6 +6,7 @@ my $VERSION = "1.4.14";
 
 use v5.014;                                                 # Require Perl 5.14 for 'state' variables and /u in regexes
 use warnings FATAL => 'all';
+no warnings 'utf8';                                         # Tolerate invalid UTF-8 input instead of dying
 use strict;
 
 use File::Spec;                                             # For catdir
