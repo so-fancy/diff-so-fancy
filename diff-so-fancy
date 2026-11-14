@@ -15,9 +15,11 @@ use lib dirname(abs_path(File::Spec->catdir($0))) . "/lib"; # Add the local lib/
 use open ':encoding(UTF-8)';                                # Use UTF-8 when opening files
 use DiffHighlight;
 use Time::Local;
+use Encode qw(decode);
 
-# Everything UTF-8 everywhere
-binmode(STDIN , ":encoding(UTF-8)");
+# Everything UTF-8 everywhere. Input is decoded per line below, so a file
+# that is not UTF-8 shows U+FFFD instead of ending the run.
+binmode(STDIN);
 binmode(STDOUT, ":encoding(UTF-8)");
 binmode(STDERR, ":encoding(UTF-8)");
 
@@ -168,6 +170,8 @@ local $DiffHighlight::line_cb = sub {
 
 my $line_count = 0;
 while (my $line = <STDIN>) {
+	# Fast path for valid UTF-8; anything else gets U+FFFD for bad bytes
+	utf8::decode($line) or $line = decode('UTF-8', $line);
 	if (!$input_has_ansi && $line =~ /$ansi_regex/) {
 		$input_has_ansi = 1;
 	}
