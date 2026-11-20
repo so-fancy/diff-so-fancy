@@ -1027,7 +1027,7 @@ sub char_count {
 # Remove all ANSI codes from a string
 sub bleach_text {
 	my $str = shift();
-	$str    =~ s/\e\[\d*(;\d+)*m//mg;
+	$str    =~ s/\e\[[0-9;]*[A-Za-z]//mg;
 
 	return $str;
 }
@@ -1042,7 +1042,11 @@ sub sanitize_display {
 	$s =~ s/\e\].*?(?:\x07|\e\\)//gs;
 	# Strip DCS / PM / APC / SOS sequences
 	$s =~ s/\e[P\^X_].*?\e\\//gs;
-	# Strips other escape sequences like: cursor movement, mode changes, etc
+	# Strip non-SGR CSI sequences whole (e.g. \e[K "erase in line"), so no
+	# tail character leaks into the visible output. SGR (color) sequences
+	# are preserved for the caller to render.
+	$s =~ s/\e\[(?![0-9;]*m)[0-9;]*[A-Za-z]//g;
+	# Strips any other escape sequences like: cursor movement, mode changes, etc
 	$s =~ s/\e(?!\[[0-9;]*m).//g;
 
 	return $s;

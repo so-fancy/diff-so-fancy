@@ -282,3 +282,16 @@ iso_date_ago() {
 	assert_success
 	assert_output --partial "1 hour ago"
 }
+
+# A non-SGR CSI sequence (e.g. \e[K "erase in line") inside a content line
+# used to render a stray visible tail: sanitize_display() stripped only the
+# ESC plus one char, leaving the `K` behind.
+# Repro: printf 'diff --git a/f b/f\nindex 111..222 100644\n--- a/f\n+++ b/f\n@@ -1 +1 @@\n-a\n+\x1b[Kb\n' | ./diff-so-fancy
+@test "Non-SGR CSI sequences leave no tail in the output" {
+	output=$( load_fixture "csi-sequence" | $diff_so_fancy | $ansi_reveal )
+	run printf "%s" "$output"
+
+	assert_success
+	assert_line --index 5 --regexp "^b$"
+	refute_output --partial "K"
+}
