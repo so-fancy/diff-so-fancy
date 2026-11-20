@@ -251,3 +251,34 @@ teardown_file() {
 	refute_output --partial "does not map to Unicode"
 	assert_output --partial "new"
 }
+
+# Craft an ISO `Date:` line showing a wall clock `seconds_ago` old in the
+# zone with the given offset from UTC (label like -0330 or +0530).
+iso_date_ago() {
+	LC_ALL=C perl -MPOSIX=strftime -e 'print strftime("%Y-%m-%d %H:%M:%S $ARGV[2]", gmtime(time() - $ARGV[0] + $ARGV[1]))' -- "$1" "$2" "$3"
+}
+
+# git_datestr_unixtime() split the zone into hours via truncating int() and
+# minutes via a floored %, shifting -0330 dates by +1h40m, so the humanized
+# suffix flipped at the wrong boundary (a 65-minute-old date read as
+# "35 minutes in the future").
+@test "Humanized dates flip at the hour boundary in -0330" {
+	date_55=$(iso_date_ago 3300 -12600 -0330)
+	run bash -c "printf 'Date: $date_55\n' | $diff_so_fancy 2>&1"
+	assert_success
+	assert_output --partial "55 minutes ago"
+
+	date_65=$(iso_date_ago 3900 -12600 -0330)
+	run bash -c "printf 'Date: $date_65\n' | $diff_so_fancy 2>&1"
+	assert_success
+	assert_output --partial "1 hour ago"
+}
+
+@test "Humanized dates flip at the hour boundary in +0530" {
+	# Control: positive fractional zones were already correct; pin that
+	# the fix didn't move them.
+	date_65=$(iso_date_ago 3900 19800 +0530)
+	run bash -c "printf 'Date: $date_65\n' | $diff_so_fancy 2>&1"
+	assert_success
+	assert_output --partial "1 hour ago"
+}

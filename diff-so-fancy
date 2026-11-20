@@ -1883,10 +1883,14 @@ sub git_datestr_unixtime {
 	# `--date=local` (and log.date=local) omit the timezone offset
 	$tz //= 0;
 
-	# Convert local time to UTC using timezone offset like -700
-	my $offset_hours   = int($tz / 100);
-	my $offset_minutes = abs($tz % 100);
-	my $offset_seconds = ($offset_hours * 3600) + ($offset_minutes * 60);
+	# Convert local time to UTC using timezone offset like -0700. The sign
+	# must apply to the whole offset: int() truncates toward zero and
+	# Perl's % takes the right operand's sign, so splitting hours and
+	# minutes first breaks negative fractional zones like -0330.
+	my $sign           = ($tz < 0) ? -1 : 1;
+	my $offset_hours   = int(abs($tz) / 100);
+	my $offset_minutes = abs($tz) % 100;
+	my $offset_seconds = $sign * (($offset_hours * 3600) + ($offset_minutes * 60));
 
 	#print "TIME: sec=$sec min=$min hour=$hour day=$mday mon=$mon year=$year tz=$tz\n";
 
