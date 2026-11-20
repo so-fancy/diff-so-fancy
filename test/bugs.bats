@@ -295,3 +295,19 @@ iso_date_ago() {
 	assert_line --index 5 --regexp "^b$"
 	refute_output --partial "K"
 }
+
+# strip_leading_indicators() deliberately wraps (${ansi_color_regex}) a
+# second time: the outer group always participates, so $1 is defined for
+# the s/// replacement, while the +/- indicator lands in $5 (every other
+# branch reads $4). "Normalizing" the wrap breaks both halves: $1 goes
+# undef (fatal under `use warnings FATAL`) and the indicator read misses,
+# so plain +/- lines come out uncolored. This pins that contract, where
+# manual coloring depends on it.
+@test "Plain +/- lines are stripped and manually colored (capture groups)" {
+	output=$( printf 'diff --git a/f b/f\nindex 111..222 100644\n--- a/f\n+++ b/f\n@@ -1 +1 @@\n-a\n+b\n' | $diff_so_fancy | $ansi_reveal )
+	run printf "%s" "$output"
+
+	assert_success
+	assert_line --index 4 --regexp "^\[BOLD\]\[RED\]a\[RESET\]$"
+	assert_line --index 5 --regexp "^\[BOLD\]\[GREEN\]b\[RESET\]$"
+}
