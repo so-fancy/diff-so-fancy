@@ -169,3 +169,51 @@ teardown_file() {
     assert_line --index 3 --partial  "${escape}[${fg_rgb};${bg_default}m@"
     assert_line --index 6 --partial  "${escape}[${bg_rgb}m--"
 }
+
+# `git config --list` prints value-less keys bare (e.g. a lone
+# `markEmptyLines` under `[diff-so-fancy]`); git treats them as true, but
+# d-s-f used to drop such lines and fall back to each key's default.
+setup_bare_bool_git_config() {
+  GIT_CONFIG="$(dsf_test_git_config)" || return $?
+  cat > "${GIT_CONFIG}" <<EOF || return $?
+$1
+EOF
+  export GIT_CONFIG
+  export GIT_CONFIG_NOSYSTEM=1
+}
+
+@test "Bare diff-so-fancy boolean means true (shortHeaders)" {
+    # shortHeaders defaults to false, so a bare key observably changes the
+    # output only when the bare boolean is honored.
+    setup_bare_bool_git_config '[diff-so-fancy]
+	shortHeaders'
+
+	output=$( printf 'diff --git a/f b/f\nindex 111..222 100644\n--- a/f\n+++ b/f\n@@ -1 +1 @@\n-a\n+b\n' | $diff_so_fancy )
+	run printf "%s" "$output"
+
+	assert_output --partial "@ 1"
+	refute_output --partial "@ f:1 @"
+}
+
+@test "Bare markEmptyLines boolean means true" {
+    setup_bare_bool_git_config '[diff-so-fancy]
+	markEmptyLines'
+
+	output=$( printf 'diff --git a/f b/f\nindex 111..222 100644\n--- a/f\n+++ b/f\n@@ -1 +1 @@\n-\n+\n' | $diff_so_fancy | $ansi_reveal )
+	run printf "%s" "$output"
+
+	assert_line --index 4 --partial "[REVERSE][BOLD][RED][BACKG052] [RESET]"
+	assert_line --index 5 --partial "[REVERSE][BOLD][GREEN][BACKG022] [RESET]"
+}
+
+@test "Bare diff.noprefix boolean is honored" {
+    setup_bare_bool_git_config '[diff]
+	noprefix'
+
+	output=$( printf 'diff --git a/f b/f\nindex 111..222 100644\n--- a/f\n+++ b/f\n@@ -1 +1 @@\n-a\n+b\n' | $diff_so_fancy )
+	run printf "%s" "$output"
+
+	# With noprefix honored, the a//b/ prefixes are kept as part of the
+	# names, so these identical files read as a rename instead of a modify.
+	assert_output --partial "renamed:"
+}
