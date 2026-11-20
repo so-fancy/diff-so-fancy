@@ -834,7 +834,10 @@ sub osc_hunk_header_record {
 sub mark_empty_line {
 	my $line = shift();
 
-	my $reset_color  = "\e\\[0?m";
+	# NB: this is a regex *pattern*, not the global $reset_color literal:
+	# interpolating the global here would put a bare "[" into the match
+	# below and fail to compile.
+	my $reset_re     = "\e\\[0?m";
 	my $reset_escape = "\e\[m";
 	my $invert_color = "\e\[7m";
 	my $add_color    = $DiffHighlight::NEW_HIGHLIGHT[1];
@@ -848,7 +851,7 @@ sub mark_empty_line {
 		$line = $invert_color . $del_color . " " . color('reset') . "\n";
 	# This handles everything else
 	} else {
-		$line =~ s/^($ansi_color_regex)[+-]$reset_color\s*$/$invert_color$1 $reset_escape\n/;
+		$line =~ s/^($ansi_color_regex)[+-]$reset_re\s*$/$invert_color$1 $reset_escape\n/;
 	}
 
 	return $line;
