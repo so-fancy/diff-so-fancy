@@ -989,8 +989,13 @@ sub strip_leading_indicators {
 # Insert the color reset code at end of line, but before any newlines
 sub insert_reset_at_line_end {
 	my $line = shift();
-	$line =~ s/^(.*)([\n\r]+)?$/${1}${reset_color}${2}/;
-	return $line;
+	my $nl = "";
+
+	if ($line =~ s/([\n\r]+)\z//) {
+		$nl = $1;
+	}
+
+	return $line . $reset_color . $nl;
 }
 
 # Count the number of a given char in a string

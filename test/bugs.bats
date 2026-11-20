@@ -177,6 +177,19 @@ teardown_file() {
 	assert_line --index 0 --partial "old mode 100644"
 }
 
+# A diff whose last line lacks a trailing newline made dsf die with
+# "Use of uninitialized value $2" (`use warnings FATAL => 'all'`) in
+# insert_reset_at_line_end(), printing partial output and exiting 255.
+# Repro: printf 'diff --git a/f b/f\nindex 111..222 100644\n--- a/f\n+++ b/f\n@@ -1 +1 @@\n-a\n+b' | ./diff-so-fancy
+# The fixture is stored without its final newline (last byte is 'b').
+@test "Input whose last line lacks a trailing newline does not abort" {
+	run bash -c "cat '${BATS_TEST_DIRNAME}/fixtures/no-trailing-newline.diff' | $diff_so_fancy 2>&1"
+
+	assert_success
+	refute_output --partial "uninitialized value"
+	assert_output --partial "b"
+}
+
 # Latin-1 bytes in the input are not valid UTF-8 and used to abort dsf under
 # `use warnings FATAL => 'all'`. Input is tolerated and the bad bytes pass through.
 @test "Invalid UTF-8 input does not abort (Latin-1 bytes)" {
