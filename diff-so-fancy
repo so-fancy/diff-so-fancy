@@ -384,8 +384,8 @@ sub do_dsf_stuff {
 				my $common = common_prefix($file_1, $file_2);
 
 				# Remove the common prefix from each as well as the next dir
-				$file_1 =~ s/$common.+?\///;
-				$file_2 =~ s/$common.+?\///;
+				$file_1 =~ s/\Q$common\E.+?\///;
+				$file_2 =~ s/\Q$common\E.+?\///;
 			}
 
 			my $str = "";

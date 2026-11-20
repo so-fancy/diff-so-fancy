@@ -1,0 +1,6 @@
+diff --recursive -u /tmp/foo(/a/bar /tmp/foo(/b/bar
+--- /tmp/foo(/a/bar  2026-03-13 21:35:28.492228513 -0700
++++ /tmp/foo(/b/bar  2026-03-13 21:35:47.101220189 -0700
+@@ -1 +1 @@
+-BAR
++FOO

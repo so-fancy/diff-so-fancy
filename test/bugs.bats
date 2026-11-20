@@ -92,6 +92,19 @@ teardown_file() {
 	assert_output --regexp 'modified: index.txt'
 }
 
+# A recursive diff whose files' common path prefix contains regex
+# metacharacters made dsf die with "Unmatched ( in regex" (exit 255), since
+# the prefix was interpolated into s/// unquoted. Balanced metachars
+# silently mis-stripped instead.
+# Repro: printf 'diff --recursive -u /tmp/foo(/a/bar /tmp/foo(/b/bar\n--- /tmp/foo(/a/bar\t2026-03-13 21:35:28.492228513 -0700\n+++ /tmp/foo(/b/bar\t2026-03-13 21:35:47.101220189 -0700\n@@ -1 +1 @@\n-BAR\n+FOO\n' | ./diff-so-fancy
+@test "diff --recursive with regex metachars in the path does not abort" {
+	run bash -c "cat '${BATS_TEST_DIRNAME}/fixtures/recursive-metachar-path.diff' | $diff_so_fancy 2>&1"
+
+	assert_success
+	refute_output --partial "Unmatched ( in regex"
+	assert_output --regexp 'modified: bar'
+}
+
 @test "Remove a \n at the end of a file (#474)" {
 	output=$( load_fixture "remove_slashn_eof" | $diff_so_fancy | $ansi_reveal)
 	run printf "%s" "$output"
