@@ -1400,7 +1400,9 @@ sub get_terminal_width {
 				$width--;
 			}
 		} else {
-			print color('orange') . "Warning: `tput cols` did not return numeric input" . color('reset') . "\n";
+			# The warning goes to STDERR: STDOUT carries the diff, so any
+			# diagnostic printed there would become its first line.
+			print STDERR color('orange') . "Warning: `tput cols` did not return numeric input" . color('reset') . "\n";
 			$width = 80;
 		}
 	}
