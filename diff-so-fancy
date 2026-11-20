@@ -96,22 +96,31 @@ if ($args->{debug}) {
 	log_debug_info();
 }
 
-# We only process ARGV if we don't have STDIN
+# CLI flags are dispatched before checking STDIN, so they work whether
+# stdin is a tty, a pipe, or /dev/null. Only the terminating flags below
+# exit; anything else (patch, debug, rulerWidth, ...) falls through into
+# normal diff processing.
+if ($args->{v} || $args->{version}) {
+	print version();
+	exit(0);
+} elsif ($args->{'set-defaults'}) {
+	my $ok = set_defaults();
+	exit();
+} elsif ($args->{colors}) {
+	# We print this to STDOUT so we can redirect to bash to auto-set the colors
+	print get_default_colors();
+	exit();
+} elsif ($args->{help} || $args->{h}) {
+	print usage();
+	exit(0);
+}
+
+# No terminating flag was given and stdin is a tty, so there is no diff
+# to process: show usage. (With piped stdin we fall through and process
+# the diff.)
 if (!$has_stdin) {
-	if ($args->{v} || $args->{version}) {
-		die(version());
-	} elsif ($args->{'set-defaults'}) {
-		my $ok = set_defaults();
-		exit;
-	} elsif ($args->{colors}) {
-		# We print this to STDOUT so we can redirect to bash to auto-set the colors
-		print get_default_colors();
-		exit;
-	} elsif (!%$args || $args->{help} || $args->{h}) {
-		die(usage());
-	} else {
-		die("Missing input on STDIN\n");
-	}
+	print usage();
+	exit(0);
 }
 
 #################################################################################

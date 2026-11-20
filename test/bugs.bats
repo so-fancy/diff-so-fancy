@@ -1,5 +1,7 @@
 #!/usr/bin/env bats
 
+bats_require_minimum_version 1.5.0
+
 # Used by both `setup_file` and `setup`, which are special bats callbacks.
 __load_imports__() {
 	load 'test_helper/bats-support/load'
@@ -102,6 +104,43 @@ teardown_file() {
 
 	assert_success
 	refute_output --partial "Unmatched ( in regex"
+	assert_output --regexp 'modified: bar'
+}
+
+# CLI flags used to be dispatched only when stdin was a tty: with piped
+# stdin they were silently ignored, and with a tty --version/--help died
+# to STDERR with exit 255, so $(diff-so-fancy --version) captured nothing.
+# Repro: diff-so-fancy --version </dev/null  (no output, exit 0)
+@test "--version works with non-tty stdin, on stdout, exit 0" {
+	run --separate-stderr $diff_so_fancy --version </dev/null
+
+	assert_success
+	assert_output --partial "Version"
+	refute_stderr
+}
+
+# Repro: diff-so-fancy --colors </dev/null  (no output, exit 0)
+@test "--colors works with non-tty stdin, on stdout, exit 0" {
+	run --separate-stderr $diff_so_fancy --colors </dev/null
+
+	assert_success
+	assert_output --partial "color.ui"
+	refute_stderr
+}
+
+@test "--help goes to stdout, exit 0" {
+	run --separate-stderr $diff_so_fancy --help </dev/null
+
+	assert_success
+	assert_output --partial "Usage:"
+	refute_stderr
+}
+
+@test "unknown flag is silently ignored and piped input still processes" {
+	run --separate-stderr bash -c "cat '${BATS_TEST_DIRNAME}/fixtures/recursive-metachar-path.diff' | $diff_so_fancy --bogus-flag"
+
+	assert_success
+	refute_stderr
 	assert_output --regexp 'modified: bar'
 }
 
