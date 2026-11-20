@@ -2066,6 +2066,21 @@ B<semIntegration> Include the summary from sem in the header for each changed fi
 
 =head1 ENVIRONMENT
 
+B<DSF_PATCH_MODE:> Set to a true value to enable patch mode without passing
+C<--patch> on the command line. In patch mode C<diff-so-fancy> keeps its output
+line-for-line aligned with its input, as C<git add --patch> requires (see
+C<interactive.diffFilter> above).
+
+B<OSC1717:> Advertise support for the OSC 1717 diff-line-metadata protocol with
+a comma-separated version list both sides understand, e.g. C<OSC1717=V1>.
+C<diff-so-fancy> negotiates the highest mutually supported version and then
+emits a version-only handshake record first, tagging file headers, hunk
+headers, and content lines with machine-readable records for host tools to
+parse. When the variable is unset nothing is emitted and output is unchanged.
+Note that exporting C<OSC1717> changes the output bytes even when redirecting
+to a file or piping to another tool, so only set it in hosts that consume the
+records.
+
 B<COLUMNS:> If C<COLUMNS> holds a positive number, C<diff-so-fancy> renders at that width instead
 of asking the terminal. This is how a caller that runs C<diff-so-fancy> with no terminal on its
 output, such as an editor or a TUI showing the result in one of its own views, states the width to
