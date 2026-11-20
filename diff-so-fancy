@@ -1510,6 +1510,9 @@ sub debug_log {
 	state $fh;
 	if (!$fh) {
 		printf(STDERR "%sDebug log enabled:%s $file\n", color('orange'), color());
+		if (-l $file) {
+			die("Refusing to write debug log to symlink: $file\n");
+		}
 		open ($fh, ">", $file) or die("Cannot write to $file");
 	}
 
