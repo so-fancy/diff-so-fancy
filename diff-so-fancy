@@ -43,7 +43,6 @@ my $osc_metadata_version       = negotiated_osc_version();
 my $ansi_regex        = qr/\e\[([0-9]{0,3}(;[0-9]{1,3}){0,10})[mK]/;
 my $ansi_color_regex  = qr/(${ansi_regex})?/;
 my $reset_color       = color("reset");
-my $bold              = color("bold");
 my $meta_color        = "";
 my $add_line_color    = ""; # Placeholder for later
 my $remove_line_color = ""; # Placeholder for later
@@ -59,7 +58,6 @@ my $ruler_shape       = 'ruler';
 my $i                 = 0;
 my $in_hunk           = 0;
 my $columns_to_remove = 0;
-my $is_mercurial      = 0;
 # OSC 1717 state: the new-/old-file line counters and the file path, all seeded
 # at each hunk header (osc_seed_hunk) and advanced per content line
 # (osc_for_content_line), plus a flag for hunks we don't annotate. The
@@ -176,14 +174,12 @@ local $DiffHighlight::line_cb = sub {
 	}
 };
 
-my $line_count = 0;
 while (my $line = <STDIN>) {
 	if (!$input_has_ansi && $line =~ /$ansi_regex/) {
 		$input_has_ansi = 1;
 	}
 
 	my $ok = DiffHighlight::handle_line($line);
-	$line_count++;
 }
 
 # If we're mid hunk above process anything still pending
@@ -227,7 +223,6 @@ sub do_dsf_stuff {
 
 	# Calculate the context lines for this chunk
 	my $context_lines = calculate_context_lines(@$input);
-	my $git_show_mode = 0;
 
 	# If we're in debug mode we want to log the chunks we see
 	if ($args->{debug}) {
@@ -293,8 +288,7 @@ sub do_dsf_stuff {
 
 			# Mercurial looks like: diff --recursive -u core/app.py language/app.py
 			if ($extra =~ m/(-r|--recursive) -u (.+?) (.*)/) {
-				$is_mercurial = 1;
-				$meta_color   = get_config_color("meta");
+				$meta_color = get_config_color("meta");
 
 				$last_file_seen = sanitize_display(basename($3 || ""));
 			# Git looks like: diff --git a/diff-so-fancy b/diff-so-fancy
@@ -325,8 +319,7 @@ sub do_dsf_stuff {
 		# In `git show` the commit always in a box #
 		############################################
 		} elsif ($line =~ /^${ansi_color_regex}commit/) {
-			$meta_color    = $1;
-			$git_show_mode = 1;
+			$meta_color = $1;
 
 			# Rulers after this (file names) are in a box (see diff-so-fancy.fileNameRulerShape)
 			$ruler_shape = $file_name_ruler_shape;
@@ -1198,11 +1191,9 @@ sub is_windows {
 sub set_defaults {
 	my $color_config = get_default_colors();
 	my $git_config   = 'git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"';
-	my $first_cmd    = 'git config --global diff-so-fancy.first-run false';
 
 	my @cmds = split(/\n/,$color_config);
 	push(@cmds,$git_config);
-	push(@cmds,$first_cmd);
 
 	# Remove all comments from the commands
 	foreach my $x (@cmds) {
@@ -1997,17 +1988,6 @@ sub get_ansi_color {
 # Borrowed from: https://www.perturb.org/display/1097_Perl_detect_if_a_module_is_installed_before_using_it.html
 # Creates methods k() and kd() to print, and print & die respectively
 BEGIN {
-	if (!defined(&trim)) {
-		*trim = sub {
-			my ($s) = (@_, $_); # Passed in var, or default to $_
-			if (length($s) == 0) { return ""; }
-			$s =~ s/^\s*//;
-			$s =~ s/\s*$//;
-
-			return $s;
-		}
-	}
-
 	# If you're me you load a debug library
 	if ($ENV{USER} && ($ENV{USER} eq "bakers")) {
 		no warnings 'once';
