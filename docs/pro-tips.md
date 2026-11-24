@@ -80,7 +80,7 @@ or with long flags:
     diff = diff-so-fancy | less --tabs=4 --RAW-CONTROL-CHARS --quit-if-one-screen --no-init --chop-long-lines --pattern='^(Date|added|deleted|modified): '
 ```
 
-## Zsh plugin suppport for diff-so-fancy
+## Zsh plugin support for diff-so-fancy
 
 This project includes a `diff-so-fancy.plugin.zsh` file providing ZSH framework
 support. You can use any framework that supports the ZSH plugin standard to
